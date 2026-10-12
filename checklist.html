@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Рядом с собакой — чек-лист запуска</title>
+<meta name="description" content="Рабочий чек-лист запуска интернет-магазина для собак: юрлицо, ассортимент, партнёры, контент, лояльность, Корея.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600&family=Onest:wght@400;500;650&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 49px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); padding-block: 12px; display: grid; gap: 10px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .btn { font: 500 13px/1 var(--font-body); padding: 8px 12px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn.danger { color: var(--signal); }
+  .progress { flex: 1 1 200px; min-width: 0; display: flex; align-items: center; gap: 10px; font: 500 12px var(--font-mono); color: var(--muted); }
+  .meter { flex: 1; height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; }
+  .meter > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+  .stage-nav { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+  .stage-nav a { font: 500 12px/1 var(--font-mono); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); color: var(--muted); text-decoration: none; white-space: nowrap; background: var(--surface); }
+  .stage-nav a.done { color: var(--accent); border-color: var(--accent); }
+  .stage { padding-block: 32px; border-top: 1px solid var(--line); }
+  .stage-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+  .stage-head h2 { font-size: clamp(20px, 2.8vw, 26px); }
+  .stage-count { font: 500 12px var(--font-mono); color: var(--muted); }
+  .kind { font: 500 11px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; padding: 4px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
+  .kind.services { background: var(--signal-soft); color: var(--signal); }
+  .kind.growth { background: var(--line); color: var(--muted); }
+  .items { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+  .item { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 0; }
+  .item input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); }
+  .item label { min-width: 0; cursor: pointer; }
+  .item.checked label { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+  .item textarea { grid-column: 2; width: 100%; min-height: 34px; resize: vertical; font: 13px/1.4 var(--font-body); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+  .done-when { margin-top: 12px; font-size: 14px; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); color: var(--ink); }
+  .done-when b { color: var(--accent); }
+  .msg { font-size: 13px; color: var(--muted); min-height: 1em; }
+  @media print { .controls, .item textarea:placeholder-shown { display: none !important; } .item { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="index.html">рядом с собакой</a>
+    <nav aria-label="Навигация">
+      <a href="index.html">← Концепция</a>
+      <a href="#how">Как пользоваться</a>
+      <a href="#list">Этапы</a>
+      <a href="#sources">Источники</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero" style="padding-block:48px 24px">
+    <div class="eyebrow">Отдельный рабочий документ · 12.10.2026 · версия 02</div>
+    <h1>Чек-лист запуска</h1>
+    <p class="lead">От юрлица и первой закупки до партнёров-основателей, контента и первых 90 дней. Обновлён по итогам обсуждения концепции.</p>
+  </div>
+
+  <section id="how" style="padding-block:24px">
+    <div class="col small">
+      <p>Сначала закрываем этапы с меткой <span class="kind">запуск</span>. Метка <span class="kind services">услуги</span> нужна только перед продажей услуг и курсов, <span class="kind growth">рост</span> — после проверки базового магазина.</p>
+      <p class="muted">Отметки и заметки сохраняются только в этом браузере. Чтобы перенести прогресс на другое устройство или показать команде — скачайте его файлом и загрузите там.</p>
+    </div>
+  </section>
+
+  <div class="controls" id="controls">
+    <div class="row">
+      <div class="progress"><span id="pct">0%</span><div class="meter"><i id="bar"></i></div><span id="cnt">0 / 0</span></div>
+    </div>
+    <div class="row" role="group" aria-label="Фильтр">
+      <button class="btn" data-f="all" aria-pressed="true">Все</button>
+      <button class="btn" data-f="launch" aria-pressed="false">Запуск</button>
+      <button class="btn" data-f="services" aria-pressed="false">Услуги и курсы</button>
+      <button class="btn" data-f="growth" aria-pressed="false">Рост</button>
+      <button class="btn" id="open" aria-pressed="false">Только незакрытые</button>
+    </div>
+    <div class="row no-print">
+      <button class="btn" id="export">Скачать прогресс</button>
+      <label class="btn" for="importFile">Загрузить прогресс</label>
+      <input type="file" id="importFile" accept="application/json" hidden>
+      <button class="btn" id="print">Печать / PDF</button>
+      <button class="btn danger" id="reset">Сбросить</button>
+      <span class="msg" id="msg" role="status"></span>
+    </div>
+    <nav class="stage-nav" id="stageNav" aria-label="Этапы"></nav>
+  </div>
+
+  <div id="list"></div>
+
+  <section id="sources">
+    <div class="sec-head"><div class="eyebrow">Источники для проверки</div><h2>Проверено 12.10.2026</h2></div>
+    <ol class="sources col">
+      <li><a href="https://biznes.gov.pl/pl/portal/00806" target="_blank" rel="noopener">Biznes.gov.pl — бизнес иностранца в Польше</a></li>
+      <li><a href="https://prawakonsumenta.uokik.gov.pl/prawo-odstapienia-od-umowy/terminy-odstapienie/" target="_blank" rel="noopener">UOKiK — отказ от интернет-покупки</a></li>
+      <li><a href="https://prawakonsumenta.uokik.gov.pl/prawo-odstapienia-od-umowy/koszty/" target="_blank" rel="noopener">UOKiK — расходы на возврат</a></li>
+      <li><a href="https://prawakonsumenta.uokik.gov.pl/pytania-i-odpowiedzi/prawo-do-informacji/" target="_blank" rel="noopener">UOKiK — цифровой контент</a></li>
+      <li><a href="https://www.lewissilkin.com/insights/2026/07/31/the-new-ai-labelling-rules-for-deployers-in-the-advertising-supply-chain" target="_blank" rel="noopener">AI Act, статья 50 — маркировка</a></li>
+      <li><a href="https://inpost.pl/cenniki" target="_blank" rel="noopener">InPost — тарифы</a></li>
+    </ol>
+    <p class="small muted col">Источники не подтверждают соответствие требованиям. Применимость проверить с бухгалтером или профильным специалистом.</p>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>Рядом с собакой · чек-лист запуска · версия 02</span>
+  <a href="index.html">Вернуться к концепции</a>
+</footer>
+
+<script>
+const STAGES = [
+  { id: "scope", kind: "launch", title: "Первый запуск", items: [
+    "Зафиксировать ядро: интернет-магазин экипировки и расходников, Польша",
+    "Первая аудитория: клиенты Даши, партнёры, украинцы и белорусы в Польше",
+    "Бюджет первой закупки ~10 000 zł и отдельный бюджет на рекламу и убыточные расходники",
+    "Три чекпоинта: перед запуском, ~2 месяца после, перед корейской закупкой",
+    "Список открытых вопросов: название, платформа, оплата, эксклюзив"
+  ], done: "Команда одинаково понимает, что запускаем первым и что откладываем." },
+  { id: "name", kind: "launch", title: "Название и бренд", items: [
+    "Критерии названия: работает на польском, нейтрально для UA/BY",
+    "Шорт-лист 5–10 вариантов",
+    "Проверить домен и ники в Instagram, TikTok, Facebook",
+    "Проверить совпадения в EUIPO и польском патентном ведомстве",
+    "Нейтральный логотип; Один — персонаж, а не логотип",
+    "Силуэты телосложений как элемент стиля",
+    "Тон текстов: тёплый эксперт, без «хит продаж»"
+  ], done: "Есть название, домен, ники и базовый визуальный язык." },
+  { id: "entity", kind: "launch", title: "Компания и договорённости", items: [
+    "Sp. z o.o.: Даша — учредитель и prezes",
+    "Распределение долей в umowie spółki",
+    "Встреча с бухгалтером: ZUS для prezes, VAT, KSeF, касса",
+    "Понимание ответственности prezes (art. 299 KSH)",
+    "Регистрация через S24, капитал от 5 000 zł",
+    "Банковский счёт компании",
+    "Договор с Arena Auto как импортёром: цены, счета, ответственность за брак"
+  ], done: "Компания зарегистрирована, бухгалтер выбран, роли и доли записаны." },
+  { id: "suppliers", kind: "launch", title: "Поставщики и закупка", items: [
+    "Список того, что Даша чаще всего рекомендует клиентам",
+    "Таблица: поставщик, закупка, розница у конкурентов, маржа, размеры, срок",
+    "Образцы и тест на примерочной команде",
+    "Ответ корейским поставщикам: pre-launch, one-pager, запрос образцов, MOQ, прайс",
+    "Условия эксклюзива: территория, срок, минимальные объёмы, выход, брак",
+    "Порядок претензий по браку с каждым поставщиком",
+    "Неравномерная закупка размеров по спросу, мало цветов"
+  ], done: "Есть 15–25 позиций с подтверждёнными ценами, размерами и сроками." },
+  { id: "rules", kind: "launch", title: "Требования к товару и правила магазина", items: [
+    "GPSR: производитель и ответственное лицо в ЕС на каждом товаре",
+    "Маркировка модели или партии, контакты, предупреждения на польском",
+    "Польские вкладыши и данные GPSR в карточках",
+    "Требования ветинспекции для лакомств — до продажи",
+    "Регламент магазина: доставка, отказ, обмен, претензии",
+    "Политика конфиденциальности и cookies (RODO)",
+    "Отдельное согласие на рассылки",
+    "Правила сертификатов: срок, использование, VAT"
+  ], done: "Каждый товар можно законно продавать, правила опубликованы." },
+  { id: "listing", kind: "launch", title: "Ассортимент и карточки", items: [
+    "Шаблон честной карточки: кому подходит, кому не подходит, на ком проверено",
+    "Фото на собаках разного телосложения",
+    "Замеры и диапазоны регулировки, проверенные самостоятельно",
+    "Мнение Даши в 2–3 предложениях",
+    "Подборки по задачам: щенок, город, занятия",
+    "Расходники: упаковки «месяц» и «3 месяца»"
+  ], done: "Все стартовые позиции оформлены по шаблону." },
+  { id: "store", kind: "launch", title: "Магазин и оплата", items: [
+    "Шорт-лист платформ: готовая (Shopify, Shoper) или своя",
+    "Решение по платформе с учётом сроков и сезона",
+    "Оплата: BLIK, Przelewy24 и др. — сравнить условия",
+    "Покупка без аккаунта",
+    "Профиль собаки: имя, порода, дата рождения, замеры",
+    "Коды партнёров и вопрос «как узнали» при оформлении",
+    "Блок про рассылку: зачем подписываться, без спама",
+    "Аналитика с согласием"
+  ], done: "Тестовый заказ проходит от корзины до письма-подтверждения." },
+  { id: "delivery", kind: "launch", title: "Склад, доставка, возвраты", items: [
+    "Договор с InPost или брокером, сравнение итоговых цен",
+    "Единый остаток по размеру и цвету",
+    "Зона возвратов и брака",
+    "Упаковка: открытка с именем собаки, памятка, подарок",
+    "Минимальная сумма или пара для дешёвых расходников",
+    "Процедура обмена размера"
+  ], done: "Знаем стоимость каждой отправки и порядок обмена." },
+  { id: "support", kind: "launch", title: "Поддержка и забота", items: [
+    "Один основной канал, email, форма",
+    "Ответ не позднее следующего рабочего дня: Даша и помощница",
+    "Проверка посадки по фото — кнопка в заказе",
+    "Сообщение через 2 недели после покупки",
+    "Вопрос «порекомендуете? 0–10» через 7–10 дней",
+    "Шаблоны ответов на польском, украинском, белорусском"
+  ], done: "Любой клиент получает ответ и понятный следующий шаг." },
+  { id: "partners", kind: "launch", title: "Партнёры-основатели и рефералка", items: [
+    "Разговоры с 3–5 кинологами и грумерами",
+    "Документ реферальной программы: скидка, %, привязка 6–12 мес, выплаты",
+    "Статус партнёров-основателей с сохранёнными условиями",
+    "Открытые уровни по приведённым заказам",
+    "Форма выплат — с бухгалтером",
+    "Набор партнёра: образцы, размерная линейка, гайд, шаблоны сторис",
+    "Страницы и подборки партнёров на сайте",
+    "Ежемесячный отчёт партнёру"
+  ], done: "Есть 3–5 активных партнёров с кодами и подборками." },
+  { id: "content", kind: "launch", title: "Контент и сообщество", items: [
+    "Банк вопросов клиентов Даши",
+    "Примерочная команда: 4–5 маленьких собак с замерами",
+    "Запас роликов с Одином и маленькими напарниками",
+    "Съёмочный день раз в неделю",
+    "Перевод и субтитры через ИИ + пометка «переведено с помощью ИИ»",
+    "Согласия на публикацию фото клиентов и людей в кадре",
+    "Брифы для друзей: съёмка, монтаж, проверка переводов",
+    "Telegram-чат и waitlist до запуска",
+    "Подборка к Sylwester до 31 декабря"
+  ], done: "Есть запас контента на 2–3 недели и свой канал для аудитории." },
+  { id: "help", kind: "launch", title: "Помощь животным", items: [
+    "Выбрать один проверенный фонд эвакуации животных из Украины",
+    "Проверить статус фонда и налоговые условия с бухгалтером",
+    "Механика: сумма, период, лимит",
+    "Раздел на сайте и формат отчётов, без лозунгов"
+  ], done: "Первая передача помощи задокументирована и опубликована." },
+  { id: "test", kind: "launch", title: "Тест перед запуском", items: [
+    "Сквозные покупки на телефоне и компьютере",
+    "Неудачная и повторная оплата",
+    "Возврат и обмен размера",
+    "Код партнёра засчитывается правильно",
+    "Мягкий запуск на своей аудитории"
+  ], done: "Реальные покупатели проходят весь путь без ручных костылей." },
+  { id: "first90", kind: "launch", title: "Первые 30–90 дней", items: [
+    "Ежедневно: заказы, остатки, ответы",
+    "Еженедельно: деньги, реклама, убыток на расходниках",
+    "Повторные покупки 30 / 90 / 120 / 180 дней по когортам",
+    "Активные партнёры и заказы на партнёра",
+    "Анализ обменов размеров",
+    "Чекпоинт ~2 месяца: решения о дозаказе и росте"
+  ], done: "Понятно, что работает, и есть данные для корейской закупки." },
+  { id: "services", kind: "services", title: "Услуги, прогулки, курсы", items: [
+    "Описание услуг Даши: консультации, прогулки, передержка",
+    "Кто исполнитель и как учитывается выручка",
+    "Запись и правила отмены",
+    "Курсы: формат, цена, доступ, правила цифрового контента",
+    "Тестовая запись и тестовая покупка курса"
+  ], done: "Услугу или курс можно купить с понятными условиями." },
+  { id: "growth", kind: "growth", title: "Рост", items: [
+    "Корейская закупка и, при выгодных условиях, эксклюзив",
+    "Напоминания о пополнении → подписка",
+    "Выставки: образцы и коды для заводчиков, позже стенд",
+    "Ветклиники и приюты: QR и наборы",
+    "Опт для салонов по запросу",
+    "Собственная марка расходников",
+    "Allegro как запасной канал",
+    "Доставка в другие страны ЕС",
+    "AI-примерка с лимитами и маркировкой"
+  ], done: "Новые направления запускаются только после проверки базы." }
+];
+
+const KEY = "rss-checklist-v2";
+let state = { checked: {}, notes: {} };
+let filter = "all", onlyOpen = false;
+
+function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"); if (s && s.checked) state = s; } catch (e) {} }
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+function idOf(s, i) { return s.id + "-" + i; }
+const kindLabel = { launch: "запуск", services: "услуги", growth: "рост" };
+
+function render() {
+  const list = document.getElementById("list"), nav = document.getElementById("stageNav");
+  list.innerHTML = ""; nav.innerHTML = "";
+  let total = 0, done = 0;
+  STAGES.forEach((s, si) => {
+    const ids = s.items.map((_, i) => idOf(s, i));
+    const sd = ids.filter(id => state.checked[id]).length;
+    total += ids.length; done += sd;
+    const a = document.createElement("a");
+    a.href = "#st-" + s.id; a.textContent = String(si + 1).padStart(2, "0") + " " + s.title;
+    if (sd === ids.length) a.className = "done";
+    nav.appendChild(a);
+    if (filter !== "all" && s.kind !== filter) return;
+    const visible = s.items.map((t, i) => ({ t, id: ids[i] })).filter(x => !onlyOpen || !state.checked[x.id]);
+    if (!visible.length) return;
+    const sec = document.createElement("section");
+    sec.className = "stage"; sec.id = "st-" + s.id;
+    sec.innerHTML = `<div class="stage-head"><h2>${String(si + 1).padStart(2, "0")} · ${s.title}</h2><span class="row"><span class="kind ${s.kind}">${kindLabel[s.kind]}</span><span class="stage-count">${sd} / ${ids.length}</span></span></div>`;
+    const ul = document.createElement("ul"); ul.className = "items";
+    visible.forEach(({ t, id }) => {
+      const li = document.createElement("li");
+      li.className = "item" + (state.checked[id] ? " checked" : "");
+      const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "cb-" + id; cb.checked = !!state.checked[id];
+      const lb = document.createElement("label"); lb.htmlFor = cb.id; lb.textContent = t;
+      const ta = document.createElement("textarea"); ta.id = "nt-" + id; ta.placeholder = "Заметка"; ta.value = state.notes[id] || ""; ta.rows = 1;
+      cb.addEventListener("change", () => { if (cb.checked) state.checked[id] = true; else delete state.checked[id]; save(); render(); });
+      ta.addEventListener("input", () => { if (ta.value) state.notes[id] = ta.value; else delete state.notes[id]; save(); });
+      li.append(cb, lb, ta); ul.appendChild(li);
+    });
+    sec.appendChild(ul);
+    const dw = document.createElement("div"); dw.className = "done-when"; dw.innerHTML = "<b>Готово, когда:</b> " + s.done;
+    sec.appendChild(dw);
+    list.appendChild(sec);
+  });
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById("pct").textContent = pct + "%";
+  document.getElementById("cnt").textContent = done + " / " + total;
+  document.getElementById("bar").style.width = pct + "%";
+}
+
+function msg(t) { const m = document.getElementById("msg"); m.textContent = t; setTimeout(() => { if (m.textContent === t) m.textContent = ""; }, 4000); }
+
+document.querySelectorAll("[data-f]").forEach(b => b.addEventListener("click", () => {
+  filter = b.dataset.f;
+  document.querySelectorAll("[data-f]").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+  render();
+}));
+document.getElementById("open").addEventListener("click", e => { onlyOpen = !onlyOpen; e.currentTarget.setAttribute("aria-pressed", String(onlyOpen)); render(); });
+document.getElementById("export").addEventListener("click", () => {
+  const blob = new Blob([JSON.stringify({ version: 2, date: new Date().toISOString(), ...state }, null, 2)], { type: "application/json" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "checklist-progress.json"; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000); msg("Файл прогресса скачан.");
+});
+document.getElementById("importFile").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = () => { try { const d = JSON.parse(r.result); state = { checked: d.checked || {}, notes: d.notes || {} }; save(); render(); msg("Прогресс загружен."); } catch (err) { msg("Не удалось прочитать файл: нужен JSON, скачанный с этой страницы."); } };
+  r.readAsText(f); e.target.value = "";
+});
+document.getElementById("print").addEventListener("click", () => window.print());
+let resetArmed = false;
+document.getElementById("reset").addEventListener("click", e => {
+  if (!resetArmed) { resetArmed = true; e.currentTarget.textContent = "Точно сбросить?"; setTimeout(() => { resetArmed = false; e.currentTarget.textContent = "Сбросить"; }, 4000); return; }
+  state = { checked: {}, notes: {} }; save(); render(); resetArmed = false; e.currentTarget.textContent = "Сбросить"; msg("Прогресс сброшен.");
+});
+
+load(); render();
+</script>
+</body>
+</html>
