@@ -334,10 +334,12 @@ document.getElementById("importFile").addEventListener("change", e => {
   r.readAsText(f); e.target.value = "";
 });
 document.getElementById("print").addEventListener("click", () => window.print());
-let resetArmed = false;
+let resetArmed = false, resetTimer;
 document.getElementById("reset").addEventListener("click", e => {
-  if (!resetArmed) { resetArmed = true; e.currentTarget.textContent = "Точно сбросить?"; setTimeout(() => { resetArmed = false; e.currentTarget.textContent = "Сбросить"; }, 4000); return; }
-  state = { checked: {}, notes: {} }; save(); render(); resetArmed = false; e.currentTarget.textContent = "Сбросить"; msg("Прогресс сброшен.");
+  const btn = e.currentTarget;
+  clearTimeout(resetTimer);
+  if (!resetArmed) { resetArmed = true; btn.textContent = "Точно сбросить?"; resetTimer = setTimeout(() => { resetArmed = false; btn.textContent = "Сбросить"; }, 4000); return; }
+  state = { checked: {}, notes: {} }; save(); render(); resetArmed = false; btn.textContent = "Сбросить"; msg("Прогресс сброшен.");
 });
 
 load(); render();
