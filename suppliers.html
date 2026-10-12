@@ -1,0 +1,763 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Рядом с собакой — поставщики</title>
+<meta name="description" content="Рабочий список поставщиков магазина для собак: страна, тип товара, статус, контакты, сайты и соцсети.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600&family=Onest:wght@400;500;650&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 49px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); padding-block: 10px; display: grid; gap: 8px; }
+  .fields { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .field { display: grid; gap: 3px; min-width: 0; }
+  .field > span { font: 500 11px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .field select, .field input { width: 100%; font: 14px/1.2 var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
+  .btn { font: 500 12.5px/1 var(--font-body); padding: 7px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; text-decoration: none; }
+  .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .count { flex: 1 1 120px; font: 500 12px var(--font-mono); color: var(--muted); }
+  .list { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); padding-block: 20px 8px; }
+  .sup { display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .sup h3 { margin: 0; font-size: 18px; }
+  .sup p { margin: 0; font-size: 14.5px; }
+  .sup-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; justify-content: space-between; }
+  .place { font: 500 12px var(--font-mono); color: var(--muted); }
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tags .tag { margin: 0; }
+  .tag.plain { background: var(--line); color: var(--muted); }
+  .facts { display: grid; gap: 6px; margin: 0; font-size: 13.5px; }
+  .facts div { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
+  .facts dt { color: var(--muted); }
+  .facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .links { display: flex; flex-wrap: wrap; gap: 5px; }
+  .links a { font: 500 12.5px/1 var(--font-body); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); text-decoration: none; background: var(--paper); }
+  .links a:hover { border-color: var(--accent); }
+  .empty { padding-block: 40px; color: var(--muted); }
+  #list [hidden] { display: none; }
+  #tableView table { min-width: 980px; font-size: 13.5px; }
+  #tableView td a { display: inline-block; margin-right: 8px; white-space: nowrap; }
+  @media (max-width: 640px) { .controls { position: static; } }
+  @media print { .controls { display: none !important; } .sup { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="index.html">рядом с собакой</a>
+    <nav aria-label="Навигация">
+      <a href="index.html">← Концепция</a>
+      <a href="#how">Как читать</a>
+      <a href="#list">Список</a>
+      <a href="#sources">Источники</a>
+      <a href="checklist.html">Чек-лист ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero" style="padding-block:48px 24px">
+    <div class="eyebrow">Отдельный рабочий документ · 12.10.2026 · версия 01</div>
+    <h1>Поставщики</h1>
+    <p class="lead">Производители и бренды, которых мы рассматриваем: кто что делает, где находится, как с ним связаться и на каком этапе разговор.</p>
+  </div>
+
+  <section id="how" style="padding-block:24px">
+    <div class="col small">
+      <p><span class="tag">шорт-лист</span> пишем первыми. <span class="tag new">в переписке</span> — разговор уже идёт. <span class="tag plain">проверить</span> — нужно убедиться, что бренд работает и подходит. <span class="tag plain">отложен</span> — причина указана в заметке.</p>
+      <p class="muted">«Присутствие в ЕС» — результат поиска 12.10.2026: «не найдено» значит, что мы не нашли польского дистрибьютора, а не что его точно нет. Цены в гривнах — розничные, с сайтов и из статей.</p>
+    </div>
+  </section>
+
+  <div class="controls" id="controls">
+    <div class="fields">
+      <label class="field"><span>Поиск</span><input type="search" id="q" placeholder="Название, товар, город"></label>
+      <label class="field"><span>Страна</span><select id="f-country"></select></label>
+      <label class="field"><span>Тип товара</span><select id="f-types"></select></label>
+      <label class="field"><span>Статус</span><select id="f-status"></select></label>
+      <label class="field"><span>Присутствие в ЕС</span><select id="f-eu"></select></label>
+      <label class="field"><span>Размеры собак</span><select id="f-sizes"></select></label>
+    </div>
+    <div class="row">
+      <span class="count" id="count" role="status"></span>
+      <button class="btn" id="view-cards" aria-pressed="true">Карточки</button>
+      <button class="btn" id="view-table" aria-pressed="false">Таблица</button>
+      <button class="btn" id="reset">Сбросить фильтры</button>
+      <button class="btn" id="csv">Скачать CSV</button>
+      <a class="btn" href="suppliers.xlsx" download>Скачать Excel</a>
+    </div>
+  </div>
+
+  <div id="list">
+    <div class="list" id="cardView"></div>
+    <div class="table-wrap" id="tableView" hidden></div>
+    <p class="empty" id="empty" hidden>Под эти фильтры никто не подходит.</p>
+  </div>
+
+  <section id="sources">
+    <div class="sec-head"><div class="eyebrow">Источники</div><h2>Откуда данные</h2></div>
+    <div class="col small">
+      <p>Контакты, сайты и соцсети взяты с сайтов самих брендов 12.10.2026. Источник по каждому поставщику — в его карточке и в выгрузке.</p>
+      <p class="muted">CSV скачивается с учётом выбранных фильтров, Excel содержит весь список.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>Рядом с собакой · поставщики · версия 01 · 12.10.2026</span>
+  <a href="index.html">Вернуться к концепции</a>
+</footer>
+
+<script>
+const SUPPLIERS = [
+ {
+  "name": "Bark&Go",
+  "country": "Украина",
+  "city": "Львов",
+  "types": [
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "Шорт-лист",
+  "eu": "Только розница (Etsy)",
+  "what": "Комбинезоны, куртки, попоны, жилеты, пыльники, охлаждающая коллекция; сумки для выгула и дождевик для владельца.",
+  "why": "Около 10 лет на рынке. По подкасту SendPulse (июнь 2026) основательница выбирает дистрибьюторов и фокусные рынки — партнёра ищут сами.",
+  "terms": "Опт и минимальная партия — запросить. Пошив под заказ 5–7 рабочих дней.",
+  "note": "На сайте есть раздел «Співпраця», но без условий.",
+  "source": "https://sendpulse.ua/blog/podkast-z-oleksandroiu-vakarovoiu",
+  "checked": "12.10.2026",
+  "site": "https://barkandgo.com.ua/",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "https://www.etsy.com/shop/BarkAndGo",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "info.barkandgo.ua@gmail.com",
+  "phone": "+380677494005"
+ },
+ {
+  "name": "Pet Fashion",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "Шорт-лист",
+  "eu": "Не найдено",
+  "what": "Комбинезоны, дождевики, жилеты, худи; отдельные лекала под таксу и другие породы.",
+  "why": "Попадает в нишу такс. У владельца (Suziria Group) уже есть канал в Польшу для корма Savory через Hovet.",
+  "terms": "Опт — через Suziria Brands, запросить. Розница: комбинезон для таксы около 620–960 грн.",
+  "note": "Крупный производитель: эксклюзив маловероятен. Польского дистрибьютора одежды поиск не нашёл.",
+  "source": "https://mind.ua/news/20266537-ukrayinska-suziria-brands-vihodit-na-rinki-polshchi-ta-niderlandiv",
+  "checked": "12.10.2026",
+  "site": "https://pet-fashion.com.ua/",
+  "instagram": "https://www.instagram.com/petfashion_tm",
+  "facebook": "https://www.facebook.com/petfashion.tm",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "https://www.youtube.com/channel/UCVrt1m3VlfDR0LVjD6ogkyA",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Dogs Bomba",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "Шорт-лист",
+  "eu": "Только розница (Etsy)",
+  "what": "Одежда с 2014 года, своя команда дизайнеров и швей; отдельные линейки для такс и корги.",
+  "why": "Доступная цена и породные лекала: дождевик-комбинезон для таксы около 680–920 грн в рознице.",
+  "terms": "Опт и минимальная партия — запросить.",
+  "note": "Дистрибьютора в ЕС поиск не нашёл.",
+  "source": "https://dogsbomba.com/",
+  "checked": "12.10.2026",
+  "site": "https://dogsbomba.com/",
+  "instagram": "https://www.instagram.com/dogs_bomba",
+  "facebook": "",
+  "etsy": "https://www.etsy.com/shop/DogsBomba",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "dogsbomba@gmail.com",
+  "phone": "+380996891029"
+ },
+ {
+  "name": "Woofit",
+  "country": "Украина",
+  "city": "Киев",
+  "types": [
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "Проверить",
+  "eu": "Не найдено",
+  "what": "Куртки, дождевики, трикотаж, пледы; шьют с 2015 года.",
+  "why": "Начинали с пошива по индивидуальным меркам — можно обсуждать нестандартные размеры.",
+  "terms": "Опт — запросить. Розница по статье 2021 года: 700–1 300 грн.",
+  "note": "Контакты на сайте не извлеклись, писать через Instagram.",
+  "source": "https://www.village.com.ua/village/city/animals/306957-dobirka-odyagu-dlya-tvarin",
+  "checked": "12.10.2026",
+  "site": "https://www.woofitdogwear.com/",
+  "instagram": "https://www.instagram.com/woofitdogwear",
+  "facebook": "https://www.facebook.com/woofitdogwear/",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Montmorency",
+  "country": "Украина",
+  "city": "Киев",
+  "types": [
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "Проверить",
+  "eu": "Не найдено",
+  "what": "Одежда и аксессуары для собак и кошек, своё ателье, пошив по меркам.",
+  "why": "Премиальный сегмент: 1 500–3 000 грн за вещь (цены 2021 года).",
+  "terms": "Запросить.",
+  "note": "Сайт montmorency.com.ua сейчас отдаёт 404 — проверить, работает ли бренд.",
+  "source": "https://www.village.com.ua/village/city/animals/306957-dobirka-odyagu-dlya-tvarin",
+  "checked": "12.10.2026",
+  "site": "",
+  "instagram": "https://www.instagram.com/montmorency_for_pets",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Noble Pet",
+  "country": "Украина",
+  "city": "Харьков",
+  "types": [
+   "Одежда",
+   "Лежаки и дом"
+  ],
+  "sizes": "Все размеры",
+  "status": "Проверить",
+  "eu": "Только розница (Etsy)",
+  "what": "Одежда, лежаки и подушки, автогамаки для перевозки собак.",
+  "why": "Широкая линейка у одного производителя, невысокие цены.",
+  "terms": "Запросить. Розница по статье 2021 года: одежда 330–640 грн, лежаки 400–2 000 грн.",
+  "note": "Уже продаёт за рубеж в розницу через Etsy.",
+  "source": "https://www.village.com.ua/village/city/animals/306957-dobirka-odyagu-dlya-tvarin",
+  "checked": "12.10.2026",
+  "site": "https://noblepet.com.ua/",
+  "instagram": "https://www.instagram.com/noble_pet",
+  "facebook": "https://www.facebook.com/noblepet.com.ua",
+  "etsy": "https://www.etsy.com/shop/NoblePetStore",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "noblepetco@gmail.com",
+  "phone": "+380667836190"
+ },
+ {
+  "name": "ЛавГав",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Расходники"
+  ],
+  "sizes": "Все размеры",
+  "status": "Шорт-лист",
+  "eu": "Не найдено",
+  "what": "Пакеты для уборки: из кукурузного крахмала (домашнее компостирование) и обычные; контейнер для рулонов.",
+  "why": "Есть готовый «месячный запас» — наша механика расходников. Приглашают зоомагазины и салоны в партнёры.",
+  "terms": "Розница 100–170 грн за упаковку. Опт — запросить.",
+  "note": "Сертификат компостируемости на главной не назван — запросить документ.",
+  "source": "https://lavgav.ua/",
+  "checked": "12.10.2026",
+  "site": "https://lavgav.ua/",
+  "instagram": "https://www.instagram.com/welovegaw",
+  "facebook": "https://www.facebook.com/welovegaw",
+  "etsy": "",
+  "tiktok": "https://www.tiktok.com/@welovegaw",
+  "telegram": "",
+  "youtube": "https://www.youtube.com/channel/UC6nuUqtOEUtWTPOajtu6E-Q",
+  "email": "welovegaw@gmail.com",
+  "phone": "+380639351463"
+ },
+ {
+  "name": "БроніК9",
+  "country": "Украина",
+  "city": "Львов",
+  "types": [
+   "Амуниция"
+  ],
+  "sizes": "Средние и крупные",
+  "status": "Проверить",
+  "eu": "Не найдено",
+  "what": "Амуниция для служебных собак: шлейки, тактические ошейники и поводки, намордники, обувь, защита.",
+  "why": "Вариант для крупных и рабочих собак и собачьего спорта.",
+  "terms": "Опт не указан. В Европу отправляют по индивидуальной договорённости, 7–14 рабочих дней.",
+  "note": "По сайту это магазин; уточнить, что шьют сами.",
+  "source": "https://bronik9.com.ua",
+  "checked": "12.10.2026",
+  "site": "https://bronik9.com.ua/",
+  "instagram": "https://www.instagram.com/bronik_k9",
+  "facebook": "https://www.facebook.com/BronikK9",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "https://youtube.com/@BroniK9",
+  "email": "",
+  "phone": "+380981789756"
+ },
+ {
+  "name": "Mr. Snoopy",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Амуниция",
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "Проверить",
+  "eu": "Не найдено",
+  "what": "Ошейники, поводки, шлейки; худи, дождевики, зимние жилеты.",
+  "why": "Один из немногих найденных украинских брендов именно амуниции.",
+  "terms": "Запросить. Цены 2021 года: поводок от 200 грн.",
+  "note": "Сайт mrsnoopy.com не открывается — проверить, работает ли бренд.",
+  "source": "https://www.village.com.ua/village/city/animals/306957-dobirka-odyagu-dlya-tvarin",
+  "checked": "12.10.2026",
+  "site": "",
+  "instagram": "https://www.instagram.com/mrsnoopythedog",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Rebellious Collars",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Амуниция"
+  ],
+  "sizes": "Все размеры",
+  "status": "Проверить",
+  "eu": "Не найдено",
+  "what": "Мастерская: ошейники из натуральной кожи под размер и цвет.",
+  "why": "Кожаная амуниция ручной работы.",
+  "terms": "Неизвестно.",
+  "note": "Контакты поиском не нашлись — искать в Instagram.",
+  "source": "https://shotam.info/ukrains-ki-zootovary-top-10-vyrobnykiv-odiahu-budynochkiv-ta-smakolykiv-dlia-tvaryn/",
+  "checked": "12.10.2026",
+  "site": "",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Best 4 Dogs",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Амуниция"
+  ],
+  "sizes": "Все размеры",
+  "status": "Проверить",
+  "eu": "Не найдено",
+  "what": "Профессиональная амуниция: несколько видов поводков и ошейников.",
+  "why": "Возможный источник поводков для дрессировки.",
+  "terms": "Неизвестно.",
+  "note": "Сайт best4dogs.com.ua не открывается — проверить, работает ли бренд.",
+  "source": "https://madeinua.org/catalog/tovary-dlia-tvaryn/best-4-dogs/",
+  "checked": "12.10.2026",
+  "site": "",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Dogtag",
+  "country": "Украина",
+  "city": "Киев",
+  "types": [
+   "Адресники"
+  ],
+  "sizes": "Все размеры",
+  "status": "Проверить",
+  "eu": "Не найдено",
+  "what": "Адресники с гравировкой телефона владельца, разные формы и размеры.",
+  "why": "Недорогое персональное дополнение к заказу.",
+  "terms": "Запросить.",
+  "note": "Город — предположение по домену.",
+  "source": "https://madeinua.org/catalog/tovary-dlia-tvaryn/dogtag/",
+  "checked": "12.10.2026",
+  "site": "http://dogtag.kiev.ua",
+  "instagram": "",
+  "facebook": "https://www.facebook.com/dogtag.kiev.ua",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Vitameat",
+  "country": "Украина",
+  "city": "Киев",
+  "types": [
+   "Лакомства"
+  ],
+  "sizes": "Все размеры",
+  "status": "Отложен",
+  "eu": "Не найдено",
+  "what": "Сушёное мясо и субпродукты, один ингредиент в пачке, без добавок.",
+  "why": "Сильный продукт для расходников.",
+  "terms": "Запросить.",
+  "note": "Ввоз кормов животного происхождения в ЕС требует ветеринарных разрешений — пока вне нашей схемы.",
+  "source": "https://vitameat.com.ua/",
+  "checked": "12.10.2026",
+  "site": "https://vitameat.com.ua/",
+  "instagram": "https://www.instagram.com/vitameat.kyiv",
+  "facebook": "https://www.facebook.com/Vitameat",
+  "etsy": "",
+  "tiktok": "https://www.tiktok.com/@vitameat",
+  "telegram": "https://t.me/vitameat",
+  "youtube": "https://www.youtube.com/@vitameat_kyiv",
+  "email": "info@vitameat.com.ua",
+  "phone": "+380732839011"
+ },
+ {
+  "name": "BASIC.FOOD",
+  "country": "Украина",
+  "city": "Ровно",
+  "types": [
+   "Лакомства"
+  ],
+  "sizes": "Все размеры",
+  "status": "Отложен",
+  "eu": "Не найдено",
+  "what": "Сушёные говяжьи субпродукты: лёгкие, сердце, печень, рубец.",
+  "why": "Простой состав без консервантов.",
+  "terms": "Запросить.",
+  "note": "То же ограничение: ветеринарные разрешения на ввоз.",
+  "source": "https://basic-food.shop/",
+  "checked": "12.10.2026",
+  "site": "https://basic-food.shop/",
+  "instagram": "https://www.instagram.com/basic.rivne",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "https://t.me/basic_food_bot",
+  "youtube": "",
+  "email": "info@basic-food.shop",
+  "phone": "+380976655442"
+ },
+ {
+  "name": "Ласощі з села",
+  "country": "Украина",
+  "city": "Запорожье",
+  "types": [
+   "Лакомства"
+  ],
+  "sizes": "Все размеры",
+  "status": "Отложен",
+  "eu": "Не найдено",
+  "what": "Сушёные говяжьи субпродукты широкой линейкой; производитель — ТД «Едельвейс Україна».",
+  "why": "Работают оптом, большой ассортимент.",
+  "terms": "Запросить.",
+  "note": "То же ограничение: ветеринарные разрешения на ввоз.",
+  "source": "https://www.lasoshizsela.com/",
+  "checked": "12.10.2026",
+  "site": "https://www.lasoshizsela.com/",
+  "instagram": "https://www.instagram.com/lasochi_z_sela",
+  "facebook": "https://www.facebook.com/groups/1171886699563323",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "korma.zp.ua@gmail.com",
+  "phone": ""
+ },
+ {
+  "name": "SNACK'ON",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Лакомства"
+  ],
+  "sizes": "Все размеры",
+  "status": "Отложен",
+  "eu": "Не найдено",
+  "what": "Крафтовые сушёные лакомства из говядины.",
+  "why": "Небольшое производство, без консервантов.",
+  "terms": "Запросить.",
+  "note": "То же ограничение: ветеринарные разрешения на ввоз. Сайт открывается с ошибкой сертификата.",
+  "source": "https://snackon.com.ua/",
+  "checked": "12.10.2026",
+  "site": "https://snackon.com.ua/",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Harley&Cho",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Лежаки и дом"
+  ],
+  "sizes": "Все размеры",
+  "status": "Отложен",
+  "eu": "Уже в ЕС",
+  "what": "Лежаки, диваны, миски на подставке, автогамаки; немного амуниции.",
+  "why": "Известный бренд, но не наша стартовая категория.",
+  "terms": "—",
+  "note": "Похоже, уже есть немецкий сайт — уникальности не будет.",
+  "source": "https://harleyandcho.ua/",
+  "checked": "12.10.2026",
+  "site": "https://harleyandcho.ua/",
+  "instagram": "https://www.instagram.com/harleyandcho",
+  "facebook": "https://www.facebook.com/harleyandcho.main",
+  "etsy": "https://www.etsy.com/listing/584236455",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "https://www.youtube.com/@HarleyandCho",
+  "email": "info@harleyandcho.ua",
+  "phone": "+380674527445"
+ },
+ {
+  "name": "Collar / WAUDOG",
+  "country": "Украина",
+  "city": "Чернигов",
+  "types": [
+   "Амуниция",
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "Отложен",
+  "eu": "Уже в ЕС",
+  "what": "Ошейники, поводки, шлейки, адресники с QR, куртки AiryVest, Puller.",
+  "why": "Ориентир по качеству, а не поставщик для уникального ассортимента.",
+  "terms": "Опт в Польше — через COLLAR PL.",
+  "note": "Продаётся в 70 странах, в Польше есть своя компания.",
+  "source": "https://forbes.ua/company/eksperimenty-na-zhivotnykh-17022021-1037",
+  "checked": "12.10.2026",
+  "site": "https://collar.com/",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Bronzedog",
+  "country": "Украина",
+  "city": "",
+  "types": [
+   "Амуниция",
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "Отложен",
+  "eu": "Не найдено",
+  "what": "Ошейники, шлейки, поводки, намордники, одежда.",
+  "why": "Широкая линейка амуниции.",
+  "terms": "—",
+  "note": "Часть товара сделана в Китае — не «украинское производство».",
+  "source": "https://e-zoo.com.ua/ua/139-amuniciya-dlya-sobak/f/12956-biotan",
+  "checked": "12.10.2026",
+  "site": "",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "DIQPET",
+  "country": "Китай",
+  "city": "Шанхай",
+  "types": [
+   "Одежда"
+  ],
+  "sizes": "Мелкие (до 8 кг)",
+  "status": "В переписке",
+  "eu": "Не применимо",
+  "what": "Urban Trekking Onesie: комбинезон на четыре лапы со встроенными ботинками. Есть отдельная линия на собак до 40 кг.",
+  "why": "Функциональная вещь для грязи и мокрого снега; поставщик честно описывает ограничения ткани.",
+  "terms": "MOQ 30 шт., размеры можно смешивать, один цвет. Образцы: 2 шт. Прайс и доставка — в ответе от 07.10.2026.",
+  "note": "Крой корейский: размеры меньше европейских, подбирать по обхвату груди. Ткань водоотталкивающая, не мембрана.",
+  "source": "Ответ DIQPET на 11 вопросов, 07.10.2026 (файл у команды)",
+  "checked": "12.10.2026",
+  "site": "",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ },
+ {
+  "name": "Merlot Studio",
+  "country": "Корея",
+  "city": "",
+  "types": [
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "status": "В переписке",
+  "eu": "Не применимо",
+  "what": "Одежда для собак: Coore Top / Suit, Ain Coat / Suit; размеры S–5XL, до 50 кг.",
+  "why": "Корейский ассортимент не только на мелких собак — редкость.",
+  "terms": "Каталог 25SS получен. MOQ и прайс дистрибьютора — запросить.",
+  "note": "Контакт — в переписке у команды.",
+  "source": "Каталог Merlot 25SS (файл у команды)",
+  "checked": "12.10.2026",
+  "site": "",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": ""
+ }
+];
+
+const FILTERS = ["country", "types", "status", "eu", "sizes"];
+const STATUS_ORDER = ["Шорт-лист", "В переписке", "Проверить", "Отложен"];
+const STATUS_CLASS = { "Шорт-лист": "tag", "В переписке": "tag new", "Проверить": "tag plain", "Отложен": "tag plain" };
+const LINKS = [["site", "Сайт"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"]];
+const CSV_COLS = [["name", "Название"], ["country", "Страна"], ["city", "Город"], ["types", "Тип товара"], ["sizes", "Размеры собак"], ["status", "Статус"], ["eu", "Присутствие в ЕС"], ["what", "Что делает"], ["why", "Почему нам"], ["terms", "Условия и цены"], ["note", "Заметка"], ["site", "Сайт"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"], ["email", "Email"], ["phone", "Телефон"], ["source", "Источник"], ["checked", "Проверено"]];
+let view = "cards";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const asList = v => Array.isArray(v) ? v : [v];
+
+function fillSelects() {
+  FILTERS.forEach(key => {
+    let values = [...new Set(SUPPLIERS.flatMap(s => asList(s[key])))];
+    values = key === "status" ? STATUS_ORDER.filter(v => values.includes(v)) : values.sort((a, b) => a.localeCompare(b, "ru"));
+    $("f-" + key).innerHTML = `<option value="">Все</option>` + values.map(v => `<option>${esc(v)}</option>`).join("");
+  });
+}
+
+function selected() {
+  const q = $("q").value.trim().toLowerCase();
+  return SUPPLIERS
+    .filter(s => FILTERS.every(key => { const v = $("f-" + key).value; return !v || asList(s[key]).includes(v); }))
+    .filter(s => !q || [s.name, s.city, s.what, s.why, s.note, s.types.join(" ")].join(" ").toLowerCase().includes(q))
+    .sort((a, b) => STATUS_ORDER.indexOf(a.status) - STATUS_ORDER.indexOf(b.status));
+}
+
+function linksHtml(s) {
+  const out = LINKS.filter(([key]) => s[key]).map(([key, label]) => `<a href="${esc(s[key])}" target="_blank" rel="noopener">${label}</a>`);
+  if (s.email) out.push(`<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`);
+  if (s.phone) out.push(`<a href="tel:${esc(s.phone)}">${esc(s.phone)}</a>`);
+  return out.join("");
+}
+const sourceHtml = s => /^https?:/.test(s.source) ? `<a href="${esc(s.source)}" target="_blank" rel="noopener">ссылка</a>` : esc(s.source);
+
+function card(s) {
+  return `<article class="card sup">
+    <div class="sup-head"><h3>${esc(s.name)}</h3><span class="place">${esc([s.country, s.city].filter(Boolean).join(" · "))}</span></div>
+    <div class="tags"><span class="${STATUS_CLASS[s.status]}">${esc(s.status)}</span>${s.types.map(t => `<span class="tag plain">${esc(t)}</span>`).join("")}</div>
+    <p>${esc(s.what)}</p>
+    <dl class="facts">
+      <div><dt>Почему нам</dt><dd>${esc(s.why)}</dd></div>
+      <div><dt>Условия</dt><dd>${esc(s.terms)}</dd></div>
+      <div><dt>В ЕС</dt><dd>${esc(s.eu)}</dd></div>
+      <div><dt>Размеры</dt><dd>${esc(s.sizes)}</dd></div>
+      <div><dt>Заметка</dt><dd>${esc(s.note)}</dd></div>
+      <div><dt>Источник</dt><dd>${sourceHtml(s)}</dd></div>
+    </dl>
+    <div class="links">${linksHtml(s) || `<span class="muted small">Контактов пока нет</span>`}</div>
+  </article>`;
+}
+
+function table(rows) {
+  return `<table><thead><tr><th>Название</th><th>Страна</th><th>Тип</th><th>Статус</th><th>В ЕС</th><th>Условия</th><th>Контакты</th></tr></thead><tbody>` +
+    rows.map(s => `<tr><td><strong>${esc(s.name)}</strong><br><span class="muted">${esc(s.city)}</span></td><td>${esc(s.country)}</td><td>${esc(s.types.join(", "))}</td><td>${esc(s.status)}</td><td>${esc(s.eu)}</td><td>${esc(s.terms)}</td><td>${linksHtml(s) || "—"}</td></tr>`).join("") +
+    `</tbody></table>`;
+}
+
+function render() {
+  const rows = selected();
+  $("count").textContent = `Показано ${rows.length} из ${SUPPLIERS.length}`;
+  $("empty").hidden = rows.length > 0;
+  $("cardView").hidden = view !== "cards" || !rows.length;
+  $("tableView").hidden = view !== "table" || !rows.length;
+  $("cardView").innerHTML = rows.map(card).join("");
+  $("tableView").innerHTML = table(rows);
+}
+
+function setView(v) {
+  view = v;
+  $("view-cards").setAttribute("aria-pressed", String(v === "cards"));
+  $("view-table").setAttribute("aria-pressed", String(v === "table"));
+  render();
+}
+
+function downloadCsv() {
+  const quote = v => `"${String(Array.isArray(v) ? v.join(", ") : v).replace(/"/g, '""')}"`;
+  const lines = [CSV_COLS.map(c => quote(c[1])).join(";"), ...selected().map(s => CSV_COLS.map(c => quote(s[c[0]])).join(";"))];
+  // BOM so Excel reads Cyrillic as UTF-8
+  const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "suppliers.csv"; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+FILTERS.forEach(key => $("f-" + key).addEventListener("change", render));
+$("q").addEventListener("input", render);
+$("reset").addEventListener("click", () => { FILTERS.forEach(key => { $("f-" + key).value = ""; }); $("q").value = ""; render(); });
+$("view-cards").addEventListener("click", () => setView("cards"));
+$("view-table").addEventListener("click", () => setView("table"));
+$("csv").addEventListener("click", downloadCsv);
+
+fillSelects(); render();
+</script>
+</body>
+</html>
