@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=18" defer></script>
+<script src="economics-data.js?v=19" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -194,7 +194,20 @@
     <div class="col"><p>Для каждого товара посчитано, сколько остаётся с продажи при нашей цене. «Проходит» — остаётся от 15% цены, «на грани» — меньше, «не проходит» — продаём в минус.</p></div>
     <div class="fits" id="fits"></div>
     <p class="note verify" id="goods-note"></p>
-    <details class="how mt">
+    <details class="how mt" id="goals" data-nav="Целевые цены">
+      <summary>Целевые цены для переговоров с поставщиками</summary>
+      <div>
+        <p class="legend" id="goal-lead"></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Товар</th><th class="num">Наша цена</th><th class="num">Цена поставщика сейчас</th><th class="num">Целевая закупка</th><th class="num">Сбить на</th><th class="num">От розницы бренда</th></tr></thead>
+            <tbody id="goal-body"></tbody>
+          </table>
+        </div>
+        <p class="legend">Цена поставщика сейчас: у импортных товаров — розница бренда минус скидка опта из вводных, у польской базы — оценка опта от розницы. Целевая закупка указана без VAT, в валюте поставщика, без доставки — её и нужно называть в письме; «от розницы бренда» — та же цена как скидка от цены на его сайте. Корм в таблицу не входит: на нём цель другая, см. «Оптимизацию».</p>
+      </div>
+    </details>
+    <details class="how">
       <summary>Все товары: цены, себестоимость, свои цифры</summary>
       <div>
         <div class="row" role="group" aria-label="Источник" id="src-filter"></div>
@@ -202,12 +215,12 @@
           <table>
             <thead><tr>
               <th>Товар</th><th class="num">Цена бренда / опт</th><th class="num">Себестоимость</th><th class="num">Наша цена</th>
-              <th class="num">Наценка</th><th class="num">Остаётся</th><th class="num">Нужная скидка</th><th>В расчёте</th>
+              <th class="num">Наценка</th><th class="num">Остаётся</th><th class="num">Целевая закупка</th><th>В расчёте</th>
             </tr></thead>
             <tbody id="items-body"></tbody>
           </table>
         </div>
-        <p class="legend">«Цена бренда» — розница на его сайте; у польской базы вместо неё оптовая цена без VAT, пока она считается от розницы. «Нужная скидка» — какую скидку от розницы бренда надо получить, чтобы выйти на целевую наценку. Товары без галочки не входят в средние. Состав польской базы примерный: списка Даши пока нет. Корма — кандидаты из поиска 13.10.2026: цена — розница в Польше, закупка считается от неё через нашу долю в цене (сухой корм 18%, консервы 20%, лакомства 35% — оценки), доставка мешка — 19,5 zł.</p>
+        <p class="legend">«Цена бренда» — розница на его сайте; у польской базы вместо неё оптовая цена без VAT, пока она считается от розницы. «Целевая закупка» — самая высокая цена поставщика без VAT, при которой товар с доставкой и налогами стоит нам не больше 45% нашей цены; под ней — на сколько нужно сбить нынешнюю цену. Товары без галочки не входят в средние. Состав польской базы примерный: списка Даши пока нет. Корма — кандидаты из поиска 13.10.2026: цена — розница в Польше, закупка считается от неё через нашу долю в цене (сухой корм 18%, консервы 20%, лакомства 35% — оценки), доставка мешка — 19,5 zł.</p>
       </div>
     </details>
     <details class="how">
@@ -485,20 +498,23 @@ document.addEventListener("DOMContentLoaded", () => {
       const o = Object.assign({}, it, saved.items[i] || {});
       const local = o.home == null, food = o.src === "Корма", v = food ? p.vatFood : p.vat;
       const rev = net(o.pl, food);
-      let cost, homeZl = null, need = null, buyNet = null;
+      let cost, homeZl = null, need = null, buyNet = null, goal = null, goalCur = "zł";
       if (local) {
         buyNet = o.buyNet != null ? o.buyNet : o.pl / (1 + v) * (1 - (o.gm != null ? o.gm : food ? p.foodGm : p.plGm));
         cost = buyNet * (payer ? 1 : 1 + v);
+        // the most we can pay the supplier, net of VAT, for the goods to stay within the target share of our price
+        if (!food) { goal = rev * (1 - p.target) / (payer ? 1 : 1 + v); need = 1 - goal / buyNet; }
       } else {
         const ua = o.src === "Украина";
         const rate = o.cur === "UAH" ? p.uah : p.krw, disc = ua ? p.discUa : p.discKr, fr = ua ? p.frUa : p.frKr, duty = ua ? p.dutyUa : p.dutyKr;
         homeZl = o.home * rate;
         const buy = homeZl * (1 - disc), ship = buy * fr, dutyZl = (buy + ship) * duty;
         cost = (buy + ship + dutyZl) * (payer ? 1 : 1 + p.vat);
-        need = 1 - rev * (1 - p.target) / ((1 + fr) * (1 + duty) * (payer ? 1 : 1 + p.vat)) / homeZl;
+        goal = rev * (1 - p.target) / ((1 + fr) * (1 + duty) * (payer ? 1 : 1 + p.vat)) / rate; goalCur = o.cur;
+        need = 1 - goal / (o.home * (1 - disc));
       }
       const gross = rev - cost, contrib = gross - orderCosts(o.pl, o.sized, o.main, food);
-      return Object.assign(o, { i, local, food, homeZl, buyNet, cost, rev, gross, contrib, need });
+      return Object.assign(o, { i, local, food, homeZl, buyNet, cost, rev, gross, contrib, need, goal, goalCur });
     });
 
     const avg = (list, f) => list.length ? list.reduce((s, x) => s + f(x), 0) / list.length : 0;
@@ -649,6 +665,15 @@ document.addEventListener("DOMContentLoaded", () => {
       ${list(byFit[f].slice(0, 8))}${byFit[f].length > 8 ? `<details class="how"><summary>ещё ${byFit[f].length - 8}</summary>${list(byFit[f].slice(8))}</details>` : ""}</div>`).join("");
     const bad = [...new Set(byFit[2].map(x => x.brand))];
     $("goods-note").innerHTML = bad.length ? `<strong>Не проходит: ${bad.join(", ")}.</strong> При закупке по рознице бренда эти товары выходят дороже, чем похожие в польских магазинах. Им нужен опт: переключите «Закупка в Украине» наверху и посмотрите, что изменится.` : `<strong>Все товары продаются в плюс.</strong> Справа от названия — сколько остаётся с продажи одной штуки.`;
+    const T45 = 1 - M.p.target, neg = M.items.filter(x => x.goal !== null), okN = neg.filter(x => x.need <= 0).length;
+    $("goal-lead").textContent = `Правило: товар с доставкой и налогами должен стоить нам не больше ${pct(T45)} нашей цены. Сейчас в него укладываются ${okN} из ${neg.length} товаров; остальным нужна цена ниже.`;
+    let brand = "";
+    const firstOf = {}; neg.forEach((x, k) => { if (!(x.brand in firstOf)) firstOf[x.brand] = k; });
+    $("goal-body").innerHTML = neg.slice().sort((a, b) => firstOf[a.brand] - firstOf[b.brand]).map(x => {
+      const now = x.local ? x.buyNet : x.home * (1 - (x.src === "Украина" ? M.p.discUa : M.p.discKr)), d = x.goalCur === "zł" ? 2 : 0;
+      const head = x.brand !== brand ? `<tr class="total"><td colspan="6">${x.brand} · ${x.src}</td></tr>` : ""; brand = x.brand;
+      return `${head}<tr><td class="name"><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a></td><td class="num">${zl(x.pl)}</td><td class="num">${nf(now, d)} ${x.goalCur}</td><td class="num"><b>до ${nf(x.goal, d)} ${x.goalCur}</b></td><td${x.need > 0 ? ' class="num neg"' : ' class="num"'}>${x.need <= 0 ? "проходит" : pct(x.need)}</td><td class="num">${x.local ? "—" : `−${pct(1 - x.goal / x.home)}`}</td></tr>`;
+    }).join("");
     $("src-filter").innerHTML = buttons("src", ["all", ...ECON.sources].map(v => [v, `${v === "all" ? "Все" : v} · ${M.items.filter(x => v === "all" || x.src === v).length}`]), srcFilter);
     $("items-body").innerHTML = M.items.filter(x => srcFilter === "all" || x.src === srcFilter).map(x => {
       const ch = saved.items[x.i] || {};
@@ -660,7 +685,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <td class="num"><input class="in${"pl" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="pl" value="${nf(x.pl)}" aria-label="Наша цена, zł: ${esc(x.name)}"> zł</td>
         <td${cls(x.gross)}>${zl(x.gross)}<br><span class="muted">${pct(x.gross / x.rev)}</span></td>
         <td${cls(x.contrib)}>${zl(x.contrib)}<br><span class="muted">${pct(x.contrib / x.rev)}</span></td>
-        <td class="num">${x.need === null ? "—" : x.need <= 0 ? "не нужна" : pct(x.need)}</td>
+        <td class="num">${x.goal === null ? "—" : `до ${nf(x.goal, x.goalCur === "zł" ? 2 : 0)} ${x.goalCur}<br><span class="muted">${x.need <= 0 ? "уже проходит" : `нужно −${pct(x.need).replace("−", "")}`}</span>`}</td>
         <td><input type="checkbox" data-item="${x.i}" data-f="on"${x.on ? " checked" : ""} aria-label="В расчёте: ${esc(x.name)}"></td></tr>`;
     }).join("");
     $("market-body").innerHTML = ECON.market.map(r => `<tr><td>${r.what}</td><td class="num">${r.price}</td><td>${r.note}<span class="links">${r.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</span></td></tr>`).join("");
