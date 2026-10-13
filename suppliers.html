@@ -39,6 +39,8 @@
   .review { display: grid; gap: 6px; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); }
   .review p { font-size: 14px; }
   .review b { color: var(--accent); }
+  .top { margin: 4px 0 0; padding-left: 18px; font-size: 13.5px; }
+  .top li { margin-bottom: 5px; }
   .empty { padding-block: 40px; color: var(--muted); }
   #list [hidden] { display: none; }
   #tableView table { min-width: 980px; font-size: 13.5px; }
@@ -109,6 +111,7 @@
     <div class="sec-head"><div class="eyebrow">Источники</div><h2>Откуда данные</h2></div>
     <div class="col small">
       <p>Контакты, сайты и соцсети взяты с сайтов самих брендов 12–13.10.2026. Оценки и приоритеты — из рабочего документа команды от 13.10.2026. Источник по каждому поставщику — в его карточке и в выгрузке.</p>
+      <p>Отзывы и популярные товары собраны 13.10.2026 с Rozetka, Etsy и сайтов брендов. По Rozetka учтена первая тысяча товаров бренда; отзывы там считаются по карточке, а размеры одной модели часто идут отдельными карточками. Где отзывов нет, порядок взят из сортировки «по популярности» в магазине бренда.</p>
       <p class="muted">CSV скачивается с учётом выбранных фильтров, Excel содержит весь список.</p>
     </div>
   </section>
@@ -132,8 +135,8 @@ const SUPPLIERS = [
   "sizes": "Все размеры",
   "eu": "Только розница (Etsy)",
   "what": "Одежда, лежаки и подушки, автогамаки для перевозки собак.",
-  "why": "Широкая линейка у одного производителя, невысокие цены.",
-  "terms": "Запросить. Розница по статье 2021 года: одежда 330–640 грн, лежаки 400–2 000 грн.",
+  "why": "Широкая линейка у одного производителя: одежда, лежаки, автогамаки.",
+  "terms": "Опт — запросить. Розница сейчас: одежда 800–1 800 грн.",
   "note": "Уже продаёт за рубеж в розницу через Etsy.",
   "source": "https://www.village.com.ua/village/city/animals/306957-dobirka-odyagu-dlya-tvarin",
   "checked": "13.10.2026",
@@ -151,7 +154,34 @@ const SUPPLIERS = [
   "opinion": "Понравились модели и описание товаров.",
   "next": "Изучить подробнее. Проверить размерную сетку, посадку, качество и оптовые условия.",
   "catalog": "https://noblepet.com.ua/yak-zrobyty-zamiry/",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Rozetka: 268 отзывов на 103 товара. Etsy: 4,8 из 5 (252 отзыва), 836 продаж за 2,5 года.",
+  "top": [
+   {
+    "title": "Куртка-дождевик Moss Yellow",
+    "price": "1 050 грн",
+    "meta": "105 отзывов, 4,6 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/68802291/p68802291/"
+   },
+   {
+    "title": "Пуховик Bobby Navy",
+    "price": "1 240 грн",
+    "meta": "97 отзывов, 4,8 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/252786756/p252786756/"
+   },
+   {
+    "title": "Комбинезон Travis",
+    "price": "1 790 грн",
+    "meta": "19 отзывов, 4,9 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/339618355/p339618355/"
+   },
+   {
+    "title": "Куртка-дождевик Moss Blue",
+    "price": "1 050 грн",
+    "meta": "13 отзывов, 4,6 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/252786746/p252786746/"
+   }
+  ]
  },
  {
   "name": "BioIntellect",
@@ -161,11 +191,11 @@ const SUPPLIERS = [
    "Амуниция"
   ],
   "sizes": "Все размеры",
-  "eu": "Не найдено",
+  "eu": "Отдельные магазины",
   "what": "Амуниция из биотана: перестёжки «свободные руки», поводки до и от 10 кг, анатомические шлейки, ошейники; ремонт поводков.",
   "why": "Свой производитель биотановой амуниции — закрывает наше ядро: шлейки и поводки.",
-  "terms": "Розница: перестёжка 1 620–2 333 грн. Опт — запросить по почте: раздел «Співпраця» приглашает к предложениям.",
-  "note": "В соцсетях — @BioIntellectUA.",
+  "terms": "Опт открыт: брендирование нашим логотипом, фурнитура из Чехии и Италии, ширина ленты 9, 16 и 19 мм; коммерческое предложение — по запросу. Розница: поводки 1 265–1 895 грн.",
+  "note": "В соцсетях — @BioIntellectUA. Пишут об опыте работы с магазинами в Украине, Израиле и Испании.",
   "source": "https://biointellect.net/spivpratsya/",
   "checked": "13.10.2026",
   "site": "https://biointellect.net/",
@@ -182,7 +212,34 @@ const SUPPLIERS = [
   "opinion": "Амуниция выглядит отлично. Уже был положительный опыт с амуницией из этого же биотана: прослужила около 5 лет. Весь ассортимент выглядит перспективно.",
   "next": "Изучить полный каталог, оптовые цены и возможность перепродажи в Польше.",
   "catalog": "https://biointellect.net/perestibky/",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Отзывов не нашли: раздел на сайте пуст, на Rozetka бренда нет. Порядок — «хиты продаж» с сайта.",
+  "top": [
+   {
+    "title": "Поводок из облегчённого BioThane 3 м, для малых собак и кошек",
+    "price": "1 265 грн",
+    "meta": "хит продаж на сайте",
+    "url": "https://biointellect.net/povidets-z-polehshenoho-biothane-dlia-malykh-sobak-i-kotiv-3m/942/"
+   },
+   {
+    "title": "Поводок из классического биотана 3 м, от 10 кг",
+    "price": "1 550 грн",
+    "meta": "хит продаж на сайте",
+    "url": "https://biointellect.net/povidets-z-klasychnoho-biotanu-3m-dlia-sobak-vid-10-kh/"
+   },
+   {
+    "title": "Анатомическая шлейка из биотана S/M",
+    "price": "1 250 грн",
+    "meta": "первая в категории",
+    "url": "https://biointellect.net/anatomichni-shleiky/1062/"
+   },
+   {
+    "title": "Перестёжка «свободные руки» 3 м, до 10 кг",
+    "price": "1 620 грн",
+    "meta": "первая в категории",
+    "url": "https://biointellect.net/perestibky/"
+   }
+  ]
  },
  {
   "name": "IPO4YOU",
@@ -214,7 +271,40 @@ const SUPPLIERS = [
   "opinion": "Магазин профессиональной амуниции. Много полезных игрушек для тренировок и крупных собак.",
   "next": "Рассмотреть для профессионального ассортимента. Изучить игрушки, тренировочный инвентарь и условия закупки.",
   "catalog": "https://www.ipo4you.com.ua/ua/shop/",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Отзывов на сайте нет. Порядок — по числу продаж в их магазине.",
+  "top": [
+   {
+    "title": "Биотановый поводок",
+    "price": "от 407 грн",
+    "meta": "1-е место по продажам",
+    "url": "https://www.ipo4you.com.ua/ua/product/biotanovyj-povodok-1-10-m/"
+   },
+   {
+    "title": "Удавка 3–4 мм",
+    "price": "от 181 грн",
+    "meta": "2-е место по продажам",
+    "url": "https://www.ipo4you.com.ua/ua/product/udavka-5-6mm/"
+   },
+   {
+    "title": "Прорезиненный поводок",
+    "price": "от 317 грн",
+    "meta": "3-е место по продажам",
+    "url": "https://www.ipo4you.com.ua/ua/product/prorezinennyj-povodok-1-10m/"
+   },
+   {
+    "title": "Сумка для лакомств с клипсой",
+    "price": "от 271 грн",
+    "meta": "4-е место по продажам",
+    "url": "https://www.ipo4you.com.ua/ua/product/sumka-dlya-lakomstv-na-lipkoj-lente/"
+   },
+   {
+    "title": "Мяч «Дыня мини»",
+    "price": "от 452 грн",
+    "meta": "5-е место по продажам",
+    "url": "https://www.ipo4you.com.ua/ua/product/kusalka-dynya-mini/"
+   }
+  ]
  },
  {
   "name": "Bark&Go",
@@ -245,7 +335,40 @@ const SUPPLIERS = [
   "opinion": "Есть интересные модели дождевиков и другой одежды, но дизайн многих моделей слишком пёстрый и обычный. Можно собирать парные луки «человек + собака».",
   "next": "Изучить подробнее. Проверить модели для парных образов и потенциал продажи в Польше.",
   "catalog": "https://barkandgo.com.ua/shop/sobaka/doschoviki-legki/",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Etsy: 4,8 из 5 (1,4 тыс. отзывов), 5 770 продаж за 10 лет. На своём сайте отзывов нет. На Etsy цены в 2–3 раза выше, чем на украинском сайте.",
+  "top": [
+   {
+    "title": "Дождевик-комбинезон для таксы, по меркам",
+    "price": "448 zł",
+    "meta": "витрина магазина на Etsy",
+    "url": "https://www.etsy.com/shop/BarkAndGo"
+   },
+   {
+    "title": "Дождевик в клетку (фланель)",
+    "price": "630 zł",
+    "meta": "витрина магазина на Etsy",
+    "url": "https://www.etsy.com/shop/BarkAndGo"
+   },
+   {
+    "title": "Снуд для собак",
+    "price": "151 zł",
+    "meta": "витрина магазина на Etsy",
+    "url": "https://www.etsy.com/shop/BarkAndGo"
+   },
+   {
+    "title": "Попона Perfect Match, мембрана, 24 размера",
+    "price": "1 980 грн",
+    "meta": "1-е место по популярности на сайте",
+    "url": "https://barkandgo.com.ua/shop/sobaka/"
+   },
+   {
+    "title": "Ромпер флисовый Hygge",
+    "price": "1 010 грн",
+    "meta": "3-е место по популярности на сайте",
+    "url": "https://barkandgo.com.ua/shop/sobaka/"
+   }
+  ]
  },
  {
   "name": "Dogs Bomba",
@@ -258,7 +381,7 @@ const SUPPLIERS = [
   "eu": "Только розница (Etsy)",
   "what": "Одежда с 2014 года, своя команда дизайнеров и швей; отдельные линейки для такс и корги.",
   "why": "Доступная цена и породные лекала: дождевик-комбинезон для таксы около 680–920 грн в рознице.",
-  "terms": "Опт и минимальная партия — запросить.",
+  "terms": "Опт и дропшиппинг — по заявке через форму на сайте: после неё открывают оптовый каталог.",
   "note": "Дистрибьютора в ЕС поиск не нашёл.",
   "source": "https://dogsbomba.com/",
   "checked": "13.10.2026",
@@ -276,7 +399,34 @@ const SUPPLIERS = [
   "opinion": "Ничего необычного или уникального, но есть интересные модели для дешёвого сегмента. Есть товары для такс.",
   "next": "Рассмотреть бюджетный сегмент. Отдельно изучить ассортимент для такс.",
   "catalog": "https://dogsbomba.com/catalog/platya/",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Rozetka: больше 1 000 товаров, но отзывов мало — 65 на 53 товара, не больше 3 на товар. Etsy: 4,0 из 5 (6 отзывов), 37 продаж, магазин на паузе с февраля 2026.",
+  "top": [
+   {
+    "title": "Костюм махровый",
+    "price": "625 грн",
+    "meta": "топ продаж на сайте",
+    "url": "https://dogsbomba.com/"
+   },
+   {
+    "title": "Рубашка в клетку",
+    "price": "580 грн",
+    "meta": "топ продаж на сайте",
+    "url": "https://dogsbomba.com/"
+   },
+   {
+    "title": "Дождевик с рюшами",
+    "price": "636 грн",
+    "meta": "3 отзыва, 5,0 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/531643534/p531643534/"
+   },
+   {
+    "title": "Жилет на липучках",
+    "price": "970 грн",
+    "meta": "3 отзыва, 5,0 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/417762108/p417762108/"
+   }
+  ]
  },
  {
   "name": "Woofit",
@@ -307,7 +457,34 @@ const SUPPLIERS = [
   "opinion": "Есть неплохие модели, но они тоже ориентированы на дешёвый сегмент.",
   "next": "Сравнить цены и качество. Рассматривать для бюджетной линейки.",
   "catalog": "https://www.woofitdogwear.com/product-category/raincoats/",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Отзывов не нашли ни на сайте, ни на Rozetka. Порядок — по числу продаж в их магазине. Цены выше бюджетного сегмента.",
+  "top": [
+   {
+    "title": "Тёплая куртка хаки",
+    "price": "1 800 грн",
+    "meta": "1-е место по продажам",
+    "url": "https://www.woofitdogwear.com/product/tepla-kurtka-khaki/"
+   },
+   {
+    "title": "Тёплая куртка «Пташки»",
+    "price": "2 100 грн",
+    "meta": "2-е место по продажам",
+    "url": "https://www.woofitdogwear.com/product/tepla-kurtka-iz-paternom-ptashky/"
+   },
+   {
+    "title": "Двусторонняя бандана",
+    "price": "300 грн",
+    "meta": "4-е место по продажам",
+    "url": "https://www.woofitdogwear.com/product/bandana/"
+   },
+   {
+    "title": "Свитер «Догуфляж»",
+    "price": "1 200 грн",
+    "meta": "6-е место по продажам",
+    "url": "https://www.woofitdogwear.com/product/sviter-dogufljazh-2/"
+   }
+  ]
  },
  {
   "name": "ЛавГав",
@@ -338,7 +515,28 @@ const SUPPLIERS = [
   "opinion": "Только пакеты для уборки за собаками, но выглядят плотными.",
   "next": "Проверить качество, толщину, стоимость упаковки и цену за один пакет.",
   "catalog": "https://lavgav.ua/faq",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Отзывов не нашли. Порядок — отметки «топ продаж» на сайте.",
+  "top": [
+   {
+    "title": "ЭКО-пакеты из кукурузного крахмала",
+    "price": "170 грн",
+    "meta": "топ продаж на сайте",
+    "url": "https://lavgav.ua/"
+   },
+   {
+    "title": "Универсальные пакеты для уборки",
+    "price": "100 грн",
+    "meta": "топ продаж на сайте",
+    "url": "https://lavgav.ua/"
+   },
+   {
+    "title": "Пакеты серии «Put In»: 5 грн с упаковки идут UAnimals",
+    "price": "100 грн",
+    "meta": "топ продаж на сайте",
+    "url": "https://lavgav.ua/"
+   }
+  ]
  },
  {
   "name": "Vitameat",
@@ -369,7 +567,28 @@ const SUPPLIERS = [
   "opinion": "Хорошие лакомства, но есть сомнения, будет ли цена конкурентоспособной в Польше.",
   "next": "Сравнить стоимость с польскими аналогами с учётом доставки и наценки.",
   "catalog": "https://vitameat.com.ua/product-category/susheni-kovbaski/",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Rozetka: 22 товара, 4 отзыва. На сайте 1 отзыв. Порядок — по числу продаж в их магазине.",
+  "top": [
+   {
+    "title": "Лёгкие сушёные",
+    "price": "от 144 грн",
+    "meta": "1-е место по продажам; 3 отзыва, 5,0 на Rozetka",
+    "url": "https://vitameat.com.ua/product/legeni-sushi/"
+   },
+   {
+    "title": "Вымя сушёное кусочками",
+    "price": "от 200 грн",
+    "meta": "2-е место по продажам",
+    "url": "https://vitameat.com.ua/product/vymya-shmatochky/"
+   },
+   {
+    "title": "Рубец сушёный колбасками",
+    "price": "от 116 грн",
+    "meta": "3-е место по продажам",
+    "url": "https://vitameat.com.ua/product/rubets-kovbaskamy/"
+   }
+  ]
  },
  {
   "name": "BASIC.FOOD",
@@ -400,7 +619,9 @@ const SUPPLIERS = [
   "opinion": "Аналогично VitaMeat: хорошие лакомства, но нужно сравнить цены с польским рынком.",
   "next": "Проверить себестоимость, составы, сроки годности и оптовые условия.",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных нет: на Rozetka бренда нет, сайт не отдаёт список товаров.",
+  "top": []
  },
  {
   "name": "Pet Fashion",
@@ -431,7 +652,34 @@ const SUPPLIERS = [
   "opinion": "Совершенно обычная одежда. Ничем не отличается от польского рынка.",
   "next": "Искать только товары с конкурентной ценой или интересными условиями опта.",
   "catalog": "https://pet-fashion.com.ua/uk/60-dosshoviki-ta-vitrovki",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Rozetka: 332 отзыва на 70 товаров из первой тысячи.",
+  "top": [
+   {
+    "title": "Лежак Brig",
+    "price": "1 395 грн",
+    "meta": "39 отзывов, 5,0 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/548883678/p548883678/"
+   },
+   {
+    "title": "Комбинезон Rain",
+    "price": "746 грн",
+    "meta": "38 отзывов, 4,7 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/548883321/p548883321/"
+   },
+   {
+    "title": "Лежак Lux",
+    "price": "505 грн",
+    "meta": "38 отзывов, 4,7 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/425117229/p425117229/"
+   },
+   {
+    "title": "Комбинезон Cold",
+    "price": "565 грн",
+    "meta": "16 отзывов, 4,9 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/569534710/p569534710/"
+   }
+  ]
  },
  {
   "name": "Montmorency",
@@ -462,7 +710,9 @@ const SUPPLIERS = [
   "opinion": "С 2023 года нет информации.",
   "next": "Проверить, работает ли бренд сейчас и актуальны ли контакты.",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных не нашли.",
+  "top": []
  },
  {
   "name": "БроніК9",
@@ -493,7 +743,9 @@ const SUPPLIERS = [
   "opinion": "Слишком серьёзная амуниция. Больше подходит профессиональным спортсменам и служебным собакам.",
   "next": "Узкая профессиональная ниша, не для основного ассортимента.",
   "catalog": "https://bronik9.com.ua/category/5268-nashijniki-ta-povodki",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных не нашли.",
+  "top": []
  },
  {
   "name": "Best 4 Dogs",
@@ -524,7 +776,9 @@ const SUPPLIERS = [
   "opinion": "Ассортимент не понравился.",
   "next": "Низкий приоритет.",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных не нашли.",
+  "top": []
  },
  {
   "name": "Mr. Snoopy",
@@ -556,7 +810,9 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных не нашли.",
+  "top": []
  },
  {
   "name": "Rebellious Collars",
@@ -587,7 +843,9 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных не нашли.",
+  "top": []
  },
  {
   "name": "Dogtag",
@@ -618,7 +876,9 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных не нашли.",
+  "top": []
  },
  {
   "name": "Ласощі з села",
@@ -649,7 +909,9 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных не нашли.",
+  "top": []
  },
  {
   "name": "SNACK'ON",
@@ -680,7 +942,9 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Данных не нашли.",
+  "top": []
  },
  {
   "name": "Harley&Cho",
@@ -711,7 +975,28 @@ const SUPPLIERS = [
   "opinion": "Для разнообразия можно заказывать.",
   "next": "Рассмотреть как дополнительного поставщика для расширения ассортимента.",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Rozetka: 382 отзыва на 38 товаров из первой тысячи.",
+  "top": [
+   {
+    "title": "Лежак Dreamer Brown M",
+    "price": "2 289 грн",
+    "meta": "97 отзывов, 4,8 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/490423359/p490423359/"
+   },
+   {
+    "title": "Лежак Dreamer Velvet M",
+    "price": "3 290 грн",
+    "meta": "55 отзывов, 5,0 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/485596274/p485596274/"
+   },
+   {
+    "title": "Миски на подставке Lunch Bar S",
+    "price": "2 890 грн",
+    "meta": "21 отзыв, 4,9 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/575716819/p575716819/"
+   }
+  ]
  },
  {
   "name": "Collar / WAUDOG",
@@ -743,7 +1028,34 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Rozetka: больше 7 000 отзывов по двум маркам; ниже — только товары для собак.",
+  "top": [
+   {
+    "title": "Куртка AiryVest ONE",
+    "price": "969 грн",
+    "meta": "219 отзывов, 4,8 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/422596260/p422596260/"
+   },
+   {
+    "title": "Мячик Liker 7",
+    "price": "95 грн",
+    "meta": "124 отзыва, 4,8 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/392251662/p392251662/"
+   },
+   {
+    "title": "Ошейник кожаный Waudog Classic",
+    "price": "224 грн",
+    "meta": "91 отзыв, 4,7 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/569624830/p569624830/"
+   },
+   {
+    "title": "Поводок Waudog Waterproof 3 м",
+    "price": "676 грн",
+    "meta": "75 отзывов, 4,8 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/569423944/p569423944/"
+   }
+  ]
  },
  {
   "name": "Bronzedog",
@@ -775,7 +1087,28 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "Не начаты"
+  "talks": "Не начаты",
+  "reviews": "Rozetka: 542 отзыва на 143 товара из первой тысячи.",
+  "top": [
+   {
+    "title": "Адресник из нержавеющей стали «Косточка»",
+    "price": "129 грн",
+    "meta": "77 отзывов, 4,9 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/87752392/p87752392/"
+   },
+   {
+    "title": "Адресник с гравировкой «Косточка» 40×25 мм",
+    "price": "129 грн",
+    "meta": "53 отзыва, 5,0 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/87752506/p87752506/"
+   },
+   {
+    "title": "Поводок брезентовый светоотражающий 5 м",
+    "price": "392 грн",
+    "meta": "20 отзывов, 5,0 · Rozetka",
+    "url": "https://rozetka.com.ua/ua/305319368/p305319368/"
+   }
+  ]
  },
  {
   "name": "DIQPET",
@@ -806,7 +1139,9 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "В переписке"
+  "talks": "В переписке",
+  "reviews": "Не проверяли.",
+  "top": []
  },
  {
   "name": "Merlot Studio",
@@ -837,7 +1172,9 @@ const SUPPLIERS = [
   "opinion": "",
   "next": "",
   "catalog": "",
-  "talks": "В переписке"
+  "talks": "В переписке",
+  "reviews": "Не проверяли.",
+  "top": []
  }
 ];
 
@@ -845,7 +1182,7 @@ const FILTERS = ["country", "types", "priority", "talks", "segment", "eu", "size
 const PRIORITY_ORDER = ["Первая очередь", "Вторая очередь", "Третья очередь", "Без приоритета"];
 const PRIORITY_CLASS = { "Первая очередь": "tag", "Вторая очередь": "tag new", "Третья очередь": "tag plain", "Без приоритета": "tag plain" };
 const LINKS = [["site", "Сайт"], ["catalog", "Каталог"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"]];
-const CSV_COLS = [["name", "Название"], ["country", "Страна"], ["city", "Город"], ["types", "Тип товара"], ["sizes", "Размеры собак"], ["priority", "Приоритет"], ["talks", "Переговоры"], ["segment", "Ценовой сегмент"], ["eu", "Присутствие в ЕС"], ["opinion", "Оценка команды"], ["next", "Следующий шаг"], ["what", "Что делает"], ["why", "Из поиска"], ["terms", "Условия и цены"], ["note", "Заметка"], ["site", "Сайт"], ["catalog", "Каталог"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"], ["email", "Email"], ["phone", "Телефон"], ["source", "Источник"], ["checked", "Проверено"]];
+const CSV_COLS = [["name", "Название"], ["country", "Страна"], ["city", "Город"], ["types", "Тип товара"], ["sizes", "Размеры собак"], ["priority", "Приоритет"], ["talks", "Переговоры"], ["segment", "Ценовой сегмент"], ["eu", "Присутствие в ЕС"], ["opinion", "Оценка команды"], ["next", "Следующий шаг"], ["reviews", "Отзывы и рейтинг"], ["top", "Популярные товары"], ["what", "Что делает"], ["why", "Из поиска"], ["terms", "Условия и цены"], ["note", "Заметка"], ["site", "Сайт"], ["catalog", "Каталог"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"], ["email", "Email"], ["phone", "Телефон"], ["source", "Источник"], ["checked", "Проверено"]];
 let view = "cards";
 
 const $ = id => document.getElementById(id);
@@ -864,7 +1201,7 @@ function selected() {
   const q = $("q").value.trim().toLowerCase();
   return SUPPLIERS
     .filter(s => FILTERS.every(key => { const v = $("f-" + key).value; return !v || asList(s[key]).includes(v); }))
-    .filter(s => !q || [s.name, s.city, s.what, s.why, s.note, s.opinion, s.next, s.types.join(" ")].join(" ").toLowerCase().includes(q))
+    .filter(s => !q || [s.name, s.city, s.what, s.why, s.note, s.opinion, s.next, s.reviews, s.top.map(p => p.title).join(" "), s.types.join(" ")].join(" ").toLowerCase().includes(q))
     .sort((a, b) => PRIORITY_ORDER.indexOf(a.priority) - PRIORITY_ORDER.indexOf(b.priority));
 }
 
@@ -882,7 +1219,9 @@ function card(s) {
     <div class="tags"><span class="${PRIORITY_CLASS[s.priority]}">${esc(s.priority)}</span>${s.talks === "В переписке" ? `<span class="tag new">в переписке</span>` : ""}${s.types.map(t => `<span class="tag plain">${esc(t)}</span>`).join("")}</div>
     <p>${esc(s.what)}</p>
     ${s.opinion ? `<div class="review"><p><b>Оценка команды.</b> ${esc(s.opinion)}</p><p><b>Следующий шаг.</b> ${esc(s.next)}</p></div>` : ""}
+    ${s.top.length ? `<div><p class="place">Популярные товары</p><ol class="top">${s.top.map(p => `<li><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a> — ${esc(p.price)}<br><span class="muted">${esc(p.meta)}</span></li>`).join("")}</ol></div>` : ""}
     <dl class="facts">
+      <div><dt>Отзывы</dt><dd>${esc(s.reviews)}</dd></div>
       <div><dt>Из поиска</dt><dd>${esc(s.why)}</dd></div>
       ${s.segment ? `<div><dt>Сегмент</dt><dd>${esc(s.segment)}</dd></div>` : ""}
       <div><dt>Условия</dt><dd>${esc(s.terms)}</dd></div>
@@ -919,7 +1258,8 @@ function setView(v) {
 }
 
 function downloadCsv() {
-  const quote = v => `"${String(Array.isArray(v) ? v.join(", ") : v).replace(/"/g, '""')}"`;
+  const flat = v => Array.isArray(v) ? v.map(x => x.title ? `${x.title} — ${x.price} (${x.meta})` : x).join(v[0] && v[0].title ? " | " : ", ") : v;
+  const quote = v => `"${String(flat(v)).replace(/"/g, '""')}"`;
   const lines = [CSV_COLS.map(c => quote(c[1])).join(";"), ...selected().map(s => CSV_COLS.map(c => quote(s[c[0]])).join(";"))];
   // BOM so Excel reads Cyrillic as UTF-8
   const blob = new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" });
