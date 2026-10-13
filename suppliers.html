@@ -54,6 +54,14 @@
   .review { display: grid; gap: 6px; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); }
   .review p { font-size: 14px; }
   .review b { color: var(--accent); }
+  .sup-body > .shelf-wrap { grid-column: 1 / -1; gap: 8px; }
+  .shelf { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 6px; scrollbar-width: thin; }
+  .prod { flex: 0 0 190px; scroll-snap-align: start; display: grid; gap: 3px; align-content: start; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); text-decoration: none; font-size: 12.5px; line-height: 1.35; }
+  .prod:hover { border-color: var(--accent); }
+  .thumb { display: block; aspect-ratio: 4 / 3; border-radius: 5px; overflow: hidden; background: var(--line); margin-bottom: 4px; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .prod-title { font-weight: 500; font-size: 13px; }
+  .prod-price { color: var(--accent); font-weight: 500; }
   .top { margin: 4px 0 0; padding-left: 18px; font-size: 13.5px; }
   .top li { margin-bottom: 5px; }
   .menu { position: relative; }
@@ -188,25 +196,29 @@ const SUPPLIERS = [
     "title": "Куртка-дождевик Moss Yellow",
     "price": "1 050 грн",
     "meta": "105 отзывов, 4,6 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/68802291/p68802291/"
+    "url": "https://rozetka.com.ua/ua/68802291/p68802291/",
+    "img": "https://content2.rozetka.com.ua/goods/images/big/559221080.jpg"
    },
    {
     "title": "Пуховик Bobby Navy",
     "price": "1 240 грн",
     "meta": "97 отзывов, 4,8 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/252786756/p252786756/"
+    "url": "https://rozetka.com.ua/ua/252786756/p252786756/",
+    "img": "https://content2.rozetka.com.ua/goods/images/big/559221204.jpg"
    },
    {
     "title": "Комбинезон Travis",
     "price": "1 790 грн",
     "meta": "19 отзывов, 4,9 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/339618355/p339618355/"
+    "url": "https://rozetka.com.ua/ua/339618355/p339618355/",
+    "img": "https://content1.rozetka.com.ua/goods/images/big/559221491.jpg"
    },
    {
     "title": "Куртка-дождевик Moss Blue",
     "price": "1 050 грн",
     "meta": "13 отзывов, 4,6 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/252786746/p252786746/"
+    "url": "https://rozetka.com.ua/ua/252786746/p252786746/",
+    "img": "https://content2.rozetka.com.ua/goods/images/big/559221037.jpg"
    }
   ]
  },
@@ -246,25 +258,29 @@ const SUPPLIERS = [
     "title": "Поводок из облегчённого BioThane 3 м, для малых собак и кошек",
     "price": "1 265 грн",
     "meta": "хит продаж на сайте",
-    "url": "https://biointellect.net/povidets-z-polehshenoho-biothane-dlia-malykh-sobak-i-kotiv-3m/942/"
+    "url": "https://biointellect.net/povidets-z-polehshenoho-biothane-dlia-malykh-sobak-i-kotiv-3m/942/",
+    "img": "https://biointellect.net/content/images/43/1024x1024l80mc50/povidets-z-polehshenoho-biothane-dlia-malykh-sobak-i-kotiv-3mid-81190185376935.webp"
    },
    {
     "title": "Поводок из классического биотана 3 м, от 10 кг",
     "price": "1 550 грн",
     "meta": "хит продаж на сайте",
-    "url": "https://biointellect.net/povidets-z-klasychnoho-biotanu-3m-dlia-sobak-vid-10-kh/"
+    "url": "https://biointellect.net/povidets-z-klasychnoho-biotanu-3m-dlia-sobak-vid-10-kh/",
+    "img": "https://biointellect.net/content/images/29/800x800l80mc50/povidets-z-klasychnoho-biotanu-3m-dlia-sobak-vid-10-kh-53402995287953.webp"
    },
    {
     "title": "Анатомическая шлейка из биотана S/M",
     "price": "1 250 грн",
     "meta": "первая в категории",
-    "url": "https://biointellect.net/anatomichni-shleiky/1062/"
+    "url": "https://biointellect.net/anatomichni-shleiky/1062/",
+    "img": "https://biointellect.net/content/images/27/500x500l85nn0/biotanova-anatomichna-shleika-xssid-63200202787277.webp"
    },
    {
     "title": "Перестёжка «свободные руки» 3 м, до 10 кг",
     "price": "1 620 грн",
     "meta": "первая в категории",
-    "url": "https://biointellect.net/perestibky/"
+    "url": "https://biointellect.net/perestibka-dlia-sobak-do-10kh-3m/566/",
+    "img": "https://biointellect.net/content/images/17/500x500l85nn0/perestibka-dlia-sobak-do-10kh-3m566-92747142288749.webp"
    }
   ]
  },
@@ -305,31 +321,36 @@ const SUPPLIERS = [
     "title": "Биотановый поводок",
     "price": "от 407 грн",
     "meta": "1-е место по продажам",
-    "url": "https://www.ipo4you.com.ua/ua/product/biotanovyj-povodok-1-10-m/"
+    "url": "https://www.ipo4you.com.ua/ua/product/biotanovyj-povodok-1-10-m/",
+    "img": "https://www.ipo4you.com.ua/wp-content/uploads/2018/03/ESB_8576-480x381.jpg"
    },
    {
     "title": "Удавка 3–4 мм",
     "price": "от 181 грн",
     "meta": "2-е место по продажам",
-    "url": "https://www.ipo4you.com.ua/ua/product/udavka-5-6mm/"
+    "url": "https://www.ipo4you.com.ua/ua/product/udavka-5-6mm/",
+    "img": "https://www.ipo4you.com.ua/wp-content/uploads/2019/06/ESB_5232-copy-480x668.jpg"
    },
    {
     "title": "Прорезиненный поводок",
     "price": "от 317 грн",
     "meta": "3-е место по продажам",
-    "url": "https://www.ipo4you.com.ua/ua/product/prorezinennyj-povodok-1-10m/"
+    "url": "https://www.ipo4you.com.ua/ua/product/prorezinennyj-povodok-1-10m/",
+    "img": "https://www.ipo4you.com.ua/wp-content/uploads/2019/03/ESB_8636-480x722.jpg"
    },
    {
     "title": "Сумка для лакомств с клипсой",
     "price": "от 271 грн",
     "meta": "4-е место по продажам",
-    "url": "https://www.ipo4you.com.ua/ua/product/sumka-dlya-lakomstv-na-lipkoj-lente/"
+    "url": "https://www.ipo4you.com.ua/ua/product/sumka-dlya-lakomstv-na-lipkoj-lente/",
+    "img": "https://www.ipo4you.com.ua/wp-content/uploads/2020/07/treatsumka-1-300x451.jpg"
    },
    {
     "title": "Мяч «Дыня мини»",
     "price": "от 452 грн",
     "meta": "5-е место по продажам",
-    "url": "https://www.ipo4you.com.ua/ua/product/kusalka-dynya-mini/"
+    "url": "https://www.ipo4you.com.ua/ua/product/kusalka-dynya-mini/",
+    "img": "https://www.ipo4you.com.ua/wp-content/uploads/2018/10/ESB_0747-480x721.jpg"
    }
   ]
  },
@@ -369,31 +390,36 @@ const SUPPLIERS = [
     "title": "Дождевик-комбинезон для таксы, по меркам",
     "price": "448 zł",
     "meta": "витрина магазина на Etsy",
-    "url": "https://www.etsy.com/shop/BarkAndGo"
+    "url": "https://www.etsy.com/listing/4339958653/waterproof-dachshund-corgi-raincoat",
+    "img": "https://i.etsystatic.com/11183352/r/il/e6fc1f/8446712665/il_340x270.8446712665_a5o0.jpg"
    },
    {
     "title": "Дождевик в клетку (фланель)",
     "price": "630 zł",
     "meta": "витрина магазина на Etsy",
-    "url": "https://www.etsy.com/shop/BarkAndGo"
+    "url": "https://www.etsy.com/listing/4412229192/waterproof-dog-raincoat-tartan-flannel",
+    "img": "https://i.etsystatic.com/11183352/r/il/4c18fd/7441363740/il_340x270.7441363740_np1b.jpg"
    },
    {
     "title": "Снуд для собак",
     "price": "151 zł",
     "meta": "витрина магазина на Etsy",
-    "url": "https://www.etsy.com/shop/BarkAndGo"
+    "url": "https://www.etsy.com/listing/4407849484/dog-snood-neck-warmer-for-all-dog-sizes",
+    "img": "https://i.etsystatic.com/11183352/r/il/1751f0/7414728754/il_340x270.7414728754_l3d9.jpg"
    },
    {
     "title": "Попона Perfect Match, мембрана, 24 размера",
     "price": "1 980 грн",
     "meta": "1-е место по популярности на сайте",
-    "url": "https://barkandgo.com.ua/shop/sobaka/"
+    "url": "https://barkandgo.com.ua/shop/popona-dlya-sobak-perfect-match-pink-membrana-24-rozmiri/",
+    "img": "https://barkandgo.com.ua/WebCache/Media/shop-12198/_assets/%D0%9F%D0%BE%D0%BF%D0%BE%D0%BD%D0%B8/%D0%97%D0%BD%D1%96%D0%BC%D0%BE%D0%BA_%D0%B5%D0%BA%D1%80%D0%B0%D0%BD%D0%B0_2026-09-23_%D0%BE_13.14.22-ratio-10x9-proportions-png.png"
    },
    {
     "title": "Ромпер флисовый Hygge",
     "price": "1 010 грн",
     "meta": "3-е место по популярности на сайте",
-    "url": "https://barkandgo.com.ua/shop/sobaka/"
+    "url": "https://barkandgo.com.ua/shop/romper-flisoviy-hygge/",
+    "img": "https://barkandgo.com.ua/WebCache/Media/shop-12198/_assets/%D0%A0%D0%BE%D0%BC%D0%BF%D0%B5%D1%80%D0%B8/ChatGPT_Image_21_%D1%81%D0%B5%D0%BD%D1%82._2026_%D0%B3.%2C_19_25_49-ratio-10x9-proportions-png.png"
    }
   ]
  },
@@ -433,25 +459,29 @@ const SUPPLIERS = [
     "title": "Костюм махровый",
     "price": "625 грн",
     "meta": "топ продаж на сайте",
-    "url": "https://dogsbomba.com/"
+    "url": "https://dogsbomba.com/catalog/kostyum-makhrovyy-shokolad-d-271/",
+    "img": "https://dogsbomba.com/storage/app/uploads/public/03c/ba2/ce0/thumb__600_400_0_0_auto.webp"
    },
    {
     "title": "Рубашка в клетку",
     "price": "580 грн",
     "meta": "топ продаж на сайте",
-    "url": "https://dogsbomba.com/"
+    "url": "https://dogsbomba.com/catalog/rubashka-kletchataya-elektrik-rub-73/",
+    "img": "https://dogsbomba.com/storage/app/uploads/public/b02/923/bc2/thumb__600_400_0_0_auto.webp"
    },
    {
     "title": "Дождевик с рюшами",
     "price": "636 грн",
     "meta": "3 отзыва, 5,0 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/531643534/p531643534/"
+    "url": "https://rozetka.com.ua/ua/531643534/p531643534/",
+    "img": "https://content2.rozetka.com.ua/goods/images/big/580748555.jpg"
    },
    {
     "title": "Жилет на липучках",
     "price": "970 грн",
     "meta": "3 отзыва, 5,0 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/417762108/p417762108/"
+    "url": "https://rozetka.com.ua/ua/417762108/p417762108/",
+    "img": "https://content.rozetka.com.ua/goods/images/big/408614938.jpg"
    }
   ]
  },
@@ -491,25 +521,29 @@ const SUPPLIERS = [
     "title": "Тёплая куртка хаки",
     "price": "1 800 грн",
     "meta": "1-е место по продажам",
-    "url": "https://www.woofitdogwear.com/product/tepla-kurtka-khaki/"
+    "url": "https://www.woofitdogwear.com/product/tepla-kurtka-khaki/",
+    "img": "https://www.woofitdogwear.com/wp-content/uploads/2021/01/dsc_5570-640x640.jpg"
    },
    {
     "title": "Тёплая куртка «Пташки»",
     "price": "2 100 грн",
     "meta": "2-е место по продажам",
-    "url": "https://www.woofitdogwear.com/product/tepla-kurtka-iz-paternom-ptashky/"
+    "url": "https://www.woofitdogwear.com/product/tepla-kurtka-iz-paternom-ptashky/",
+    "img": "https://www.woofitdogwear.com/wp-content/uploads/2023/09/esb_7809-640x640.jpg"
    },
    {
     "title": "Двусторонняя бандана",
     "price": "300 грн",
     "meta": "4-е место по продажам",
-    "url": "https://www.woofitdogwear.com/product/bandana/"
+    "url": "https://www.woofitdogwear.com/product/bandana/",
+    "img": "https://www.woofitdogwear.com/wp-content/uploads/2018/09/esb_5964-640x640.png"
    },
    {
     "title": "Свитер «Догуфляж»",
     "price": "1 200 грн",
     "meta": "6-е место по продажам",
-    "url": "https://www.woofitdogwear.com/product/sviter-dogufljazh-2/"
+    "url": "https://www.woofitdogwear.com/product/sviter-dogufljazh-2/",
+    "img": "https://www.woofitdogwear.com/wp-content/uploads/2021/11/dsc_6518-640x640.png"
    }
   ]
  },
@@ -549,19 +583,22 @@ const SUPPLIERS = [
     "title": "ЭКО-пакеты из кукурузного крахмала",
     "price": "170 грн",
     "meta": "топ продаж на сайте",
-    "url": "https://lavgav.ua/"
+    "url": "https://lavgav.ua/products/corn-bags",
+    "img": "https://lavgav.ua/rails/active_storage/disk/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDVG9JYTJWNVNTSnJkbUZ5YVdGdWRITXZORFY2TjJSd2JXMWhaelkwWkdaaWNXbHZOVzFuYXpWaWJtNTBaQzg1TXpnM056a3dZV1ptTjJaaFptUTFZamMyTkdGalpqUmtZMk15TnpFek4yWmlPREZpWlRrMU1qRm1ZMlptTURjeE56QmtaRFZtWkRBMU1qSm1ZbU0yQmpvR1JWUTZFR1JwYzNCdmMybDBhVzl1U1NKTmFXNXNhVzVsT3lCbWFXeGxibUZ0WlQwaVEyOXlia0pCWnlBeklERXVjRzVuSWpzZ1ptbHNaVzVoYldVcVBWVlVSaTA0SnlkRGIzSnVRa0ZuSlRJd015VXlNREV1Y0c1bkJqc0dWRG9SWTI5dWRHVnVkRjkwZVhCbFNTSU9hVzFoWjJVdmNHNW5CanNHVkRvUmMyVnlkbWxqWlY5dVlXMWxPZ3BzYjJOaGJBPT0iLCJleHAiOm51bGwsInB1ciI6ImJsb2Jfa2V5In19--5ebc18024ff506554eeb3296ee37ec27a61a8c85/CornBAg%203%201.png"
    },
    {
     "title": "Универсальные пакеты для уборки",
     "price": "100 грн",
     "meta": "топ продаж на сайте",
-    "url": "https://lavgav.ua/"
+    "url": "https://lavgav.ua/products/universal_bio_bags",
+    "img": "https://lavgav.ua/rails/active_storage/disk/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDVG9JYTJWNVNTSnJkbUZ5YVdGdWRITXZNR2R3TW5GME5HMDNaemhpZDJaaU0yNWphWGgzWld0blpUQm1hQzh3TVdNM1lqY3dZamd6WlRCa05UbGpNVGRsWldNME5XRTJOekk1TVRJeFkyWXpZMlpsWWpaaE5EUTJNelkwT0RWbE5UVXdNVGxqWmpjMk4yVTJNREEzQmpvR1JWUTZFR1JwYzNCdmMybDBhVzl1U1NKTGFXNXNhVzVsT3lCbWFXeGxibUZ0WlQwaWRYUnBiR2wwZVRNdGJXbHVMbkJ1WnlJN0lHWnBiR1Z1WVcxbEtqMVZWRVl0T0NjbmRYUnBiR2wwZVRNdGJXbHVMbkJ1WndZN0JsUTZFV052Ym5SbGJuUmZkSGx3WlVraURtbHRZV2RsTDNCdVp3WTdCbFE2RVhObGNuWnBZMlZmYm1GdFpUb0tiRzlqWVd3PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9rZXkifX0=--346c6f28f6674347e1526b83cd532fc748714a51/utility3-min.png"
    },
    {
     "title": "Пакеты серии «Put In»: 5 грн с упаковки идут UAnimals",
     "price": "100 грн",
     "meta": "топ продаж на сайте",
-    "url": "https://lavgav.ua/"
+    "url": "https://lavgav.ua/products/putin_cleanup-bags",
+    "img": "https://lavgav.ua/rails/active_storage/disk/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDVG9JYTJWNVNTSnJkbUZ5YVdGdWRITXZOSEZpTVdKMGIzUm1aWEZpY0dKcGNEZzFZbWhyZFhSMmRERnJlQzh3TVdNM1lqY3dZamd6WlRCa05UbGpNVGRsWldNME5XRTJOekk1TVRJeFkyWXpZMlpsWWpaaE5EUTJNelkwT0RWbE5UVXdNVGxqWmpjMk4yVTJNREEzQmpvR1JWUTZFR1JwYzNCdmMybDBhVzl1U1NKSGFXNXNhVzVsT3lCbWFXeGxibUZ0WlQwaWNIVjBhVzR5TFcxcGJpNXdibWNpT3lCbWFXeGxibUZ0WlNvOVZWUkdMVGduSjNCMWRHbHVNaTF0YVc0dWNHNW5CanNHVkRvUlkyOXVkR1Z1ZEY5MGVYQmxTU0lPYVcxaFoyVXZjRzVuQmpzR1ZEb1JjMlZ5ZG1salpWOXVZVzFsT2dwc2IyTmhiQT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2tleSJ9fQ==--cbc620ba409c6ce0e0a0d35f71869c16640c32d4/putin2-min.png"
    }
   ]
  },
@@ -601,19 +638,22 @@ const SUPPLIERS = [
     "title": "Лёгкие сушёные",
     "price": "от 144 грн",
     "meta": "1-е место по продажам; 3 отзыва, 5,0 на Rozetka",
-    "url": "https://vitameat.com.ua/product/legeni-sushi/"
+    "url": "https://vitameat.com.ua/product/legeni-sushi/",
+    "img": "https://vitameat.com.ua/wp-content/uploads/2026/09/abCx9GzDOW-300x300.webp"
    },
    {
     "title": "Вымя сушёное кусочками",
     "price": "от 200 грн",
     "meta": "2-е место по продажам",
-    "url": "https://vitameat.com.ua/product/vymya-shmatochky/"
+    "url": "https://vitameat.com.ua/product/vymya-shmatochky/",
+    "img": "https://vitameat.com.ua/wp-content/uploads/2026/09/455UiPMfz6-300x300.webp"
    },
    {
     "title": "Рубец сушёный колбасками",
     "price": "от 116 грн",
     "meta": "3-е место по продажам",
-    "url": "https://vitameat.com.ua/product/rubets-kovbaskamy/"
+    "url": "https://vitameat.com.ua/product/rubets-kovbaskamy/",
+    "img": "https://vitameat.com.ua/wp-content/uploads/2026/09/T3l8w7WybC-300x300.webp"
    }
   ]
  },
@@ -686,25 +726,29 @@ const SUPPLIERS = [
     "title": "Лежак Brig",
     "price": "1 395 грн",
     "meta": "39 отзывов, 5,0 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/548883678/p548883678/"
+    "url": "https://rozetka.com.ua/ua/548883678/p548883678/",
+    "img": "https://content2.rozetka.com.ua/goods/images/big/602851290.jpg"
    },
    {
     "title": "Комбинезон Rain",
     "price": "746 грн",
     "meta": "38 отзывов, 4,7 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/548883321/p548883321/"
+    "url": "https://rozetka.com.ua/ua/548883321/p548883321/",
+    "img": "https://content.rozetka.com.ua/goods/images/big/602850804.jpg"
    },
    {
     "title": "Лежак Lux",
     "price": "505 грн",
     "meta": "38 отзывов, 4,7 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/425117229/p425117229/"
+    "url": "https://rozetka.com.ua/ua/425117229/p425117229/",
+    "img": "https://content2.rozetka.com.ua/goods/images/big/421181185.jpg"
    },
    {
     "title": "Комбинезон Cold",
     "price": "565 грн",
     "meta": "16 отзывов, 4,9 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/569534710/p569534710/"
+    "url": "https://rozetka.com.ua/ua/569534710/p569534710/",
+    "img": "https://content.rozetka.com.ua/goods/images/big/434422528.jpg"
    }
   ]
  },
@@ -1009,19 +1053,22 @@ const SUPPLIERS = [
     "title": "Лежак Dreamer Brown M",
     "price": "2 289 грн",
     "meta": "97 отзывов, 4,8 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/490423359/p490423359/"
+    "url": "https://rozetka.com.ua/ua/490423359/p490423359/",
+    "img": "https://content.rozetka.com.ua/goods/images/big/512209596.jpg"
    },
    {
     "title": "Лежак Dreamer Velvet M",
     "price": "3 290 грн",
     "meta": "55 отзывов, 5,0 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/485596274/p485596274/"
+    "url": "https://rozetka.com.ua/ua/485596274/p485596274/",
+    "img": "https://content1.rozetka.com.ua/goods/images/big/519549393.jpg"
    },
    {
     "title": "Миски на подставке Lunch Bar S",
     "price": "2 890 грн",
     "meta": "21 отзыв, 4,9 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/575716819/p575716819/"
+    "url": "https://rozetka.com.ua/ua/575716819/p575716819/",
+    "img": "https://content.rozetka.com.ua/goods/images/big/242718694.jpg"
    }
   ]
  },
@@ -1062,25 +1109,29 @@ const SUPPLIERS = [
     "title": "Куртка AiryVest ONE",
     "price": "969 грн",
     "meta": "219 отзывов, 4,8 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/422596260/p422596260/"
+    "url": "https://rozetka.com.ua/ua/422596260/p422596260/",
+    "img": "https://content.rozetka.com.ua/goods/images/big/419217113.jpg"
    },
    {
     "title": "Мячик Liker 7",
     "price": "95 грн",
     "meta": "124 отзыва, 4,8 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/392251662/p392251662/"
+    "url": "https://rozetka.com.ua/ua/392251662/p392251662/",
+    "img": "https://content.rozetka.com.ua/goods/images/big/358714451.jpg"
    },
    {
     "title": "Ошейник кожаный Waudog Classic",
     "price": "224 грн",
     "meta": "91 отзыв, 4,7 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/569624830/p569624830/"
+    "url": "https://rozetka.com.ua/ua/569624830/p569624830/",
+    "img": "https://content2.rozetka.com.ua/goods/images/big/643725753.jpg"
    },
    {
     "title": "Поводок Waudog Waterproof 3 м",
     "price": "676 грн",
     "meta": "75 отзывов, 4,8 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/569423944/p569423944/"
+    "url": "https://rozetka.com.ua/ua/569423944/p569423944/",
+    "img": "https://content1.rozetka.com.ua/goods/images/big/643318174.jpg"
    }
   ]
  },
@@ -1121,19 +1172,22 @@ const SUPPLIERS = [
     "title": "Адресник из нержавеющей стали «Косточка»",
     "price": "129 грн",
     "meta": "77 отзывов, 4,9 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/87752392/p87752392/"
+    "url": "https://rozetka.com.ua/ua/87752392/p87752392/",
+    "img": "https://content1.rozetka.com.ua/goods/images/big/184593091.jpg"
    },
    {
     "title": "Адресник с гравировкой «Косточка» 40×25 мм",
     "price": "129 грн",
     "meta": "53 отзыва, 5,0 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/87752506/p87752506/"
+    "url": "https://rozetka.com.ua/ua/87752506/p87752506/",
+    "img": "https://content1.rozetka.com.ua/goods/images/big/184593091.jpg"
    },
    {
     "title": "Поводок брезентовый светоотражающий 5 м",
     "price": "392 грн",
     "meta": "20 отзывов, 5,0 · Rozetka",
-    "url": "https://rozetka.com.ua/ua/305319368/p305319368/"
+    "url": "https://rozetka.com.ua/ua/305319368/p305319368/",
+    "img": "https://content1.rozetka.com.ua/goods/images/big/187828547.jpg"
    }
   ]
  },
@@ -1257,7 +1311,6 @@ function card(s) {
     <div class="sup-body">
       <div>
         ${s.opinion ? `<div class="review"><p><b>Оценка команды.</b> ${esc(s.opinion)}</p><p><b>Следующий шаг.</b> ${esc(s.next)}</p></div>` : ""}
-        ${s.top.length ? `<div><p class="place">Популярные товары</p>${topHtml(s)}</div>` : ""}
         <div class="links">${linksHtml(s) || `<span class="muted small">Контактов пока нет</span>`}</div>
       </div>
       <dl class="facts">
@@ -1270,6 +1323,10 @@ function card(s) {
         <div><dt>Заметка</dt><dd>${esc(s.note)}</dd></div>
         <div><dt>Источник</dt><dd>${sourceHtml(s)}</dd></div>
       </dl>
+      ${s.top.length ? `<div class="shelf-wrap"><p class="place">Популярные товары</p><div class="shelf">${s.top.map(p => `<a class="prod" href="${esc(p.url)}" target="_blank" rel="noopener">
+        <span class="thumb">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span>
+        <span class="prod-title">${esc(p.title)}</span><span class="prod-price">${esc(p.price)}</span><span class="muted">${esc(p.meta)}</span>
+      </a>`).join("")}</div></div>` : ""}
     </div>
   </details>`;
 }
