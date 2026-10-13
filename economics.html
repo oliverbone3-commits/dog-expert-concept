@@ -139,6 +139,15 @@
     <div class="col"><p id="plan-lead"></p></div>
     <div class="chart" id="chart" role="img"></div>
     <p class="legend">Столбик — результат месяца после постоянных расходов: вверх плюс, вниз минус. Над столбиком — заказов в месяц.</p>
+    <h3 class="sub mt">Что для этого нужно</h3>
+    <div class="grid" id="needs"></div>
+    <details class="how">
+      <summary>Из чего складываются деньги на старт</summary>
+      <div>
+        <div class="table-wrap"><table><thead><tr><th>На что</th><th class="num">Сумма</th><th>Когда</th><th>Откуда цифра</th></tr></thead><tbody id="startup-body"></tbody></table></div>
+        <p class="legend">Уставный капитал sp. z o.o. (от 5 000 zł) расходом не считается: он остаётся на счёте компании, из него можно платить за товар.</p>
+      </div>
+    </details>
     <h3 class="sub mt">Контрольные точки</h3>
     <div class="grid" id="checks"></div>
     <details class="how mt">
@@ -268,7 +277,8 @@
       <div class="card">
         <h3>Что не учтено</h3>
         <ul class="small">
-          <li>зарплаты и ZUS команды;</li>
+          <li>зарплаты и ZUS команды (помощницу можно задать во вводных);</li>
+          <li>сезонность: всплеск перед Sylwester и зимой;</li>
           <li>остатки размеров и брак;</li>
           <li>образцы и запас денег на товар;</li>
           <li>цены DIQPET: прайс пришёл в личном письме.</li>
@@ -284,7 +294,7 @@
       </div>
     </div>
     <details class="how mt">
-      <summary>Все вводные: курсы, расходы, партнёрская программа</summary>
+      <summary>Все вводные: курсы, расходы на заказ, партнёры, постоянные расходы</summary>
       <div>
         <div class="params" id="params"></div>
         <p class="legend mt"><span class="guess">Точка</span> — допущение, которого у нас пока нет фактом.</p>
@@ -295,7 +305,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const KEY = "econ-03"; // bump when the order of items or scenarios changes: overrides are stored by position
+  const KEY = "econ-04"; // bump when the order of items or scenarios changes: overrides are stored by position
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const defs = ECON.inputs.flatMap(g => g.items);
@@ -323,8 +333,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const net = price => price / (1 + (payer ? p.vat : 0));
     // costs that grow with the price: the payment fee, and the partner's discount and commission
     const fee = price => price * (1 - p.pShare * p.pDisc) * p.pay;
-    const partner = price => p.pShare * p.pDisc * net(price) + p.pShare * p.pComm * price * (1 - p.pDisc);
-    const orderCosts = (price, sized, main) => fee(price) + partner(price) + main * (p.payFix + p.pack + sized * p.exShare * p.exCost + (price >= p.freeFrom ? p.deliv : 0));
+    const partner = price => p.pShare * p.pDisc * net(price) + p.pShare * p.pComm * price * (1 - p.pDisc) + p.refShare * 2 * p.refDisc * net(price);
+    // paid once per order: packaging, gift, loyalty, and what a refused order leaves us with; an exchange is paid on sized goods
+    const perOrder = p.payFix + p.pack + p.gift + p.loyal + p.retShare * (p.deliv + p.pack + p.gift + p.payFix);
+    const exchange = p.exShare * p.deliv * (1 + p.exOurs);
+    const orderCosts = (price, sized, main) => fee(price) + partner(price) + main * (perOrder + sized * exchange + (price >= p.freeFrom ? p.deliv : 0));
 
     const items = ECON.items.map((it, i) => {
       const o = Object.assign({}, it, saved.items[i] || {});
@@ -351,7 +364,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const aov = avg(list, x => x.pl) * b, rev = avg(list, x => x.rev) * b, cost = avg(list, x => x.cost) * b;
       const delivery = b === 1 ? avg(list, x => x.pl >= p.freeFrom ? p.deliv : 0) : aov >= p.freeFrom ? p.deliv : 0;
       const part = b * avg(list, x => partner(x.pl));
-      const service = list.length ? b * avg(list, x => fee(x.pl)) + p.payFix + p.pack + avg(list, x => x.sized) * p.exShare * p.exCost + delivery : 0;
+      const service = list.length ? b * avg(list, x => fee(x.pl)) + perOrder + avg(list, x => x.sized) * exchange + delivery : 0;
       return { name, b, aov, rev, cost, part, service, contrib: rev - cost - part - service, n: list.length };
     });
     const stages = ECON.stages.map((st, s) => {
@@ -359,16 +372,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const sum = f => groups.reduce((t, g, k) => t + f(g) * mix[k], 0);
       return Object.assign({}, st, { mix, total: mix.reduce((a, b) => a + b, 0), aov: sum(g => g.aov), rev: sum(g => g.rev), cost: sum(g => g.cost), part: sum(g => g.part), service: sum(g => g.service), contrib: sum(g => g.contrib) });
     });
-    const fixed = p.platform + p.acc + p.adsDay * 30 + p.other;
+    const fixed = p.platform + p.acc + p.adsDay * 30 + p.other + p.community + p.samples + p.charity + p.assistant;
     const scenarios = ECON.scenarios.map(sc => {
       let cum = 0, low = 0;
       const months = sc.orders.map((def, m) => {
         const orders = `${sc.id}-${m}` in saved.orders ? saved.orders[`${sc.id}-${m}`] : def, st = stages[ECON.stageOfMonth[m]];
-        const res = orders * st.contrib - fixed; cum += res; low = Math.min(low, cum);
-        return { m, orders, changed: orders !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov, res, cum, repeat: ECON.repeat[m], fresh: Math.ceil(orders * (1 - ECON.repeat[m])), stock: orders * st.cost };
+        const res = orders * st.contrib - fixed - (m < p.lossMonths ? p.lossLimit : 0); cum += res; low = Math.min(low, cum);
+        return { m, byCode: orders * p.pShare, payout: orders * p.pShare * p.pComm * st.aov * (1 - p.pDisc), orders, changed: orders !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov, res, cum, repeat: ECON.repeat[m], fresh: Math.ceil(orders * (1 - ECON.repeat[m])), stock: orders * st.cost };
       });
       const tot = f => months.reduce((s, x) => s + f(x), 0);
-      return Object.assign({}, sc, { months, low, orders: tot(x => x.orders), rev: tot(x => x.rev), res: tot(x => x.res), fresh: tot(x => x.fresh), stock: tot(x => x.stock), run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
+      return Object.assign({}, sc, { months, low, perHour: tot(x => x.res) / (sc.hours * 52), orders: tot(x => x.orders), rev: tot(x => x.rev), res: tot(x => x.res), fresh: tot(x => x.fresh), stock: tot(x => x.stock), run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
     });
     const even = stages.map(st => st.contrib > 0 ? Math.ceil(fixed / st.contrib) : null);
     return { p, payer, items, groups, stages, fixed, scenarios, even };
@@ -408,7 +421,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("headline").textContent = M.even[0] ? `Выходим в ноль с ${M.even[0]} заказов в месяц.` : "С заказа ничего не остаётся — в ноль не выйти.";
     $("kpis").innerHTML = [
       kpi("Остаётся с одного заказа", zl(st.contrib), `Из среднего заказа ${zl(st.aov)} — после товара и расходов на сам заказ.`),
-      kpi("Заказов в месяц для нуля", M.even[0] ? String(M.even[0]) : "нет", `Столько покрывает ${zl(M.fixed)} постоянных расходов: платформа, бухгалтерия, реклама.`),
+      kpi("Заказов в месяц для нуля", M.even[0] ? String(M.even[0]) : "нет", `Столько покрывает ${zl(M.fixed)} постоянных расходов в месяц: платформа, бухгалтерия, реклама, встречи, образцы, помощь фонду.`),
       kpi(`Первый год, «${cur.title}»`, zl(cur.res), plus < 0 ? `Ни одного месяца в плюсе. Оборот — ${zl(cur.rev)}.` : `Месяцы в плюсе — с ${plus + 1}-го. Оборот — ${zl(cur.rev)}.`),
     ].join("");
     document.querySelector('[data-lever="scenario"]').innerHTML = buttons("sc", M.scenarios.map(s => [s.id, s.title]), view.scenario);
@@ -419,8 +432,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const vatPart = st.aov - st.rev;
     const parts = [
       ["c-goods", "Товар", "закупка, доставка, пошлина" + (M.payer ? "" : " и налог на ввозе"), st.cost],
-      ["c-partner", "Партнёрам", "скидка клиенту по коду и комиссия кинологу", st.part],
-      ["c-service", "Расходы на заказ", "оплата картой, упаковка, обмен размера, доставка", st.service],
+      ["c-partner", "Партнёрам и друзьям", "скидка по коду, комиссия кинологу, «приведи друга»", st.part],
+      ["c-service", "Расходы на заказ", "оплата картой, упаковка и открытка, подарок, обмены и отказы", st.service],
       ...(M.payer ? [["c-vat", "VAT с продажи", "уходит в бюджет", vatPart]] : []),
       ["c-left", "Остаётся", "на постоянные расходы и прибыль", st.contrib],
     ];
@@ -444,9 +457,17 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="up">${x.res > 0 ? `<i style="height:${Math.max(2, x.res / scale).toFixed(1)}px"></i>` : ""}</div>
       <div class="down">${x.res < 0 ? `<i style="height:${Math.max(2, -x.res / scale).toFixed(1)}px"></i>` : ""}</div><span>${x.m + 1}</span></div>`).join("");
     $("chart").setAttribute("aria-label", cur.months.map(x => `месяц ${x.m + 1}: ${zl(x.res)}`).join("; "));
-    $("checks").innerHTML = ECON.checkpoints.filter(c => c.month).map(c => {
-      const x = cur.months[c.month - 1];
-      return kpi(c.title, `${nf(x.orders)} заказов в месяц`, `Оборот ${zl(x.rev)}, результат месяца ${zl(x.res)}. Повторных заказов ${pct(x.repeat)}, активных партнёров ${c.partners}.`);
+    const before = ECON.startup.filter(x => x.when === 0), later = ECON.startup.filter(x => x.when > 0), sum = l => l.reduce((a, x) => a + x.zl, 0);
+    $("needs").innerHTML = [
+      kpi("Время команды", `${nf(cur.hours, cur.hours % 1 ? 1 : 0)} ч в неделю`, `${cur.team}. На час работы выходит ${zl(cur.perHour)}.`),
+      kpi("Деньги до запуска", zl(sum(before)), `Первая закупка, упаковка, образцы и регистрация. Ещё ${zl(Math.abs(cur.low))} — запас на минусовые месяцы.`),
+      kpi("Деньги на Корею", zl(sum(later)), `Тест через посредника и первая закупка — после ${later[0].when}-го месяца, если чекпоинт пройден.`),
+    ].join("");
+    $("startup-body").innerHTML = ECON.startup.map(x => `<tr><td>${x.what}</td><td class="num">${zl(x.zl)}</td><td>${x.when ? `после ${x.when}-го месяца` : "до запуска"}</td><td>${x.note}</td></tr>`).join("") +
+      `<tr class="total"><td>Всего</td><td class="num">${zl(sum(ECON.startup))}</td><td></td><td></td></tr>`;
+    $("checks").innerHTML = ECON.checkpoints.map((c, k) => {
+      const x = cur.months[c.month - 1], n = cur.partners[k], each = x.byCode / n, one = x.payout / x.byCode;
+      return kpi(c.title, `${nf(x.orders)} заказов в месяц`, `Оборот ${zl(x.rev)}, результат ${zl(x.res)}, повторных ${pct(x.repeat)}. По кодам партнёров — ${nf(x.byCode)} заказов: при ${nf(n, n % 1 ? 1 : 0)} активных это около ${nf(each, 1)} на каждого. Партнёрам выплатим ${zl(x.payout)}; до порога ${zl(ECON.payoutFrom)} нужно ${Math.ceil(ECON.payoutFrom / one)} заказа.`);
     }).join("");
     $("goals-body").innerHTML = cur.months.map(x => `<tr><td>${x.m + 1}</td>
       <td class="num"><input class="in${x.changed ? " changed" : ""}" type="text" inputmode="numeric" data-order="${cur.id}-${x.m}" value="${nf(x.orders)}" aria-label="Заказов, месяц ${x.m + 1}"></td>
