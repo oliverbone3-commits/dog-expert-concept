@@ -37,6 +37,13 @@
   td.sep, th.sep { border-left: 1px solid var(--line); }
   input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
   .legend { font-size: var(--fs-work); color: var(--muted); }
+  td.name a { color: inherit; text-decoration-color: var(--line-strong); }
+  td.name a:hover { color: var(--accent); }
+  td .links { display: block; margin-top: 4px; font-size: var(--fs-xs); }
+  td .links a { margin-right: var(--sp-3); white-space: nowrap; }
+  .field.inline { display: inline-grid; max-width: 100%; }
+  .field.inline select { width: auto; max-width: 100%; }
+  .check { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); min-height: var(--control-h); }
 </style>
 </head>
 <body data-page="economics">
@@ -50,6 +57,7 @@
       <span class="chip">Закупка по украинской рознице</span>
       <span class="chip">Три сценария</span>
       <span class="chip">Чекпоинты</span>
+      <span class="chip">Налоги по формам бизнеса</span>
     </div>
     <p class="status-note">Цели для сверки, не прогноз. Оптовых прайсов пока нет: украинские товары посчитаны так, будто мы покупаем их по розничной цене бренда, — любой опт улучшит результат. Цены в Польше — предложение, не решение команды.</p>
   </div>
@@ -83,18 +91,19 @@
       <h2>Юнит-экономика по товарам.</h2>
     </div>
     <div class="col">
-      <p>«Цена дома» — розница бренда на его сайте. Закупка равна ей минус скидка опта из вводных. Себестоимость — закупка, доставка, пошлина и невозвратный VAT на ввозе. Вклад — то, что остаётся после товара и расходов на заказ.</p>
+      <p>«Цена дома» — розница бренда на его сайте, закупка равна ей минус скидка опта из вводных. У польской базы вместо неё оптовая цена без VAT: пока прайсов нет, она считается от розницы через «нашу долю». Себестоимость — закупка, доставка, пошлина и невозвратный VAT. Вклад — то, что остаётся после товара и расходов на заказ. Название ведёт на страницу товара.</p>
     </div>
+    <div class="row" role="group" aria-label="Источник" id="src-filter"></div>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Позиция</th><th class="num">Цена дома</th><th class="num">Себестоимость</th><th class="num">Цена в Польше</th>
+          <th>Позиция</th><th class="num">Цена дома / опт</th><th class="num">Себестоимость</th><th class="num">Цена в Польше</th>
           <th class="num">Валовая маржа</th><th class="num">Вклад с продажи</th><th class="num">Нужная скидка</th><th>В расчёте</th>
         </tr></thead>
         <tbody id="items-body"></tbody>
       </table>
     </div>
-    <p class="note">«Нужная скидка» — какую скидку от домашней розницы надо получить, чтобы при этой цене в Польше выйти на целевую валовую маржу. Позиции со снятой галочкой не входят в средние по источнику: при закупке по рознице они не проходят.</p>
+    <p class="note">«Нужная скидка» — какую скидку от домашней розницы надо получить, чтобы при этой цене в Польше выйти на целевую валовую маржу. Позиции со снятой галочкой не входят в средние по источнику: при закупке по рознице они не проходят. Состав польской базы примерный — по категориям из концепции, с ценами польских магазинов; списка Даши пока нет.</p>
   </section>
 
   <section id="sources" data-nav="Источники">
@@ -111,7 +120,7 @@
         <tbody id="sources-body"></tbody>
       </table>
     </div>
-    <p class="note">Справа — доля заказов по источникам на каждом этапе. Корейский ассортимент появляется после чекпоинта на 6-м месяце; 10% заказов примерно соответствуют первой корейской закупке на 3–4 тыс. USD. В заказе считается один основной товар: наборы и добавки поднимут чек, это запас.</p>
+    <p class="note">Справа — доля заказов по источникам на каждом этапе. Корейский ассортимент появляется после чекпоинта на 6-м месяце; 10% заказов примерно соответствуют первой корейской закупке на 3–4 тыс. USD. В импортном заказе считается один основной товар, в заказе из польской базы — столько, сколько задано во вводных.</p>
   </section>
 
   <section id="goals" data-nav="Цели">
@@ -157,11 +166,64 @@
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Товар</th><th class="num">Розница в Польше</th><th>Откуда цифра</th></tr></thead>
+        <thead><tr><th>Товар</th><th class="num">Розница в Польше</th><th>Что это и где смотреть</th></tr></thead>
         <tbody id="market-body"></tbody>
       </table>
     </div>
     <p class="note verify"><strong>Вывод.</strong> Украинская одежда заметно дешевле польской полки и проходит даже при закупке по рознице. Амуниция из BioThane — нет: в Польше такой поводок стоит до 110 zł, а украинская розница с ввозом уже выше. По ней нужен опт со скидкой от 40%. Цены на одежду для такс в польских магазинах поиском не нашлись.</p>
+  </section>
+
+  <section id="tax" data-nav="Налоги">
+    <div class="sec-head">
+      <div class="eyebrow">Налоги</div>
+      <h2>Нагрузка при разных формах и режимах.</h2>
+    </div>
+    <div class="col">
+      <p>Сколько из прибыли уходит на налог на доход и взносы при разных формах бизнеса. Прибыль берётся из выбранного сценария целей — это результат первого года после постоянных расходов.</p>
+    </div>
+    <div class="row">
+      <span role="group" aria-label="Сценарий" class="row" id="tax-scenarios"></span>
+      <label class="check"><input type="checkbox" id="tax-employed"> Владелец работает по найму с зарплатой не ниже минимальной</label>
+      <label class="field inline"><span>ZUS для JDG</span>
+        <select id="tax-zus"><option value="start">Первый год: полгода без взносов</option><option value="pref">Льготный</option><option value="full">Полный</option></select>
+      </label>
+    </div>
+
+    <h3 class="sub mt">VAT: освобождение или плательщик</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Режим</th><th class="num">Вклад с заказа, этап 1</th><th class="num">Безубыточность, заказов в месяц</th><th class="num">Оборот за год</th><th class="num">Результат за год</th></tr></thead>
+        <tbody id="vat-body"></tbody>
+      </table>
+    </div>
+    <p class="note verify" id="vat-warn" hidden></p>
+
+    <h3 class="sub mt">Налог на доход и взносы по формам</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Форма</th><th class="num">Прибыль до налогов</th><th class="num">Налог на доход</th><th class="num">Взносы ZUS и здоровье</th><th class="num">Всего</th><th class="num">Остаётся</th><th class="num">Нагрузка</th></tr></thead>
+        <tbody id="tax-body"></tbody>
+      </table>
+    </div>
+    <p class="note">В JDG прибыль выше, потому что бухгалтерия дешевле, чем у sp. z o.o. Взносы владельца в sp. z o.o. он платит сам, компания их в расходы не берёт. «Нагрузка» — налог и взносы как доля прибыли; при убытке её нет, но взносы остаются.</p>
+
+    <h3 class="sub mt">Та же нагрузка, когда прибыль вырастет</h3>
+    <div class="table-wrap">
+      <table>
+        <thead id="lvl-head"></thead>
+        <tbody id="lvl-body"></tbody>
+      </table>
+    </div>
+    <p class="note" id="lvl-note"></p>
+
+    <details class="how mt">
+      <summary>Ставки и суммы, на которых это посчитано</summary>
+      <div>
+        <div class="table-wrap"><table><tbody id="tax-params"></tbody></table></div>
+        <ul class="sources small" id="tax-sources"></ul>
+      </div>
+    </details>
+    <p class="note verify"><strong>Это ориентир, не консультация.</strong> Упрощения: шкала посчитана без совместной декларации и льгот; у владельца с работой по найму необлагаемая сумма считается уже использованной зарплатой; вычет половины взноса на здоровье учтён только для ryczałt; у эстонского CIT есть условия по найму сотрудников, источники по ним расходятся. Форму и режим выбираем с бухгалтером.</p>
   </section>
 
   <section id="limits" data-nav="Что не учтено">
@@ -174,7 +236,7 @@
         <h3>В расходах нет</h3>
         <ul class="small">
           <li>зарплат и ZUS;</li>
-          <li>налога на прибыль;</li>
+          <li>налога на доход в результатах сценариев — он посчитан отдельно, в разделе «Налоги»;</li>
           <li>списаний остатков размеров и брака;</li>
           <li>образцов и оборотных денег сверх закупки на месяц.</li>
         </ul>
@@ -183,7 +245,7 @@
         <h3>На странице нет</h3>
         <ul class="small">
           <li>цен DIQPET: прайс пришёл в личном письме, расчёт по нему лежит у команды в файле;</li>
-          <li>польской базы по позициям: пока одна строка с допущениями из концепции.</li>
+          <li>оптовых цен польской базы: закупка посчитана от розницы через долю 40% из концепции.</li>
         </ul>
       </div>
       <div class="card">
@@ -200,14 +262,14 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const KEY = "econ-01";
+  const KEY = "econ-02"; // bump when the order of items or scenarios changes: overrides are stored by position
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const defs = ECON.inputs.flatMap(g => g.items);
   const fresh = () => ({ v: {}, vatPayer: null, items: {}, mix: {}, orders: {} });
   let saved = fresh();
   try { saved = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
-  let scenario = "normal";
+  let scenario = "normal", srcFilter = "all", employed = true, zus = "start";
 
   const store = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
   const dirty = () => saved.vatPayer !== null || [saved.v, saved.items, saved.mix, saved.orders].some(o => Object.keys(o).length);
@@ -218,31 +280,40 @@ document.addEventListener("DOMContentLoaded", () => {
   const cls = n => n < 0 ? ' class="num neg"' : ' class="num"';
   const parse = s => { const n = parseFloat(String(s).replace(/\s/g, "").replace(",", ".")); return Number.isFinite(n) ? n : null; };
 
-  function model() {
+  function model(forcePayer) {
     const p = Object.fromEntries(defs.map(d => [d.key, d.key in saved.v ? saved.v[d.key] : d.value]));
-    const payer = saved.vatPayer === null ? ECON.vatPayer : saved.vatPayer;
+    const payer = forcePayer !== undefined ? forcePayer : saved.vatPayer === null ? ECON.vatPayer : saved.vatPayer;
     const net = price => price / (1 + (payer ? p.vat : 0));
-    const orderCosts = (price, sized, main) =>
-      price * (1 - p.pShare * p.pDisc) * p.pay + p.pShare * p.pDisc * net(price) + p.pShare * p.pComm * price * (1 - p.pDisc) +
-      main * (p.payFix + p.pack + sized * p.exShare * p.exCost + (price >= p.freeFrom ? p.deliv : 0));
+    // costs that grow with the price, and costs paid once per order
+    const share = price => price * (1 - p.pShare * p.pDisc) * p.pay + p.pShare * p.pDisc * net(price) + p.pShare * p.pComm * price * (1 - p.pDisc);
+    const orderCosts = (price, sized, main) => share(price) + main * (p.payFix + p.pack + sized * p.exShare * p.exCost + (price >= p.freeFrom ? p.deliv : 0));
 
     const items = ECON.items.map((it, i) => {
       const o = Object.assign({}, it, saved.items[i] || {});
-      const ua = o.src === "Украина";
-      const rate = o.cur === "UAH" ? p.uah : p.krw, disc = ua ? p.discUa : p.discKr, fr = ua ? p.frUa : p.frKr, duty = ua ? p.dutyUa : p.dutyKr;
-      const homeZl = o.home * rate, buy = homeZl * (1 - disc), ship = buy * fr, dutyZl = (buy + ship) * duty;
-      const cost = (buy + ship + dutyZl) * (payer ? 1 : 1 + p.vat);
-      const rev = net(o.pl), gross = rev - cost, contrib = gross - orderCosts(o.pl, o.sized, o.main);
-      const need = 1 - rev * (1 - p.target) / ((1 + fr) * (1 + duty) * (payer ? 1 : 1 + p.vat)) / homeZl;
-      return Object.assign(o, { i, homeZl, cost, rev, gross, contrib, need });
+      const rev = net(o.pl), local = o.src === "Польская база";
+      let cost, homeZl = null, need = null, buyNet = null;
+      if (local) {
+        buyNet = o.buyNet != null ? o.buyNet : o.pl / (1 + p.vat) * (1 - p.plGm);
+        cost = buyNet * (payer ? 1 : 1 + p.vat);
+      } else {
+        const ua = o.src === "Украина";
+        const rate = o.cur === "UAH" ? p.uah : p.krw, disc = ua ? p.discUa : p.discKr, fr = ua ? p.frUa : p.frKr, duty = ua ? p.dutyUa : p.dutyKr;
+        homeZl = o.home * rate;
+        const buy = homeZl * (1 - disc), ship = buy * fr, dutyZl = (buy + ship) * duty;
+        cost = (buy + ship + dutyZl) * (payer ? 1 : 1 + p.vat);
+        need = 1 - rev * (1 - p.target) / ((1 + fr) * (1 + duty) * (payer ? 1 : 1 + p.vat)) / homeZl;
+      }
+      const gross = rev - cost, contrib = gross - orderCosts(o.pl, o.sized, o.main);
+      return Object.assign(o, { i, local, homeZl, buyNet, cost, rev, gross, contrib, need });
     });
 
     const avg = (list, f) => list.length ? list.reduce((s, x) => s + f(x), 0) / list.length : 0;
-    const plRev = net(p.plAov);
     const groups = ECON.sources.map(name => {
-      if (name === "Польская база") return { name, aov: p.plAov, cost: plRev * (1 - p.plGm), contrib: plRev * p.plGm - orderCosts(p.plAov, 1, 1), n: null };
-      const list = items.filter(x => x.src === name && x.on && x.main);
-      return { name, aov: avg(list, x => x.pl), cost: avg(list, x => x.cost), contrib: avg(list, x => x.contrib), n: list.length };
+      const list = items.filter(x => x.src === name && x.on && x.main), b = name === "Польская база" ? p.plBasket : 1;
+      const aov = avg(list, x => x.pl) * b;
+      const delivery = b === 1 ? avg(list, x => x.pl >= p.freeFrom ? p.deliv : 0) : aov >= p.freeFrom ? p.deliv : 0;
+      const contrib = list.length ? b * avg(list, x => x.gross - share(x.pl)) - p.payFix - p.pack - avg(list, x => x.sized) * p.exShare * p.exCost - delivery : 0;
+      return { name, b, aov, cost: avg(list, x => x.cost) * b, contrib, n: list.length };
     });
     const stages = ECON.stages.map((st, s) => {
       const mix = st.mix.map((m, g) => `${s}-${g}` in saved.mix ? saved.mix[`${s}-${g}`] : m);
@@ -262,6 +333,29 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     const even = stages.map(st => st.contrib > 0 ? Math.ceil(fixed / st.contrib) : null);
     return { p, payer, items, groups, stages, fixed, scenarios, even, ceilOrders: stages[2].aov ? Math.ceil(p.ceiling / 12 / stages[2].aov) : null };
+  }
+
+  // owner taxes and contributions for a year: profit is the company result before them, rev is yearly sales
+  function taxes(profit, rev, acc) {
+    const T = ECON.tax, pos = n => Math.max(n, 0);
+    const pj = profit + (acc - T.accJdg) * 12;
+    const social = employed ? 0 : zus === "start" ? 6 * T.socialPref : zus === "pref" ? 12 * T.socialPref : 12 * T.socialFull;
+    const income = pj - social, minHealth = 12 * T.healthMin;
+    const step = employed ? pos(T.scaleStep - T.salaryYear) : T.scaleStep;
+    const scaleTax = pos(T.scale[0] * Math.min(pos(income), step) + T.scale[1] * pos(income - step) - (employed ? 0 : T.scaleCredit));
+    const hScale = Math.max(T.healthScale * pos(income), minHealth), hFlat = Math.max(T.healthFlat * pos(income), minHealth);
+    const hLump = 12 * T.healthLump.find(t => rev <= t[0])[1];
+    const cit = T.cit * pos(profit), div = T.dividend * pos(profit - cit);
+    const row = (name, hint, base, tax, contrib) => ({ name, hint, base, tax, contrib, total: tax + contrib, left: base - tax - contrib, load: base > 0 ? (tax + contrib) / base : null });
+    return [
+      row("JDG, шкала 12 / 32%", "Налог с дохода, взнос на здоровье 9%", pj, scaleTax, social + hScale),
+      row("JDG, линейный 19%", "Взнос на здоровье 4,9%, частично вычитается", pj, T.flat * pos(income - Math.min(hFlat, T.healthFlatCap)), social + hFlat),
+      row("JDG, ryczałt 3%", "Налог с оборота, расходы не учитываются", pj, T.lump * pos(rev - social - hLump / 2), social + hLump),
+      row("Sp. z o.o., прибыль остаётся в компании", "CIT 9%; несколько участников, взносов нет", profit, cit, 0),
+      row("Sp. z o.o., прибыль выведена дивидендами", "CIT 9% и 19% с дивидендов; несколько участников", profit, cit + div, 0),
+      row("Sp. z o.o. с одним участником, дивиденды", "То же плюс ZUS и здоровье участника", profit, cit + div, (employed ? 0 : 12 * T.socialFull) + 12 * T.healthSolo),
+      row("Sp. z o.o., эстонский CIT, дивиденды", "Около 20% при выплате; пока прибыль в компании — 0", profit, T.estonian * pos(profit), 0),
+    ];
   }
 
   function render() {
@@ -284,20 +378,24 @@ document.addEventListener("DOMContentLoaded", () => {
       return `<div class="param"><label for="p-${d.key}"${d.guess ? ' class="guess"' : ""} title="${esc(d.src)}">${d.label}</label><input class="in${d.key in saved.v ? " changed" : ""}" type="text" inputmode="decimal" id="p-${d.key}" data-param="${d.key}" value="${shown}"><span class="unit">${d.unit || ""}</span></div>`;
     }).join("")}</div>`).join("");
 
-    $("items-body").innerHTML = M.items.map(x => {
+    $("src-filter").innerHTML = ["all", ...ECON.sources].map(v => `<button class="btn" data-src="${v}" aria-pressed="${v === srcFilter}">${v === "all" ? "Все" : v} · ${M.items.filter(x => v === "all" || x.src === v).length}</button>`).join("");
+    $("items-body").innerHTML = M.items.filter(x => srcFilter === "all" || x.src === srcFilter).map(x => {
       const ch = saved.items[x.i] || {};
-      return `<tr${x.on ? "" : ' class="off"'}><td class="name"><b>${esc(x.name)}</b><span>${x.brand} · ${x.src}${x.main ? "" : " · добавка к заказу"}</span></td>
-        <td class="num"><input class="in${"home" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="home" value="${nf(x.home)}" aria-label="Цена дома, ${x.cur}: ${esc(x.name)}"> ${x.cur}<br><span class="muted">${zl(x.homeZl)}</span></td>
+      const first = x.local
+        ? `<input class="in${"buyNet" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="buyNet" value="${nf(x.buyNet, 2)}" aria-label="Опт без VAT, zł: ${esc(x.name)}"> zł<br><span class="muted">опт без VAT</span>`
+        : `<input class="in${"home" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="home" value="${nf(x.home)}" aria-label="Цена дома, ${x.cur}: ${esc(x.name)}"> ${x.cur}<br><span class="muted">${zl(x.homeZl)}</span>`;
+      return `<tr${x.on ? "" : ' class="off"'}><td class="name"><b><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a></b><span>${x.brand} · ${x.src}${x.main ? "" : " · добавка к заказу"}</span></td>
+        <td class="num">${first}</td>
         <td class="num">${zl(x.cost)}</td>
         <td class="num"><input class="in${"pl" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="pl" value="${nf(x.pl)}" aria-label="Цена в Польше, zł: ${esc(x.name)}"> zł</td>
         <td${cls(x.gross)}>${zl(x.gross)}<br><span class="muted">${pct(x.gross / x.rev)}</span></td>
         <td${cls(x.contrib)}>${zl(x.contrib)}<br><span class="muted">${pct(x.contrib / x.rev)}</span></td>
-        <td class="num">${x.need <= 0 ? "не нужна" : pct(x.need)}</td>
+        <td class="num">${x.need === null ? "—" : x.need <= 0 ? "не нужна" : pct(x.need)}</td>
         <td><input type="checkbox" data-item="${x.i}" data-f="on"${x.on ? " checked" : ""} aria-label="В расчёте: ${esc(x.name)}"></td></tr>`;
     }).join("");
 
     M.stages.forEach((st, s) => { $("st-" + s).innerHTML = `${st.title}<br>${st.months}`; });
-    $("sources-body").innerHTML = M.groups.map((g, k) => `<tr><td class="name"><b>${g.name}</b><span>${g.n === null ? "допущения из концепции" : `среднее по ${g.n} поз. в расчёте`}</span></td>
+    $("sources-body").innerHTML = M.groups.map((g, k) => `<tr><td class="name"><b>${g.name}</b><span>среднее по ${g.n} поз. в расчёте${g.b !== 1 ? `, ${nf(g.b, 1)} товара в заказе` : ""}</span></td>
       <td class="num">${zl(g.aov)}</td><td class="num">${zl(g.cost)}</td><td${cls(g.contrib)}>${zl(g.contrib)}</td><td class="num">${g.aov ? pct(g.contrib / g.aov) : "—"}</td>
       ${M.stages.map((st, s) => `<td class="num${s ? "" : " sep"}"><input class="in${`${s}-${k}` in saved.mix ? " changed" : ""}" type="text" inputmode="decimal" data-mix="${s}-${k}" value="${nf(st.mix[k] * 100)}" aria-label="Доля заказов, %: ${g.name}, ${st.title}"> %</td>`).join("")}</tr>`).join("") +
       [["Средний чек", st => zl(st.aov)], ["Вклад с заказа", st => zl(st.contrib)], ["Сумма долей", st => `<span${Math.abs(st.total - 1) > .001 ? ' class="neg"' : ""}>${pct(st.total)}</span>`]]
@@ -319,7 +417,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const x = c.month ? base.months[c.month - 1] : null;
       return `<tr><td>${c.title}</td>${x ? `<td class="num">${nf(x.orders)}</td><td class="num">${zl(x.rev)}</td><td class="num">${zl(x.contrib)}</td><td${cls(x.res)}>${zl(x.res)}</td><td class="num">${pct(x.repeat)}</td><td class="num">${nf(x.fresh)}</td>` : `<td class="num">—</td>`.repeat(6)}<td>${c.partners}</td></tr>`;
     }).join("");
-    $("market-body").innerHTML = ECON.market.map(r => `<tr><td>${r.what}</td><td class="num">${r.price}</td><td>${r.note}</td></tr>`).join("");
+    $("market-body").innerHTML = ECON.market.map(r => `<tr><td>${r.what}</td><td class="num">${r.price}</td><td>${r.note}<span class="links">${r.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</span></td></tr>`).join("");
+
+    // taxes
+    const T = ECON.tax;
+    $("tax-scenarios").innerHTML = M.scenarios.map(s => `<button class="btn" data-sc="${s.id}" aria-pressed="${s.id === scenario}">${s.title}</button>`).join("");
+    $("tax-employed").checked = employed; $("tax-zus").value = zus; $("tax-zus").disabled = employed;
+    $("vat-body").innerHTML = [[false, "Без VAT (освобождение)"], [true, "Плательщик VAT"]].map(([mode, label]) => {
+      const V = model(mode), sc = V.scenarios.find(s => s.id === scenario);
+      return `<tr><td class="name"><b>${label}</b><span>${mode === M.payer ? "выбран в калькуляторе" : ""}</span></td><td class="num">${zl(V.stages[0].contrib)}</td><td class="num">${V.even[0] || "нет"}</td><td class="num">${zl(sc.rev)}</td><td${cls(sc.res)}>${zl(sc.res)}</td></tr>`;
+    }).join("");
+    const over = !M.payer && cur.rev > T.vatLimit;
+    $("vat-warn").hidden = !over;
+    if (over) { const m = cur.months.findIndex((x, k) => cur.months.slice(0, k + 1).reduce((a, y) => a + y.rev, 0) > T.vatLimit); $("vat-warn").innerHTML = `<strong>Лимит освобождения.</strong> В сценарии «${cur.title}» продажи за год — ${zl(cur.rev)}, это выше лимита ${zl(T.vatLimit)}: освобождение закончится примерно на ${m + 1}-м месяце, дальше расчёт без VAT завышает результат.`; }
+    const taxRow = r => `<tr><td class="name"><b>${r.name}</b><span>${r.hint}</span></td><td${cls(r.base)}>${zl(r.base)}</td><td class="num">${zl(r.tax)}</td><td class="num">${zl(r.contrib)}</td><td class="num">${zl(r.total)}</td><td${cls(r.left)}>${zl(r.left)}</td><td class="num">${r.load === null ? "—" : pct(r.load)}</td></tr>`;
+    $("tax-body").innerHTML = taxes(cur.res, cur.rev, M.p.acc).map(taxRow).join("");
+    const byLevel = T.levels.map(l => taxes(l, l / T.profitShare, M.p.acc));
+    $("lvl-head").innerHTML = `<tr><th>Форма</th>${T.levels.map(l => `<th class="num">Прибыль ${zl(l)}</th>`).join("")}</tr>`;
+    $("lvl-body").innerHTML = byLevel[0].map((r, k) => `<tr><td class="name"><b>${r.name}</b></td>${byLevel.map(rows => `<td class="num">${zl(rows[k].total)}<br><span class="muted">${rows[k].load === null ? "—" : pct(rows[k].load)}</span></td>`).join("")}</tr>`).join("");
+    $("lvl-note").textContent = `Прибыль — результат компании до налога на доход и взносов владельца. Для ryczałt оборот посчитан так, будто прибыль составляет ${pct(T.profitShare)} от него.`;
+    $("tax-params").innerHTML = T.params.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
+    $("tax-sources").innerHTML = T.sources.map(r => `<li><a href="${esc(r[1])}" target="_blank" rel="noopener">${r[0]}</a></li>`).join("");
   }
 
   // a field keeps the shared value until it is edited; an edit equal to the shared value clears the override
@@ -329,17 +447,22 @@ document.addEventListener("DOMContentLoaded", () => {
     if (t.dataset.param) { const d = defs.find(x => x.key === t.dataset.param); if (n !== null) put(saved.v, d.key, d.unit === "%" ? n / 100 : n, d.value); }
     else if (t.dataset.item) {
       const i = +t.dataset.item, f = t.dataset.f, bag = saved.items[i] || {};
-      if (f === "on") put(bag, f, t.checked ? 1 : 0, ECON.items[i].on); else if (n !== null && n > 0) put(bag, f, n, ECON.items[i][f]);
+      if (f === "on") put(bag, f, t.checked ? 1 : 0, ECON.items[i].on); else if (n !== null && n > 0) put(bag, f, n, f === "buyNet" ? undefined : ECON.items[i][f]);
       if (Object.keys(bag).length) saved.items[i] = bag; else delete saved.items[i];
     }
     else if (t.dataset.mix) { const [s, g] = t.dataset.mix.split("-"); if (n !== null) put(saved.mix, t.dataset.mix, n / 100, ECON.stages[s].mix[g]); }
     else if (t.dataset.order) { const [id, m] = t.dataset.order.split("-"); if (n !== null && n >= 0) put(saved.orders, t.dataset.order, Math.round(n), ECON.scenarios.find(s => s.id === id).orders[m]); }
+    else if (t.id === "tax-employed") { employed = t.checked; render(); return; }
+    else if (t.id === "tax-zus") { zus = t.value; render(); return; }
     else return;
     store(); render();
   });
+  document.addEventListener("click", e => {
+    const sc = e.target.closest("[data-sc]"), src = e.target.closest("[data-src]");
+    if (sc) { scenario = sc.dataset.sc; render(); } else if (src) { srcFilter = src.dataset.src; render(); }
+  });
   $("vat-off").addEventListener("click", () => { saved.vatPayer = ECON.vatPayer === false ? null : false; store(); render(); });
   $("vat-on").addEventListener("click", () => { saved.vatPayer = ECON.vatPayer === true ? null : true; store(); render(); });
-  $("scenarios").addEventListener("click", e => { const b = e.target.closest("[data-sc]"); if (b) { scenario = b.dataset.sc; render(); } });
   $("reset").addEventListener("click", () => { saved = fresh(); store(); render(); });
   render();
   // the tables are built after load, so a link to a section has to be followed again
