@@ -3,8 +3,8 @@
 const SITE = [
   { title: "Проект", pages: [
     { id: "home", href: "index.html", title: "Главная" },
-    { id: "concept", href: "concept.html", title: "Концепция", version: "06", date: "12.10.2026",
-      desc: "Позиционирование, аудитория, продукт, партнёрская сеть, контент, Корея, экономика, юрлицо и чекпоинты." },
+    { id: "concept", href: "concept.html", title: "Концепция", version: "07", date: "13.10.2026",
+      desc: "Позиционирование, аудитория, продукт, партнёрская сеть, контент, Корея, экономика, форма бизнеса и чекпоинты." },
   ] },
   { title: "Работа", pages: [
     { id: "suppliers", href: "suppliers.html", title: "Поставщики", version: "04", date: "13.10.2026",
