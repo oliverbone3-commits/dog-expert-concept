@@ -10,74 +10,49 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600&family=Onest:wght@400;500;650&family=JetBrains+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="styles.css">
+<script src="site.js" defer></script>
 <style>
-  .controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 49px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); padding-block: 8px; display: grid; gap: 6px; }
-  .row { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
-  .filters { display: flex; flex-wrap: wrap; gap: 4px; }
-  .btn { font: 500 12.5px/1 var(--font-body); padding: 6px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-  .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .btn.danger { color: var(--signal); }
-  .progress { flex: 1 1 160px; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font: 500 12px var(--font-mono); color: var(--muted); white-space: nowrap; }
-  .meter { flex: 0 1 140px; min-width: 40px; height: 5px; border-radius: 99px; background: var(--line); overflow: hidden; }
+  .filters { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+  .progress { flex: 1 1 160px; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 8px; font: 500 var(--fs-xs) var(--font-mono); color: var(--muted); white-space: nowrap; }
+  .meter { flex: 0 1 140px; min-width: 40px; height: 5px; border-radius: var(--r-pill); background: var(--line); overflow: hidden; }
   .meter > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
-  @media (max-width: 640px) { .filters { flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } .filters .btn { white-space: nowrap; } }
-  .menu { position: relative; }
-  .menu > summary { list-style: none; user-select: none; }
-  .menu > summary::-webkit-details-marker { display: none; }
-  .menu-list { position: absolute; right: 0; top: calc(100% + 6px); z-index: 6; display: grid; gap: 4px; padding: 6px; min-width: 190px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgb(0 0 0 / .18); }
-  .menu-list .btn { text-align: left; border-color: transparent; padding: 8px 9px; }
-  .menu-list .btn:hover { background: var(--paper); }
-  .stage-nav { display: flex; gap: 4px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
-  .stage-nav a { font: 500 11.5px/1 var(--font-mono); padding: 5px 7px; border-radius: 6px; border: 1px solid var(--line); color: var(--muted); text-decoration: none; white-space: nowrap; background: var(--surface); }
-  .stage-nav a.done { color: var(--accent); border-color: var(--accent); }
-  .stage { padding-block: 32px; border-top: 1px solid var(--line); }
+  @media (max-width: 640px) { .filters { flex: 1 1 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; } }
+  /* on a phone the panel scrolls away with the page */
+  @media (max-width: 760px) { .controls { position: static; } .stage { scroll-margin-top: calc(var(--bar-h) + var(--sp-3)); } }
+  .stage { padding-block: var(--sp-6); border-top: 1px solid var(--line); scroll-margin-top: calc(var(--bar-h) + 120px); }
   .stage-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
   .stage-head h2 { font-size: clamp(20px, 2.8vw, 26px); }
-  .stage-count { font: 500 12px var(--font-mono); color: var(--muted); }
-  .kind { font: 500 11px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .06em; padding: 4px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); }
-  .kind.services { background: var(--signal-soft); color: var(--signal); }
-  .kind.growth { background: var(--line); color: var(--muted); }
+  .stage-count { font: 500 var(--fs-xs) var(--font-mono); color: var(--muted); }
   .items { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
-  .item { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; margin: 0; }
-  .item input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--accent); }
-  .item label { min-width: 0; cursor: pointer; }
+  /* the label fills the row, so the whole row toggles the checkbox */
+  .item { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: 0 var(--sp-3); display: grid; grid-template-columns: auto 1fr auto; gap: 0 10px; margin: 0; }
+  .item input[type=checkbox] { width: 22px; height: 22px; margin: 9px 0 0; accent-color: var(--accent); }
+  .item label { min-width: 0; cursor: pointer; padding-block: 10px; font-size: var(--fs-work); }
   .item.checked label { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
-  .item textarea { grid-column: 2; width: 100%; min-height: 34px; resize: vertical; font: 13px/1.4 var(--font-body); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
-  .done-when { margin-top: 12px; font-size: 14px; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); color: var(--ink); }
+  .item textarea { grid-column: 2 / -1; margin-bottom: 10px; background: var(--paper); }
+  .item .btn { align-self: start; margin-top: 4px; }
+  .done-when { margin-top: 12px; font-size: var(--fs-work); padding: 10px 12px; border-radius: var(--r-md); background: var(--accent-soft); color: var(--ink); }
   .done-when b { color: var(--accent); }
-  .msg { font: 12px var(--font-body); color: var(--muted); overflow: hidden; text-overflow: ellipsis; }
-  @media print { .controls, .item textarea:placeholder-shown { display: none !important; } .item { break-inside: avoid; } }
+  .msg { overflow: hidden; text-overflow: ellipsis; }
+  @media print { .item textarea:placeholder-shown { display: none !important; } .item { break-inside: avoid; } }
 </style>
 </head>
-<body>
-
-<header class="bar">
-  <div class="wrap">
-    <a class="brand" href="index.html">рядом с собакой</a>
-    <nav aria-label="Навигация">
-      <a href="index.html">← Концепция</a>
-      <a href="#how">Как пользоваться</a>
-      <a href="#list">Этапы</a>
-      <a href="#sources">Источники</a>
-      <a href="suppliers.html">Поставщики ↗</a>
-      <a href="import.html">Импорт ↗</a>
-    </nav>
-  </div>
-</header>
+<body data-page="checklist">
 
 <main class="wrap">
-  <div class="hero" style="padding-block:48px 24px">
-    <div class="eyebrow">Отдельный рабочий документ · 12.10.2026 · версия 02</div>
+  <div class="hero work">
+    <div class="eyebrow" data-meta>Рабочий документ</div>
     <h1>Чек-лист запуска</h1>
-    <p class="lead">От юрлица и первой закупки до партнёров-основателей, контента и первых 90 дней. Обновлён по итогам обсуждения концепции.</p>
   </div>
 
-  <section id="how" style="padding-block:24px">
+  <details class="how" id="how">
+    <summary>Как пользоваться</summary>
     <div class="col small">
-      <p>Сначала закрываем этапы с меткой <span class="kind">запуск</span>. Метка <span class="kind services">услуги</span> нужна только перед продажей услуг и курсов, <span class="kind growth">рост</span> — после проверки базового магазина.</p>
+      <p>От юрлица и первой закупки до партнёров-основателей, контента и первых 90 дней. Обновлён по итогам обсуждения концепции.</p>
+      <p>Сначала закрываем этапы с меткой <span class="tag">запуск</span>. Метка <span class="tag new">услуги</span> нужна только перед продажей услуг и курсов, <span class="tag plain">рост</span> — после проверки базового магазина.</p>
       <p class="muted">Отметки и заметки сохраняются только в этом браузере. Чтобы перенести прогресс на другое устройство или показать команде — скачайте его файлом и загрузите там.</p>
     </div>
-  </section>
+  </details>
 
   <div class="controls" id="controls">
     <div class="row">
@@ -100,12 +75,11 @@
         </div>
       </details>
     </div>
-    <nav class="stage-nav" id="stageNav" aria-label="Этапы"></nav>
   </div>
 
   <div id="list"></div>
 
-  <section id="sources">
+  <section id="sources" data-nav="Источники">
     <div class="sec-head"><div class="eyebrow">Источники для проверки</div><h2>Проверено 12.10.2026</h2></div>
     <ol class="sources col">
       <li><a href="https://biznes.gov.pl/pl/portal/00806" target="_blank" rel="noopener">Biznes.gov.pl — бизнес иностранца в Польше</a></li>
@@ -118,11 +92,6 @@
     <p class="small muted col">Источники не подтверждают соответствие требованиям. Применимость проверить с бухгалтером или профильным специалистом.</p>
   </section>
 </main>
-
-<footer class="wrap">
-  <span>Рядом с собакой · чек-лист запуска · версия 02</span>
-  <a href="index.html">Вернуться к концепции</a>
-</footer>
 
 <script>
 const STAGES = [
@@ -274,35 +243,38 @@ function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || "null"
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 function idOf(s, i) { return s.id + "-" + i; }
 const kindLabel = { launch: "запуск", services: "услуги", growth: "рост" };
+const kindTag = { launch: "tag", services: "tag new", growth: "tag plain" };
 
 function render() {
-  const list = document.getElementById("list"), nav = document.getElementById("stageNav");
-  list.innerHTML = ""; nav.innerHTML = "";
+  const list = document.getElementById("list");
+  list.innerHTML = "";
   let total = 0, done = 0;
   STAGES.forEach((s, si) => {
     const ids = s.items.map((_, i) => idOf(s, i));
     const sd = ids.filter(id => state.checked[id]).length;
     total += ids.length; done += sd;
-    const a = document.createElement("a");
-    a.href = "#st-" + s.id; a.textContent = String(si + 1).padStart(2, "0") + " " + s.title;
-    if (sd === ids.length) a.className = "done";
-    nav.appendChild(a);
     if (filter !== "all" && s.kind !== filter) return;
     const visible = s.items.map((t, i) => ({ t, id: ids[i] })).filter(x => !onlyOpen || !state.checked[x.id]);
     if (!visible.length) return;
     const sec = document.createElement("section");
     sec.className = "stage"; sec.id = "st-" + s.id;
-    sec.innerHTML = `<div class="stage-head"><h2>${String(si + 1).padStart(2, "0")} · ${s.title}</h2><span class="row"><span class="kind ${s.kind}">${kindLabel[s.kind]}</span><span class="stage-count">${sd} / ${ids.length}</span></span></div>`;
+    sec.dataset.nav = String(si + 1).padStart(2, "0") + " " + s.title;
+    if (sd === ids.length) sec.dataset.navDone = "1";
+    sec.innerHTML = `<div class="stage-head"><h2>${String(si + 1).padStart(2, "0")} · ${s.title}</h2><span class="row"><span class="${kindTag[s.kind]}">${kindLabel[s.kind]}</span><span class="stage-count">${sd} / ${ids.length}</span></span></div>`;
     const ul = document.createElement("ul"); ul.className = "items";
     visible.forEach(({ t, id }) => {
       const li = document.createElement("li");
       li.className = "item" + (state.checked[id] ? " checked" : "");
       const cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "cb-" + id; cb.checked = !!state.checked[id];
       const lb = document.createElement("label"); lb.htmlFor = cb.id; lb.textContent = t;
-      const ta = document.createElement("textarea"); ta.id = "nt-" + id; ta.placeholder = "Заметка"; ta.value = state.notes[id] || ""; ta.rows = 1;
+      const ta = document.createElement("textarea"); ta.id = "nt-" + id; ta.placeholder = "Заметка"; ta.value = state.notes[id] || ""; ta.rows = 1; ta.hidden = !state.notes[id];
+      // the note field opens on request, or stays open once it has text
+      const nb = document.createElement("button"); nb.type = "button"; nb.className = "btn quiet no-print"; nb.textContent = "Заметка";
+      nb.setAttribute("aria-controls", ta.id); nb.setAttribute("aria-expanded", String(!ta.hidden));
+      nb.addEventListener("click", () => { ta.hidden = !ta.hidden; nb.setAttribute("aria-expanded", String(!ta.hidden)); if (!ta.hidden) ta.focus(); });
       cb.addEventListener("change", () => { if (cb.checked) state.checked[id] = true; else delete state.checked[id]; save(); render(); });
       ta.addEventListener("input", () => { if (ta.value) state.notes[id] = ta.value; else delete state.notes[id]; save(); });
-      li.append(cb, lb, ta); ul.appendChild(li);
+      li.append(cb, lb, nb, ta); ul.appendChild(li);
     });
     sec.appendChild(ul);
     const dw = document.createElement("div"); dw.className = "done-when"; dw.innerHTML = "<b>Готово, когда:</b> " + s.done;
@@ -313,6 +285,7 @@ function render() {
   document.getElementById("pct").textContent = pct + "%";
   document.getElementById("cnt").textContent = done + " / " + total;
   document.getElementById("bar").style.width = pct + "%";
+  if (window.site) site.toc();
 }
 
 document.addEventListener("click", e => { const m = document.getElementById("menu"); if (m.open && !m.contains(e.target)) m.open = false; });

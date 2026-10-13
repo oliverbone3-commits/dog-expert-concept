@@ -10,29 +10,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600&family=Onest:wght@400;500;650&family=JetBrains+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="styles.css">
+<script src="site.js" defer></script>
 </head>
-<body>
-
-<header class="bar">
-  <div class="wrap">
-    <a class="brand" href="index.html">рядом с собакой</a>
-    <nav aria-label="Навигация">
-      <a href="index.html">← Концепция</a>
-      <a href="#border">На границе</a>
-      <a href="#who">Кто импортёр</a>
-      <a href="#importer">Обязанности</a>
-      <a href="#vat">НДС</a>
-      <a href="#risks">Риски</a>
-      <a href="#ask">Вопросы</a>
-      <a href="suppliers.html">Поставщики ↗</a>
-      <a href="checklist.html">Чек-лист ↗</a>
-    </nav>
-  </div>
-</header>
+<body data-page="import">
 
 <main class="wrap">
-  <div class="hero" style="padding-block:48px 24px">
-    <div class="eyebrow">Отдельный рабочий документ · 12.10.2026 · версия 01</div>
+  <div class="hero compact">
+    <div class="eyebrow" data-meta>Справка</div>
     <h1>Импорт</h1>
     <p class="lead">Что мы платим при ввозе товара в Польшу, какие обязанности появляются у импортёра и у магазина и чем отличается собственный импорт от импорта через Arena Auto.</p>
     <div class="chips">
@@ -44,7 +28,7 @@
     <p class="status-note">Ориентир для разговора с таможенным агентом и бухгалтером, не консультация. Ставки и код товара официальной базой TARIC не подтверждены.</p>
   </div>
 
-  <section id="border">
+  <section id="border" data-nav="На границе">
     <div class="sec-head">
       <div class="eyebrow">На границе</div>
       <h2>Пошлина маленькая. Главный платёж — НДС.</h2>
@@ -89,7 +73,7 @@
     <p class="note verify"><strong>Проверить у агента:</strong> код и ставку для каждой позиции. У пакетов для уборки код другой и ставка выше (по памяти около 6,5%, из Украины 0%).</p>
   </section>
 
-  <section id="who">
+  <section id="who" data-nav="Кто импортёр">
     <div class="sec-head">
       <div class="eyebrow">Кто импортёр</div>
       <h2>Через Arena Auto или сами.</h2>
@@ -101,7 +85,7 @@
       <table>
         <thead><tr><th></th><th>Через Arena Auto</th><th>Сами</th></tr></thead>
         <tbody>
-          <tr><td>Статус</td><td><span class="tag" style="margin:0">решено</span></td><td><span class="tag new" style="margin:0">на обсуждение</span></td></tr>
+          <tr><td>Статус</td><td><span class="tag">решено</span></td><td><span class="tag new">на обсуждение</span></td></tr>
           <tr><td>Таможня</td><td>EORI и опыт уже есть</td><td>Нужны EORI и договор с таможенным агентом</td></tr>
           <tr><td>Кто указан на товаре</td><td>Arena Auto как импортёр</td><td>Наш магазин</td></tr>
           <tr><td>Ответственность за товар</td><td>На Arena Auto</td><td>На sp. z o.o., где Даша prezes</td></tr>
@@ -114,7 +98,7 @@
     <p class="note">Корейские поставщики просят данные компании. При собственном импорте мы показываем им одну фирму, а не две.</p>
   </section>
 
-  <section id="importer">
+  <section id="importer" data-nav="Обязанности">
     <div class="sec-head">
       <div class="eyebrow">Обязанности</div>
       <h2>Что ложится на импортёра и на магазин.</h2>
@@ -152,7 +136,7 @@
     <p class="note verify"><strong>Надзор.</strong> С 3 января 2026 года в Польше действует закон о надзоре за безопасностью товаров: UOKiK и торговая инспекция могут штрафовать, по одному источнику — до 1 млн zł для импортёра. <strong>Не подтверждено:</strong> попадает ли одежда для собак под ограничение PFHxA и как запрет экологических заявлений внедрён в Польше.</p>
   </section>
 
-  <section id="vat">
+  <section id="vat" data-nav="НДС">
     <div class="sec-head">
       <div class="eyebrow">НДС</div>
       <h2>Плательщик или освобождение.</h2>
@@ -175,7 +159,7 @@
     <p class="note">Экономика в концепции посчитана с НДС 23%. При освобождении теряется вычет по остальным расходам, и льгота заканчивается на 240 000 zł продаж. Режим выбираем с бухгалтером.</p>
   </section>
 
-  <section id="risks">
+  <section id="risks" data-nav="Риски">
     <div class="sec-head">
       <div class="eyebrow">Риски</div>
       <h2>Что держим в голове.</h2>
@@ -194,7 +178,7 @@
     </div>
   </section>
 
-  <section id="ask">
+  <section id="ask" data-nav="Вопросы">
     <div class="sec-head">
       <div class="eyebrow">Вопросы</div>
       <h2>Что спросить до первой партии.</h2>
@@ -229,10 +213,10 @@
         </ol>
       </div>
     </div>
-    <p style="margin-top:20px"><a class="cta" href="suppliers.html">Открыть список поставщиков →</a></p>
+    <p class="mt"><a class="cta" href="suppliers.html">Открыть список поставщиков →</a></p>
   </section>
 
-  <section id="sources">
+  <section id="sources" data-nav="Источники">
     <div class="sec-head"><div class="eyebrow">Источники</div><h2>Проверено 12.10.2026</h2></div>
     <ol class="sources col">
       <li><a href="https://celna24.pl/customs-tariff/4201" target="_blank" rel="noopener">celna24.pl — код 4201</a></li>
@@ -250,11 +234,6 @@
     <p class="small muted col">Источники подтверждают существование правил, но не их применимость к нашему товару. Сравнение схем импорта и развилка по НДС написаны без отдельной проверки источников — подтвердить у бухгалтера и таможенного агента.</p>
   </section>
 </main>
-
-<footer class="wrap">
-  <span>Рядом с собакой · импорт · версия 01 · 12.10.2026</span>
-  <a href="index.html">Вернуться к концепции</a>
-</footer>
 
 </body>
 </html>
