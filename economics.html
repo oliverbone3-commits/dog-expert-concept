@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=06" defer></script>
+<script src="economics-data.js?v=07" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -262,6 +262,96 @@
         <div class="table-wrap"><table><tbody id="tax-params"></tbody></table></div>
         <p class="legend">Упрощения: шкала посчитана без совместной декларации и льгот; у владельца с работой по найму необлагаемая сумма считается использованной зарплатой; вычет половины взноса на здоровье учтён только для ryczałt; у эстонского CIT есть условия по найму сотрудников, источники по ним расходятся.</p>
         <ul class="sources small" id="tax-sources"></ul>
+      </div>
+    </details>
+  </section>
+
+  <section id="setup" data-nav="Форма и учёт">
+    <div class="sec-head">
+      <div class="eyebrow">Форма и учёт</div>
+      <h2>Sp. z o.o. без взносов и без сотрудников.</h2>
+    </div>
+    <div class="col"><p id="setup-lead"></p></div>
+    <div class="grid" id="setup-cards"></div>
+    <p class="note verify"><strong>Вывод Claude от 13.10.2026, командой не обсуждался.</strong> Цены бухгалтеров и правила проверены поиском; число документов — оценка. Перед регистрацией подтвердить у бухгалтера.</p>
+    <details class="how mt">
+      <summary>Sp. z o.o. или JDG в первый год</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>За первый год</th><th class="num">Sp. z o.o., Даша и Настя</th><th class="num">JDG на Дашу</th></tr></thead>
+            <tbody id="setup-forms"></tbody>
+          </table>
+        </div>
+        <p class="legend" id="setup-forms-note"></p>
+        <h3 class="sub mt">Когда взносы всё же появятся</h3>
+        <ul class="small" id="setup-zus"></ul>
+      </div>
+    </details>
+    <details class="how">
+      <summary>Цены бухгалтеров</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Кто</th><th>JDG</th><th>Sp. z o.o.</th></tr></thead>
+            <tbody id="setup-offers"></tbody>
+          </table>
+        </div>
+        <p class="legend" id="setup-offers-note"></p>
+      </div>
+    </details>
+    <details class="how">
+      <summary>Сколько будет документов и как их уменьшить</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Откуда документы</th><th class="num">В месяц без контроля</th><th class="num">Если следить</th></tr></thead>
+            <tbody id="setup-docs"></tbody>
+          </table>
+        </div>
+        <p class="legend">Бухгалтер берёт деньги за расходные документы. Продажи частным покупателям на цену почти не влияют: фактура — только по просьбе, остальное идёт одной сводкой за месяц.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Как ввозим украинский товар</th><th class="num">Документов в месяц</th><th class="num">Бухгалтер в месяц, нетто</th></tr></thead>
+            <tbody id="setup-import"></tbody>
+          </table>
+        </div>
+        <p class="legend" id="setup-import-note"></p>
+        <h3 class="sub mt">Как уменьшить</h3>
+        <ul class="small" id="setup-less"></ul>
+      </div>
+    </details>
+    <details class="how">
+      <summary>Что стоит одна посылка из Украины</summary>
+      <div>
+        <div class="table-wrap"><table><tbody id="setup-parcel"></tbody></table></div>
+        <p class="legend">Мелкие частые посылки съедают маржу. Пошлина, обязанности импортёра и сравнение с Arena Auto — см. <a href="import.html">«Импорт»</a>.</p>
+      </div>
+    </details>
+    <details class="how">
+      <summary>VAT простыми словами</summary>
+      <div class="col">
+        <ul class="small" id="setup-vat"></ul>
+        <p class="small" id="setup-vat-model"></p>
+        <h3 class="sub mt">Когда переходить на VAT</h3>
+        <ul class="small" id="setup-vat-when"></ul>
+      </div>
+    </details>
+    <details class="how">
+      <summary>Касса, иностранные сервисы, свой импорт</summary>
+      <div>
+        <div class="table-wrap"><table><tbody id="setup-rules"></tbody></table></div>
+      </div>
+    </details>
+    <details class="how">
+      <summary>Как стартуют похожие магазины</summary>
+      <div class="col"><ul class="small" id="setup-peers"></ul></div>
+    </details>
+    <details class="how">
+      <summary>Что спросить у бухгалтера и источники</summary>
+      <div class="col">
+        <ul class="small" id="setup-ask"></ul>
+        <ul class="sources small" id="setup-sources"></ul>
       </div>
     </details>
   </section>
@@ -546,6 +636,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }).join("");
     $("tax-params").innerHTML = T.params.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
     $("tax-sources").innerHTML = T.sources.map(r => `<li><a href="${esc(r[1])}" target="_blank" rel="noopener">${r[0]}</a></li>`).join("");
+
+    // legal form, bookkeeping and documents
+    const S = ECON.setup, noVat = M.payer ? other : M, withVat = M.payer ? M : other;
+    const lis = list => list.map(t => `<li>${t}</li>`).join("");
+    const trs = (list, num = true) => list.map(r => `<tr>${r.map((c, k) => `<td${k && num ? ' class="num"' : ""}>${c}</td>`).join("")}</tr>`).join("");
+    $("setup-lead").textContent = S.lead;
+    $("setup-cards").innerHTML = S.cards.map(c => kpi(c[0], c[1], c[2])).join("");
+    $("setup-forms").innerHTML = trs(S.forms); $("setup-forms-note").textContent = S.formsNote; $("setup-zus").innerHTML = lis(S.zus);
+    $("setup-offers").innerHTML = S.offers.map(o => `<tr><td><a href="${esc(o.url)}" target="_blank" rel="noopener">${o.who}</a></td><td>${o.jdg}</td><td>${o.sp}</td></tr>`).join("");
+    $("setup-offers-note").textContent = S.offersNote;
+    $("setup-docs").innerHTML = trs(S.docs); $("setup-import").innerHTML = trs(S.importDocs); $("setup-import-note").textContent = S.importNote;
+    $("setup-less").innerHTML = lis(S.less); $("setup-parcel").innerHTML = trs(S.parcel, false); $("setup-rules").innerHTML = trs(S.rules, false);
+    $("setup-vat").innerHTML = lis(S.vat); $("setup-vat-when").innerHTML = lis(S.vatWhen);
+    $("setup-vat-model").textContent = `По нашей модели без VAT с заказа остаётся ${zl(noVat.stages[0].contrib)}, плательщиком — ${zl(withVat.stages[0].contrib)}.`;
+    $("setup-peers").innerHTML = lis(S.peers); $("setup-ask").innerHTML = lis(S.ask);
+    $("setup-sources").innerHTML = S.sources.map(r => `<li><a href="${esc(r[1])}" target="_blank" rel="noopener">${r[0]}</a></li>`).join("");
 
     // all inputs
     $("params").innerHTML = ECON.inputs.map(g => `<div class="card"><h3>${g.group}</h3>${g.items.map(d => {
