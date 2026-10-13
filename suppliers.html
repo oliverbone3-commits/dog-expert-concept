@@ -12,19 +12,34 @@
 <link rel="stylesheet" href="styles.css">
 <style>
   .controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 49px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); padding-block: 10px; display: grid; gap: 8px; }
-  .fields { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .fields { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); padding-top: 4px; }
+  .fields[hidden] { display: none; }
   .field { display: grid; gap: 3px; min-width: 0; }
   .field > span { font: 500 11px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-  .field select, .field input { width: 100%; font: 14px/1.2 var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; }
-  .row { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; }
-  .btn { font: 500 12.5px/1 var(--font-body); padding: 7px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; text-decoration: none; }
-  .btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .count { flex: 1 1 120px; font: 500 12px var(--font-mono); color: var(--muted); }
-  .list { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); padding-block: 20px 8px; }
-  .sup { display: grid; gap: 10px; align-content: start; min-width: 0; }
-  .sup h3 { margin: 0; font-size: 18px; }
-  .sup p { margin: 0; font-size: 14.5px; }
-  .sup-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; justify-content: space-between; }
+  .field select, .search { width: 100%; font: 14px/1.2 var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; }
+  .search { flex: 1 1 180px; min-width: 0; }
+  .field.end { align-content: end; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .btn { font: 500 12.5px/1 var(--font-body); padding: 8px 9px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; text-decoration: none; }
+  .btn[aria-pressed="true"], .btn[aria-expanded="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .btn.on { border-color: var(--accent); color: var(--accent); }
+  .count { font: 500 12px var(--font-mono); color: var(--muted); margin-right: auto; }
+  .list { display: grid; gap: 8px; padding-block: 16px 8px; }
+  .sup { padding: 0; min-width: 0; }
+  .sup > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: minmax(170px, 1fr) minmax(0, 2.2fr) minmax(0, 1.3fr) auto; gap: 6px 20px; align-items: start; padding: 14px 18px; }
+  .sup > summary::-webkit-details-marker { display: none; }
+  .sup > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 10px; }
+  .sup h3 { margin: 0 0 2px; font-size: 17px; }
+  .sup p { margin: 0; font-size: 14px; }
+  .sum-main { display: grid; gap: 6px; min-width: 0; }
+  .sum-side { font-size: 13px; color: var(--muted); min-width: 0; }
+  .sum-side b { color: var(--ink); font-weight: 500; }
+  .chev { font: 500 12px var(--font-mono); color: var(--muted); white-space: nowrap; padding-top: 2px; }
+  .chev::after { content: "Подробнее ▾"; }
+  .sup[open] .chev::after { content: "Свернуть ▴"; }
+  .sup-body { display: grid; gap: 16px 28px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); padding: 16px 18px 18px; border-top: 1px solid var(--line); }
+  .sup-body > div { display: grid; gap: 12px; align-content: start; min-width: 0; }
+  @media (max-width: 760px) { .sup > summary { grid-template-columns: 1fr auto; } .sum-main, .sum-side { grid-column: 1 / -1; } .sup-body { grid-template-columns: 1fr; } }
   .place { font: 500 12px var(--font-mono); color: var(--muted); }
   .tags { display: flex; flex-wrap: wrap; gap: 5px; }
   .tags .tag { margin: 0; }
@@ -41,11 +56,17 @@
   .review b { color: var(--accent); }
   .top { margin: 4px 0 0; padding-left: 18px; font-size: 13.5px; }
   .top li { margin-bottom: 5px; }
+  .menu { position: relative; }
+  .menu > summary { list-style: none; user-select: none; }
+  .menu > summary::-webkit-details-marker { display: none; }
+  .menu-list { position: absolute; right: 0; top: calc(100% + 6px); z-index: 6; display: grid; gap: 4px; padding: 6px; min-width: 210px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 8px 24px rgb(0 0 0 / .18); }
+  .menu-list .btn { text-align: left; border-color: transparent; padding: 8px 9px; }
+  .menu-list .btn:hover { background: var(--paper); }
   .empty { padding-block: 40px; color: var(--muted); }
   #list [hidden] { display: none; }
-  #tableView table { min-width: 980px; font-size: 13.5px; }
+  #tableView table { min-width: 1240px; font-size: 13.5px; }
+  #tableView .top { margin: 0; min-width: 260px; }
   #tableView td a { display: inline-block; margin-right: 8px; white-space: nowrap; }
-  @media (max-width: 640px) { .controls { position: static; } }
   @media print { .controls { display: none !important; } .sup { break-inside: avoid; } }
 </style>
 </head>
@@ -81,8 +102,20 @@
   </section>
 
   <div class="controls" id="controls">
-    <div class="fields">
-      <label class="field"><span>Поиск</span><input type="search" id="q" placeholder="Название, товар, город"></label>
+    <div class="row">
+      <input class="search" type="search" id="q" placeholder="Поиск: название, товар, город" aria-label="Поиск">
+      <button class="btn" id="toggle-filters" aria-expanded="false" aria-controls="filters">Фильтры</button>
+      <button class="btn" id="view-cards" aria-pressed="true">Карточки</button>
+      <button class="btn" id="view-table" aria-pressed="false">Таблица</button>
+      <details class="menu no-print" id="menu">
+        <summary class="btn">Скачать ▾</summary>
+        <div class="menu-list">
+          <button class="btn" id="csv">CSV — с учётом фильтров</button>
+          <a class="btn" href="suppliers.xlsx" download>Excel — весь список</a>
+        </div>
+      </details>
+    </div>
+    <div class="fields" id="filters" hidden>
       <label class="field"><span>Страна</span><select id="f-country"></select></label>
       <label class="field"><span>Тип товара</span><select id="f-types"></select></label>
       <label class="field"><span>Приоритет</span><select id="f-priority"></select></label>
@@ -90,14 +123,11 @@
       <label class="field"><span>Ценовой сегмент</span><select id="f-segment"></select></label>
       <label class="field"><span>Присутствие в ЕС</span><select id="f-eu"></select></label>
       <label class="field"><span>Размеры собак</span><select id="f-sizes"></select></label>
+      <div class="field end"><button class="btn" id="reset">Сбросить фильтры</button></div>
     </div>
     <div class="row">
       <span class="count" id="count" role="status"></span>
-      <button class="btn" id="view-cards" aria-pressed="true">Карточки</button>
-      <button class="btn" id="view-table" aria-pressed="false">Таблица</button>
-      <button class="btn" id="reset">Сбросить фильтры</button>
-      <button class="btn" id="csv">Скачать CSV</button>
-      <a class="btn" href="suppliers.xlsx" download>Скачать Excel</a>
+      <button class="btn" id="expand" hidden>Раскрыть все</button>
     </div>
   </div>
 
@@ -1213,36 +1243,54 @@ function linksHtml(s) {
 }
 const sourceHtml = s => /^https?:/.test(s.source) ? `<a href="${esc(s.source)}" target="_blank" rel="noopener">ссылка</a>` : esc(s.source);
 
+const topHtml = s => s.top.length ? `<ol class="top">${s.top.map(p => `<li><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a> — ${esc(p.price)}<br><span class="muted">${esc(p.meta)}</span></li>`).join("")}</ol>` : "";
+
 function card(s) {
-  return `<article class="card sup">
-    <div class="sup-head"><h3>${esc(s.name)}</h3><span class="place">${esc([s.country, s.city].filter(Boolean).join(" · "))}</span></div>
-    <div class="tags"><span class="${PRIORITY_CLASS[s.priority]}">${esc(s.priority)}</span>${s.talks === "В переписке" ? `<span class="tag new">в переписке</span>` : ""}${s.types.map(t => `<span class="tag plain">${esc(t)}</span>`).join("")}</div>
-    <p>${esc(s.what)}</p>
-    ${s.opinion ? `<div class="review"><p><b>Оценка команды.</b> ${esc(s.opinion)}</p><p><b>Следующий шаг.</b> ${esc(s.next)}</p></div>` : ""}
-    ${s.top.length ? `<div><p class="place">Популярные товары</p><ol class="top">${s.top.map(p => `<li><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a> — ${esc(p.price)}<br><span class="muted">${esc(p.meta)}</span></li>`).join("")}</ol></div>` : ""}
-    <dl class="facts">
-      <div><dt>Отзывы</dt><dd>${esc(s.reviews)}</dd></div>
-      <div><dt>Из поиска</dt><dd>${esc(s.why)}</dd></div>
-      ${s.segment ? `<div><dt>Сегмент</dt><dd>${esc(s.segment)}</dd></div>` : ""}
-      <div><dt>Условия</dt><dd>${esc(s.terms)}</dd></div>
-      <div><dt>В ЕС</dt><dd>${esc(s.eu)}</dd></div>
-      <div><dt>Размеры</dt><dd>${esc(s.sizes)}</dd></div>
-      <div><dt>Заметка</dt><dd>${esc(s.note)}</dd></div>
-      <div><dt>Источник</dt><dd>${sourceHtml(s)}</dd></div>
-    </dl>
-    <div class="links">${linksHtml(s) || `<span class="muted small">Контактов пока нет</span>`}</div>
-  </article>`;
+  const best = s.top[0];
+  return `<details class="card sup">
+    <summary>
+      <div><h3>${esc(s.name)}</h3><span class="place">${esc([s.country, s.city].filter(Boolean).join(" · "))}</span></div>
+      <div class="sum-main">
+        <div class="tags"><span class="${PRIORITY_CLASS[s.priority]}">${esc(s.priority)}</span>${s.talks === "В переписке" ? `<span class="tag new">в переписке</span>` : ""}${s.types.map(t => `<span class="tag plain">${esc(t)}</span>`).join("")}</div>
+        <p>${esc(s.what)}</p>
+      </div>
+      <div class="sum-side">${best ? `<b>${esc(best.title)}</b> — ${esc(best.price)}<br>${esc(best.meta)}` : esc(s.next || s.note)}</div>
+      <span class="chev" aria-hidden="true"></span>
+    </summary>
+    <div class="sup-body">
+      <div>
+        ${s.opinion ? `<div class="review"><p><b>Оценка команды.</b> ${esc(s.opinion)}</p><p><b>Следующий шаг.</b> ${esc(s.next)}</p></div>` : ""}
+        ${s.top.length ? `<div><p class="place">Популярные товары</p>${topHtml(s)}</div>` : ""}
+        <div class="links">${linksHtml(s) || `<span class="muted small">Контактов пока нет</span>`}</div>
+      </div>
+      <dl class="facts">
+        <div><dt>Отзывы</dt><dd>${esc(s.reviews)}</dd></div>
+        <div><dt>Из поиска</dt><dd>${esc(s.why)}</dd></div>
+        ${s.segment ? `<div><dt>Сегмент</dt><dd>${esc(s.segment)}</dd></div>` : ""}
+        <div><dt>Условия</dt><dd>${esc(s.terms)}</dd></div>
+        <div><dt>В ЕС</dt><dd>${esc(s.eu)}</dd></div>
+        <div><dt>Размеры</dt><dd>${esc(s.sizes)}</dd></div>
+        <div><dt>Заметка</dt><dd>${esc(s.note)}</dd></div>
+        <div><dt>Источник</dt><dd>${sourceHtml(s)}</dd></div>
+      </dl>
+    </div>
+  </details>`;
 }
 
 function table(rows) {
-  return `<table><thead><tr><th>Название</th><th>Страна</th><th>Тип</th><th>Приоритет</th><th>Следующий шаг</th><th>В ЕС</th><th>Контакты</th></tr></thead><tbody>` +
-    rows.map(s => `<tr><td><strong>${esc(s.name)}</strong><br><span class="muted">${esc(s.city)}</span></td><td>${esc(s.country)}</td><td>${esc(s.types.join(", "))}</td><td>${esc(s.priority)}</td><td>${esc(s.next || "—")}</td><td>${esc(s.eu)}</td><td>${linksHtml(s) || "—"}</td></tr>`).join("") +
+  return `<table><thead><tr><th>Название</th><th>Тип</th><th>Приоритет</th><th>Отзывы</th><th>Популярные товары</th><th>Следующий шаг</th><th>Контакты</th></tr></thead><tbody>` +
+    rows.map(s => `<tr><td><strong>${esc(s.name)}</strong><br><span class="muted">${esc([s.country, s.city].filter(Boolean).join(" · "))}</span></td><td>${esc(s.types.join(", "))}</td><td>${esc(s.priority)}</td><td>${esc(s.reviews)}</td><td>${topHtml(s) || "—"}</td><td>${esc(s.next || "—")}</td><td>${linksHtml(s) || "—"}</td></tr>`).join("") +
     `</tbody></table>`;
 }
 
 function render() {
   const rows = selected();
+  const active = FILTERS.filter(key => $("f-" + key).value).length;
   $("count").textContent = `Показано ${rows.length} из ${SUPPLIERS.length}`;
+  $("toggle-filters").textContent = active ? `Фильтры · ${active}` : "Фильтры";
+  $("toggle-filters").classList.toggle("on", active > 0);
+  $("expand").hidden = view !== "cards" || !rows.length;
+  $("expand").textContent = "Раскрыть все";
   $("empty").hidden = rows.length > 0;
   $("cardView").hidden = view !== "cards" || !rows.length;
   $("tableView").hidden = view !== "table" || !rows.length;
@@ -1273,6 +1321,17 @@ $("reset").addEventListener("click", () => { FILTERS.forEach(key => { $("f-" + k
 $("view-cards").addEventListener("click", () => setView("cards"));
 $("view-table").addEventListener("click", () => setView("table"));
 $("csv").addEventListener("click", downloadCsv);
+$("toggle-filters").addEventListener("click", e => {
+  const open = $("filters").hidden;
+  $("filters").hidden = !open;
+  e.currentTarget.setAttribute("aria-expanded", String(open));
+});
+$("expand").addEventListener("click", e => {
+  const cards = [...document.querySelectorAll(".sup")], open = cards.some(c => !c.open);
+  cards.forEach(c => { c.open = open; });
+  e.currentTarget.textContent = open ? "Свернуть все" : "Раскрыть все";
+});
+document.addEventListener("click", e => { const m = $("menu"); if (m.open && !m.contains(e.target)) m.open = false; });
 
 fillSelects(); render();
 </script>
