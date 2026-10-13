@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=09" defer></script>
+<script src="economics-data.js?v=10" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -152,7 +152,7 @@
       <summary>Из чего складываются деньги на старт</summary>
       <div>
         <div class="table-wrap"><table><thead><tr><th>На что</th><th class="num">Сумма</th><th>Когда</th><th>Откуда цифра</th></tr></thead><tbody id="startup-body"></tbody></table></div>
-        <p class="legend">Уставный капитал sp. z o.o. (от 5 000 zł) расходом не считается: он остаётся на счёте компании, из него можно платить за товар.</p>
+        <p class="legend">Посчитано для теста через JDG Даши: регистрация бесплатная, уставный капитал не нужен. Для sp. z o.o. понадобятся около 400 zł на регистрацию и 5 000 zł капитала, которые остаются на счёте компании.</p>
       </div>
     </details>
     <h3 class="sub mt">Контрольные точки</h3>
@@ -223,7 +223,7 @@
       <summary>Сравнить все формы бизнеса</summary>
       <div>
         <div class="row">
-          <label class="check"><input type="checkbox" id="tax-employed"> Владелец работает по найму с зарплатой не ниже минимальной</label>
+          <label class="check"><input type="checkbox" id="tax-employed"> Владелица — Даша: zlecenie, без социальных взносов с бизнеса</label>
           <label class="field inline"><span>ZUS для JDG</span>
             <select id="tax-zus"><option value="start">Первый год: полгода без взносов</option><option value="pref">Льготный</option><option value="full">Полный</option></select>
           </label>
@@ -234,7 +234,7 @@
             <tbody id="tax-body"></tbody>
           </table>
         </div>
-        <p class="legend">Прибыль — результат года из выбранного сценария. В JDG она выше, потому что бухгалтерия дешевле. Взносы владельца в sp. z o.o. он платит сам. При убытке налога нет, а взносы остаются.</p>
+        <p class="legend">Прибыль — результат года из выбранного сценария до налогов и взносов владельца. В sp. z o.o. она ниже, потому что бухгалтерия дороже. Взносы единственного участника sp. z o.o. он платит сам. При убытке налога нет, а взносы остаются.</p>
       </div>
     </details>
     <details class="how">
@@ -260,7 +260,7 @@
       <summary>Ставки, упрощения и источники</summary>
       <div>
         <div class="table-wrap"><table><tbody id="tax-params"></tbody></table></div>
-        <p class="legend">Упрощения: шкала посчитана без совместной декларации и льгот; у владельца с работой по найму необлагаемая сумма считается использованной зарплатой; вычет половины взноса на здоровье учтён только для ryczałt; у эстонского CIT есть условия по найму сотрудников, источники по ним расходятся.</p>
+        <p class="legend">Упрощения: шкала посчитана без совместной декларации и льгот; необлагаемая сумма 30 000 zł целиком идёт на прибыль магазина, потому что zlecenie Даши до 26 лет не облагается PIT; вычет половины взноса на здоровье учтён только для ryczałt; у эстонского CIT есть условия по найму сотрудников, источники по ним расходятся.</p>
         <ul class="sources small" id="tax-sources"></ul>
       </div>
     </details>
@@ -469,7 +469,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const sum = f => groups.reduce((t, g, k) => t + f(g) * mix[k], 0);
       return Object.assign({}, st, { mix, total: mix.reduce((a, b) => a + b, 0), aov: sum(g => g.aov), rev: sum(g => g.rev), cost: sum(g => g.cost), part: sum(g => g.part), service: sum(g => g.service), contrib: sum(g => g.contrib) });
     });
-    const fixed = p.platform + p.acc + p.adsDay * 30 + p.other + p.community + p.samples + p.charity + p.assistant;
+    const fixed = p.platform + p.acc + p.health + p.adsDay * 30 + p.other + p.community + p.samples + p.charity + p.assistant;
     // pre-orders come from our own audience before launch: no partner or referral costs, and the money arrives before the first purchase
     const pre = { orders: p.preOrders, res: p.preOrders * (stages[0].contrib + stages[0].part), rev: p.preOrders * stages[0].aov, stock: p.preOrders * stages[0].cost };
     const scenarios = ECON.scenarios.map(sc => {
@@ -487,14 +487,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return { p, payer, items, groups, stages, fixed, pre, scenarios, even };
   }
 
-  // owner taxes and contributions for a year: profit is the company result before them, rev is yearly sales
-  function taxes(profit, rev, acc) {
+  // owner taxes and contributions for a year: pj is the JDG result before the owner's contributions, rev is yearly sales.
+  // "employed" here means Dasha: zlecenie covers social contributions and is PIT-free until 26, so the tax-free amount stays for the shop
+  function taxes(pj, rev, p) {
     const T = ECON.tax, pos = n => Math.max(n, 0);
-    const pj = profit + (acc - T.accJdg) * 12;
+    const profit = pj - (T.accSp - p.acc) * 12;
     const social = employed ? 0 : zus === "start" ? 6 * T.socialPref : zus === "pref" ? 12 * T.socialPref : 12 * T.socialFull;
     const income = pj - social, minHealth = 12 * T.healthMin;
-    const step = employed ? pos(T.scaleStep - T.salaryYear) : T.scaleStep;
-    const scaleTax = pos(T.scale[0] * Math.min(pos(income), step) + T.scale[1] * pos(income - step) - (employed ? 0 : T.scaleCredit));
+    const step = T.scaleStep;
+    const scaleTax = pos(T.scale[0] * Math.min(pos(income), step) + T.scale[1] * pos(income - step) - T.scaleCredit);
     const hScale = Math.max(T.healthScale * pos(income), minHealth), hFlat = Math.max(T.healthFlat * pos(income), minHealth);
     const hLump = 12 * T.healthLump.find(t => rev <= t[0])[1];
     const cit = T.cit * pos(profit), div = T.dividend * pos(profit - cit);
@@ -505,7 +506,7 @@ document.addEventListener("DOMContentLoaded", () => {
       row("JDG, ryczałt 3%", "Налог с оборота, расходы не учитываются", pj, T.lump * pos(rev - social - hLump / 2), social + hLump),
       row("Sp. z o.o., прибыль остаётся в компании", "CIT 9%; несколько участников, взносов нет", profit, cit, 0),
       row("Sp. z o.o., прибыль выведена дивидендами", "CIT 9% и 19% с дивидендов; несколько участников", profit, cit + div, 0),
-      row("Sp. z o.o. с одним участником, дивиденды", "То же плюс ZUS и здоровье участника", profit, cit + div, (employed ? 0 : 12 * T.socialFull) + 12 * T.healthSolo),
+      row("Sp. z o.o. с одним участником, дивиденды", "То же плюс ZUS и здоровье участника", profit, cit + div, 12 * T.socialFull + 12 * T.healthSolo),
       row("Sp. z o.o., эстонский CIT, дивиденды", "Около 20% при выплате; пока прибыль в компании — 0", profit, T.estonian * pos(profit), 0),
     ];
   }
@@ -521,7 +522,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("headline").textContent = M.even[0] ? `Выходим в ноль с ${M.even[0]} заказов в месяц.` : "С заказа ничего не остаётся — в ноль не выйти.";
     $("kpis").innerHTML = [
       kpi("Остаётся с одного заказа", zl(st.contrib), `Из среднего заказа ${zl(st.aov)} — после товара и расходов на сам заказ.`),
-      kpi("Заказов в месяц для нуля", M.even[0] ? String(M.even[0]) : "нет", `Столько покрывает ${zl(M.fixed)} постоянных расходов в месяц: платформа, бухгалтерия, реклама, встречи, образцы, помощь фонду.`),
+      kpi("Заказов в месяц для нуля", M.even[0] ? String(M.even[0]) : "нет", `Столько покрывает ${zl(M.fixed)} постоянных расходов в месяц: платформа, бухгалтерия, взнос на здоровье Даши, реклама, встречи, образцы, помощь фонду.`),
       kpi(`Первый год, «${cur.title}»`, zl(cur.res), plus < 0 ? `Ни одного месяца в плюсе. Оборот — ${zl(cur.rev)}.` : `Месяцы в плюсе — с ${plus + 1}-го. Оборот — ${zl(cur.rev)}.`),
     ].join("");
     document.querySelector('[data-lever="scenario"]').innerHTML = buttons("sc", M.scenarios.map(s => [s.id, s.title]), view.scenario);
@@ -570,7 +571,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const before = ECON.startup.filter(x => x.when === 0), later = ECON.startup.filter(x => x.when > 0), sum = l => l.reduce((a, x) => a + x.zl, 0);
     $("needs").innerHTML = [
       kpi("Время команды", `${nf(cur.hours, cur.hours % 1 ? 1 : 0)} ч в неделю`, `${cur.team}. На час работы выходит ${zl(cur.perHour)}.`),
-      kpi("Свои деньги до запуска", zl(Math.max(0, sum(before) - M.pre.rev)), `Нужно ${zl(sum(before))}: первая закупка, упаковка, образцы и регистрация. Из них ${zl(Math.min(M.pre.rev, sum(before)))} принесёт предоплата по предзаказам. ${cur.low < 0 ? `Ещё ${zl(Math.abs(cur.low))} — запас на минусовые месяцы.` : "Запас на минусовые месяцы не нужен."}`),
+      kpi("Свои деньги до запуска", zl(Math.max(0, sum(before) - M.pre.rev)), `Нужно ${zl(sum(before))}: первая закупка, упаковка, образцы и налог с займа. Из них ${zl(Math.min(M.pre.rev, sum(before)))} принесёт предоплата по предзаказам. ${cur.low < 0 ? `Ещё ${zl(Math.abs(cur.low))} — запас на минусовые месяцы.` : "Запас на минусовые месяцы не нужен."}`),
       kpi("Деньги на Корею", zl(sum(later)), `Тест через посредника и первая закупка — после ${later[0].when}-го месяца, если чекпоинт пройден.`),
     ].join("");
     $("startup-body").innerHTML = ECON.startup.map(x => `<tr><td>${x.what}</td><td class="num">${zl(x.zl)}</td><td>${x.when ? `после ${x.when}-го месяца` : "до запуска"}</td><td>${x.note}</td></tr>`).join("") +
@@ -611,22 +612,22 @@ document.addEventListener("DOMContentLoaded", () => {
     $("market-body").innerHTML = ECON.market.map(r => `<tr><td>${r.what}</td><td class="num">${r.price}</td><td>${r.note}<span class="links">${r.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</span></td></tr>`).join("");
 
     // taxes
-    const rows = taxes(cur.res, cur.rev, M.p.acc), other = model(!M.payer), over = !M.payer && cur.rev > T.vatLimit;
+    const rows = taxes(cur.res + 12 * M.p.health, cur.rev, M.p), other = model(!M.payer), over = !M.payer && cur.rev > T.vatLimit;
     const overMonth = over ? cur.months.findIndex((x, k) => cur.months.slice(0, k + 1).reduce((a, y) => a + y.rev, 0) > T.vatLimit) + 1 : 0;
     $("tax-lead").textContent = cur.res > 0
-      ? `В сценарии «${cur.title}» прибыль за первый год — ${zl(cur.res)}. Компания у нас sp. z o.o.: налог зависит от того, оставляем прибыль в компании или выводим, и от числа участников.`
-      : `В сценарии «${cur.title}» первый год заканчивается в минус, налога на прибыль нет. Остаются только взносы — если они есть у выбранной формы.`;
+      ? `В сценарии «${cur.title}» результат первого года — ${zl(cur.res)}, взнос на здоровье Даши в нём уже вычтен. Тест идёт через JDG: налога с прибыли нет, пока она ниже 30 000 zł в год.`
+      : `В сценарии «${cur.title}» первый год заканчивается в минус, налога на прибыль нет. Взнос на здоровье Даши платится всё равно, он уже в расходах.`;
     $("tax-cards").innerHTML = [
-      kpi("Прибыль остаётся в компании", pct(T.cit), `CIT: ${zl(rows[3].tax)} в этом сценарии. Участники взносов не платят, если их двое или больше.`),
-      kpi("Прибыль выводим участникам", pct(1 - (1 - T.cit) * (1 - T.dividend)), `CIT плюс 19% с дивидендов: ${zl(rows[4].tax)} в этом сценарии.`),
-      kpi("Если участник один", `+${zl(rows[5].contrib)} в год`, `Взносы, которые он платит сам, даже при убытке. ${employed ? "Посчитано для участника с работой по найму." : "Посчитано для участника без работы по найму."}`),
+      kpi("JDG Даши: налог с прибыли", zl(rows[0].tax), `По шкале 12%, первые 30 000 zł в год без налога. Останется ${zl(rows[0].left)}.`),
+      kpi("JDG Даши: взносы за год", zl(rows[0].contrib), employed ? "Только взнос на здоровье, он уже в постоянных расходах. Социальных взносов нет первые 30 месяцев." : "ZUS и взнос на здоровье владельца без другой работы; режим ZUS выбирается в таблице ниже."),
+      kpi("Если бы sp. z o.o.", zl(rows[4].left), `Осталось бы после CIT и дивидендов: взносов нет, но бухгалтерия дороже на ${zl((T.accSp - M.p.acc) * 12)} в год.`),
       kpi("VAT", M.payer ? "Плательщик" : "Без VAT", over
         ? `Продажи за год ${zl(cur.rev)} — выше лимита ${zl(T.vatLimit)}: освобождение закончится примерно на ${overMonth}-м месяце.`
         : `${M.payer ? "Без VAT" : "Плательщиком"} с заказа оставалось бы ${zl(other.stages[0].contrib)} вместо ${zl(st.contrib)}.`),
     ].join("");
     $("tax-employed").checked = employed; $("tax-zus").value = zus; $("tax-zus").disabled = employed;
     $("tax-body").innerHTML = rows.map(r => `<tr><td class="name"><b>${r.name}</b><span>${r.hint}</span></td><td${cls(r.base)}>${zl(r.base)}</td><td class="num">${zl(r.tax)}</td><td class="num">${zl(r.contrib)}</td><td class="num">${zl(r.total)}</td><td${cls(r.left)}>${zl(r.left)}</td><td class="num">${r.load === null ? "—" : pct(r.load)}</td></tr>`).join("");
-    const byLevel = T.levels.map(l => taxes(l, l / T.profitShare, M.p.acc));
+    const byLevel = T.levels.map(l => taxes(l, l / T.profitShare, M.p));
     $("lvl-head").innerHTML = `<tr><th>Форма</th>${T.levels.map(l => `<th class="num">Прибыль ${zl(l)}</th>`).join("")}</tr>`;
     $("lvl-body").innerHTML = byLevel[0].map((r, k) => `<tr><td class="name"><b>${r.name}</b></td>${byLevel.map(list => `<td class="num">${zl(list[k].total)}<br><span class="muted">${list[k].load === null ? "—" : pct(list[k].load)}</span></td>`).join("")}</tr>`).join("");
     $("lvl-note").textContent = `Сумма — налог и взносы за год, процент — их доля в прибыли. Для ryczałt оборот посчитан так, будто прибыль составляет ${pct(T.profitShare)} от него.`;
