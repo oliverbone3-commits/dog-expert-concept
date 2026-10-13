@@ -11,7 +11,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600&family=Onest:wght@400;500;650&family=JetBrains+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="styles.css">
 <style>
-  .controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 49px); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); padding-block: 10px; display: grid; gap: 8px; }
+  .controls { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--bar-h, 49px)); z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line); padding-block: 10px; display: grid; gap: 8px; }
   .fields { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); padding-top: 4px; }
   .fields[hidden] { display: none; }
   .field { display: grid; gap: 3px; min-width: 0; }
@@ -125,10 +125,7 @@
       <label class="field"><span>Размеры собак</span><select id="f-sizes"></select></label>
       <div class="field end"><button class="btn" id="reset">Сбросить фильтры</button></div>
     </div>
-    <div class="row">
-      <span class="count" id="count" role="status"></span>
-      <button class="btn" id="expand" hidden>Раскрыть все</button>
-    </div>
+    <span class="count" id="count" role="status"></span>
   </div>
 
   <div id="list">
@@ -1289,8 +1286,7 @@ function render() {
   $("count").textContent = `Показано ${rows.length} из ${SUPPLIERS.length}`;
   $("toggle-filters").textContent = active ? `Фильтры · ${active}` : "Фильтры";
   $("toggle-filters").classList.toggle("on", active > 0);
-  $("expand").hidden = view !== "cards" || !rows.length;
-  $("expand").textContent = "Раскрыть все";
+
   $("empty").hidden = rows.length > 0;
   $("cardView").hidden = view !== "cards" || !rows.length;
   $("tableView").hidden = view !== "table" || !rows.length;
@@ -1326,14 +1322,12 @@ $("toggle-filters").addEventListener("click", e => {
   $("filters").hidden = !open;
   e.currentTarget.setAttribute("aria-expanded", String(open));
 });
-$("expand").addEventListener("click", e => {
-  const cards = [...document.querySelectorAll(".sup")], open = cards.some(c => !c.open);
-  cards.forEach(c => { c.open = open; });
-  e.currentTarget.textContent = open ? "Свернуть все" : "Раскрыть все";
-});
+// filters stick right under the header, whatever height it renders at
+const syncBar = () => document.documentElement.style.setProperty("--bar-h", document.querySelector(".bar").offsetHeight + "px");
+window.addEventListener("resize", syncBar);
 document.addEventListener("click", e => { const m = $("menu"); if (m.open && !m.contains(e.target)) m.open = false; });
 
-fillSelects(); render();
+syncBar(); fillSelects(); render();
 </script>
 </body>
 </html>
