@@ -5,7 +5,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Рядом с собакой — экономика</title>
-<meta name="description" content="Юнит-экономика и цели магазина для собак: калькулятор по позициям и источникам товара, сценарии по месяцам, чекпоинты.">
+<meta name="description" content="Экономика магазина для собак простыми словами: сколько остаётся с заказа, сколько заказов нужно для нуля, план по месяцам, товары и налоги.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600&family=Onest:wght@400;500;650&family=JetBrains+Mono:wght@500&display=swap">
@@ -13,11 +13,45 @@
 <script src="site.js" defer></script>
 <script src="economics-data.js" defer></script>
 <style>
-  .kpi { display: grid; gap: var(--sp-1); }
-  .kpi b { font: 500 clamp(22px, 3vw, 28px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
+  .kpi { display: grid; gap: var(--sp-1); align-content: start; }
+  .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
   .kpi span { font: 500 var(--fs-label)/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
-  .kpi p { margin: 0; font-size: var(--fs-work); color: var(--muted); }
+  .kpi p { margin: 0; font-size: var(--fs-sm); color: var(--muted); }
   .neg { color: var(--signal); }
+  .levers { display: grid; gap: var(--sp-3); margin-top: var(--sp-5); }
+  .lever { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
+  .lever > span { flex: 0 0 150px; font: 500 var(--fs-label)/1.3 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  @media (max-width: 560px) { .lever > span { flex-basis: 100%; } }
+
+  /* one order, split into where the money goes */
+  .split { display: flex; height: 44px; border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--line); margin-block: var(--sp-4) var(--sp-3); }
+  .split i { display: block; min-width: 2px; }
+  .c-goods { background: var(--line-strong); } .c-partner { background: var(--info); } .c-service { background: var(--signal); } .c-vat { background: var(--muted); } .c-left { background: var(--accent); }
+  .lines { display: grid; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; max-width: 560px; }
+  .lines li { display: grid; grid-template-columns: 14px 1fr auto; gap: var(--sp-3); align-items: baseline; margin: 0; }
+  .lines i { width: 12px; height: 12px; border-radius: 3px; align-self: center; }
+  .lines span small { display: block; color: var(--muted); font-size: var(--fs-xs); }
+  .lines b { font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .lines .sum { border-top: 1px solid var(--line-strong); padding-top: var(--sp-2); }
+
+  /* months: profit above the line, loss below it */
+  .chart { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; margin-block: var(--sp-4); }
+  .mon { display: grid; grid-template-rows: 18px 110px 46px 18px; gap: 2px; text-align: center; font: 500 var(--fs-label)/1.2 var(--font-mono); color: var(--muted); min-width: 0; }
+  .mon .up { display: flex; align-items: flex-end; border-bottom: 1px solid var(--line-strong); }
+  .mon .down { display: flex; align-items: flex-start; }
+  .mon .up i, .mon .down i { display: block; width: 100%; border-radius: 3px 3px 0 0; background: var(--accent); }
+  .mon .down i { border-radius: 0 0 3px 3px; background: var(--signal); }
+  .mon.first .up i { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+  .fits { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .fits ul { list-style: none; margin: var(--sp-2) 0 0; padding: 0; display: grid; gap: 6px; font-size: var(--fs-work); }
+  .fits li { display: flex; justify-content: space-between; gap: var(--sp-3); margin: 0; }
+  .fits li a { color: inherit; text-decoration-color: var(--line-strong); min-width: 0; }
+  .fits li span { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .fits small { color: var(--muted); }
+  .fits .how { margin: var(--sp-2) 0 0; }
+  .fits .how > summary { min-height: 0; font-weight: 400; }
+
   input.in { width: 88px; min-height: 34px; padding: 0 8px; text-align: right; font: var(--fs-sm)/1.2 var(--font-body); font-variant-numeric: tabular-nums; }
   td input.in { width: 76px; }
   input.in.changed { border-color: var(--accent); }
@@ -31,19 +65,19 @@
   .guess::after { content: " •"; color: var(--signal); }
   td.name b { font-weight: 500; }
   td.name span { display: block; color: var(--muted); font-size: var(--fs-xs); }
+  td.name a { color: inherit; text-decoration-color: var(--line-strong); }
+  td.name a:hover, .fits li a:hover { color: var(--accent); }
+  td .links { display: block; margin-top: 4px; font-size: var(--fs-xs); }
+  td .links a { margin-right: var(--sp-3); white-space: nowrap; }
   tr.off td { color: var(--muted); }
   tr.total td { font-weight: 500; border-top: 1px solid var(--line-strong); }
-  th.grp { text-align: center; border-left: 1px solid var(--line); }
   td.sep, th.sep { border-left: 1px solid var(--line); }
   input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
   .legend { font-size: var(--fs-work); color: var(--muted); }
-  td.name a { color: inherit; text-decoration-color: var(--line-strong); }
-  td.name a:hover { color: var(--accent); }
-  td .links { display: block; margin-top: 4px; font-size: var(--fs-xs); }
-  td .links a { margin-right: var(--sp-3); white-space: nowrap; }
   .field.inline { display: inline-grid; max-width: 100%; }
   .field.inline select { width: auto; max-width: 100%; }
   .check { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); min-height: var(--control-h); }
+  .how > summary { font-weight: 500; }
 </style>
 </head>
 <body data-page="economics">
@@ -52,241 +86,245 @@
   <div class="hero compact">
     <div class="eyebrow" data-meta>Работа</div>
     <h1>Экономика</h1>
-    <p class="lead">Сколько остаётся с заказа, сколько заказов нужно для нуля и какие цели ставим по месяцам. Цифры пересчитываются от вводных: когда приходит новый прайс, меняем его в одном месте.</p>
-    <div class="chips">
-      <span class="chip">Закупка по украинской рознице</span>
-      <span class="chip">Три сценария</span>
-      <span class="chip">Чекпоинты</span>
-      <span class="chip">Налоги по формам бизнеса</span>
-    </div>
-    <p class="status-note">Цели для сверки, не прогноз. Оптовых прайсов пока нет: украинские товары посчитаны так, будто мы покупаем их по розничной цене бренда, — любой опт улучшит результат. Цены в Польше — предложение, не решение команды.</p>
+    <p class="lead">Три вопроса: сколько остаётся с одного заказа, сколько заказов нужно, чтобы выйти в ноль, и что будет по месяцам. Всё остальное — подробности, они свёрнуты.</p>
+    <p class="status-note">Цели для сверки, не прогноз. Оптовых прайсов пока нет, поэтому закупка посчитана с запасом: украинские товары — по розничной цене бренда.</p>
   </div>
 
-  <section id="kpi" data-nav="Показатели">
+  <section id="main" data-nav="Главное">
     <div class="sec-head">
-      <div class="eyebrow">Показатели</div>
-      <h2>С чем сверяемся.</h2>
+      <div class="eyebrow">Главное</div>
+      <h2 id="headline"></h2>
     </div>
     <div class="grid" id="kpis"></div>
-    <p class="note" id="local-note" hidden><strong>В этом браузере есть ваши правки.</strong> Цифры на странице посчитаны с ними и видны только вам. <button class="btn quiet" id="reset">Вернуть общие значения</button></p>
+    <div class="levers">
+      <div class="lever"><span>Как пойдут продажи</span><div class="row" role="group" aria-label="Сценарий" data-lever="scenario"></div></div>
+      <div class="lever"><span>VAT</span><div class="row" role="group" aria-label="Режим VAT" data-lever="vat"></div></div>
+      <div class="lever"><span>Закупка в Украине</span><div class="row" role="group" aria-label="Скидка опта" data-lever="disc"></div></div>
+    </div>
+    <p class="msg mt">Переключатели меняют всю страницу и ничего не сохраняют: это способ посмотреть «а что, если».</p>
+    <p class="note" id="local-note" hidden><strong>В этом браузере изменены вводные.</strong> Цифры посчитаны с вашими правками и видны только вам. <button class="btn quiet" id="reset">Вернуть общие значения</button></p>
   </section>
 
-  <section id="calc" data-nav="Калькулятор">
+  <section id="order" data-nav="Один заказ">
     <div class="sec-head">
-      <div class="eyebrow">Калькулятор</div>
-      <h2>Вводные, от которых всё считается.</h2>
+      <div class="eyebrow">Один заказ</div>
+      <h2>Куда уходят деньги клиента.</h2>
     </div>
-    <div class="row" role="group" aria-label="Режим VAT">
-      <button class="btn" id="vat-off" aria-pressed="true">Без VAT (освобождение)</button>
-      <button class="btn" id="vat-on" aria-pressed="false">Плательщик VAT</button>
-      <span class="msg">Без VAT налог на ввозе не возвращается и входит в себестоимость. В концепции экономика посчитана с VAT.</span>
-    </div>
-    <div class="params mt" id="params"></div>
-    <p class="legend mt"><span class="guess">Точка</span> — допущение, которого у нас пока нет фактом. Правки в полях сохраняются только в вашем браузере; общие значения лежат в файле <code>economics-data.js</code>.</p>
+    <div class="col"><p id="order-lead"></p></div>
+    <div class="split" id="split" role="img"></div>
+    <ul class="lines" id="lines"></ul>
+    <p class="note" id="order-note"></p>
+    <details class="how mt">
+      <summary>По источникам товара</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Источник</th><th class="num">Средний заказ</th><th class="num">Товар</th><th class="num">Остаётся</th>
+              <th class="num sep" id="st-0"></th><th class="num" id="st-1"></th><th class="num" id="st-2"></th>
+            </tr></thead>
+            <tbody id="sources-body"></tbody>
+          </table>
+        </div>
+        <p class="legend">Справа — какую долю заказов даёт каждый источник на этапе; её можно менять. Корейские товары появляются после 6-го месяца. В заказе из польской базы считается 1,4 товара, в импортном — один.</p>
+      </div>
+    </details>
   </section>
 
-  <section id="items" data-nav="Позиции">
+  <section id="plan" data-nav="План">
     <div class="sec-head">
-      <div class="eyebrow">Позиции</div>
-      <h2>Юнит-экономика по товарам.</h2>
+      <div class="eyebrow">План по месяцам</div>
+      <h2 id="plan-head"></h2>
     </div>
-    <div class="col">
-      <p>«Цена дома» — розница бренда на его сайте, закупка равна ей минус скидка опта из вводных. У польской базы вместо неё оптовая цена без VAT: пока прайсов нет, она считается от розницы через «нашу долю». Себестоимость — закупка, доставка, пошлина и невозвратный VAT. Вклад — то, что остаётся после товара и расходов на заказ. Название ведёт на страницу товара.</p>
-    </div>
-    <div class="row" role="group" aria-label="Источник" id="src-filter"></div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Позиция</th><th class="num">Цена дома / опт</th><th class="num">Себестоимость</th><th class="num">Цена в Польше</th>
-          <th class="num">Валовая маржа</th><th class="num">Вклад с продажи</th><th class="num">Нужная скидка</th><th>В расчёте</th>
-        </tr></thead>
-        <tbody id="items-body"></tbody>
-      </table>
-    </div>
-    <p class="note">«Нужная скидка» — какую скидку от домашней розницы надо получить, чтобы при этой цене в Польше выйти на целевую валовую маржу. Позиции со снятой галочкой не входят в средние по источнику: при закупке по рознице они не проходят. Состав польской базы примерный — по категориям из концепции, с ценами польских магазинов; списка Даши пока нет.</p>
+    <div class="col"><p id="plan-lead"></p></div>
+    <div class="chart" id="chart" role="img"></div>
+    <p class="legend">Столбик — результат месяца после постоянных расходов: вверх плюс, вниз минус. Над столбиком — заказов в месяц.</p>
+    <h3 class="sub mt">Контрольные точки</h3>
+    <div class="grid" id="checks"></div>
+    <details class="how mt">
+      <summary>Таблица по месяцам и свои цифры заказов</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Месяц</th><th class="num">Заказов</th><th class="num">Средний заказ</th><th class="num">Оборот</th><th class="num">Результат месяца</th>
+              <th class="num">Накопительно</th><th class="num">Повторные</th><th class="num">Новых клиентов</th><th class="num">Закупка товара</th>
+            </tr></thead>
+            <tbody id="goals-body"></tbody>
+          </table>
+        </div>
+        <p class="legend">Заказы на 6-й месяц взяты из концепции: слабо 15–25, нормально 60–90, максимум 150–250. Остальные месяцы — предложенная траектория. Доля повторных заказов — цель; на рынке за год возвращаются 28–31% покупателей.</p>
+      </div>
+    </details>
   </section>
 
-  <section id="sources" data-nav="Источники">
+  <section id="goods" data-nav="Товары">
     <div class="sec-head">
-      <div class="eyebrow">Источники</div>
-      <h2>Откуда товар и что он приносит.</h2>
+      <div class="eyebrow">Товары</div>
+      <h2 id="goods-head"></h2>
     </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Источник</th><th class="num">Средний чек</th><th class="num">Себестоимость</th><th class="num">Вклад с заказа</th><th class="num">Вклад, %</th>
-          <th class="num sep" id="st-0"></th><th class="num" id="st-1"></th><th class="num" id="st-2"></th>
-        </tr></thead>
-        <tbody id="sources-body"></tbody>
-      </table>
-    </div>
-    <p class="note">Справа — доля заказов по источникам на каждом этапе. Корейский ассортимент появляется после чекпоинта на 6-м месяце; 10% заказов примерно соответствуют первой корейской закупке на 3–4 тыс. USD. В импортном заказе считается один основной товар, в заказе из польской базы — столько, сколько задано во вводных.</p>
-  </section>
-
-  <section id="goals" data-nav="Цели">
-    <div class="sec-head">
-      <div class="eyebrow">Цели</div>
-      <h2>Заказы и деньги по месяцам.</h2>
-    </div>
-    <div class="row" role="group" aria-label="Сценарий" id="scenarios"></div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Месяц</th><th class="num">Заказов</th><th class="num">Средний чек</th><th class="num">Оборот</th><th class="num">Результат месяца</th>
-          <th class="num">Накопительно</th><th class="num">Повторные</th><th class="num">Новых клиентов</th><th class="num">Закупка товара</th>
-        </tr></thead>
-        <tbody id="goals-body"></tbody>
-      </table>
-    </div>
-    <div class="grid" id="goal-sum"></div>
-    <p class="note">Заказы на 6-й месяц взяты из сценариев концепции: слабо 15–25, нормально 60–90, максимум 150–250. Остальные месяцы — предложенная траектория, её можно править в таблице. Результат — после постоянных расходов, без зарплат и ZUS.</p>
-  </section>
-
-  <section id="check" data-nav="Чекпоинты">
-    <div class="sec-head">
-      <div class="eyebrow">Чекпоинты</div>
-      <h2>Контрольные точки сценария «Нормально».</h2>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr>
-          <th>Точка</th><th class="num">Заказов в месяц</th><th class="num">Оборот в месяц</th><th class="num">Вклад с заказа</th>
-          <th class="num">Результат месяца</th><th class="num">Повторные заказы</th><th class="num">Новых клиентов</th><th>Активных партнёров</th>
-        </tr></thead>
-        <tbody id="check-body"></tbody>
-      </table>
-    </div>
-    <p class="note">Партнёры — из концепции. Доля повторных заказов — цель; ориентир рынка: 28–31% покупателей возвращаются за 12 месяцев, большинство вторых заказов приходится на 30–90-й день.</p>
-  </section>
-
-  <section id="market" data-nav="Польский рынок">
-    <div class="sec-head">
-      <div class="eyebrow">Польский рынок</div>
-      <h2>С чем сравнивают наши цены.</h2>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Товар</th><th class="num">Розница в Польше</th><th>Что это и где смотреть</th></tr></thead>
-        <tbody id="market-body"></tbody>
-      </table>
-    </div>
-    <p class="note verify"><strong>Вывод.</strong> Украинская одежда заметно дешевле польской полки и проходит даже при закупке по рознице. Амуниция из BioThane — нет: в Польше такой поводок стоит до 110 zł, а украинская розница с ввозом уже выше. По ней нужен опт со скидкой от 40%. Цены на одежду для такс в польских магазинах поиском не нашлись.</p>
+    <div class="col"><p>Для каждого товара посчитано, сколько остаётся с продажи при нашей цене. «Проходит» — остаётся от 15% цены, «на грани» — меньше, «не проходит» — продаём в минус.</p></div>
+    <div class="fits" id="fits"></div>
+    <p class="note verify" id="goods-note"></p>
+    <details class="how mt">
+      <summary>Все товары: цены, себестоимость, свои цифры</summary>
+      <div>
+        <div class="row" role="group" aria-label="Источник" id="src-filter"></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr>
+              <th>Товар</th><th class="num">Цена бренда / опт</th><th class="num">Себестоимость</th><th class="num">Наша цена</th>
+              <th class="num">Наценка</th><th class="num">Остаётся</th><th class="num">Нужная скидка</th><th>В расчёте</th>
+            </tr></thead>
+            <tbody id="items-body"></tbody>
+          </table>
+        </div>
+        <p class="legend">«Цена бренда» — розница на его сайте; у польской базы вместо неё оптовая цена без VAT, пока она считается от розницы. «Нужная скидка» — какую скидку от розницы бренда надо получить, чтобы выйти на целевую наценку. Товары без галочки не входят в средние. Состав польской базы примерный: списка Даши пока нет.</p>
+      </div>
+    </details>
+    <details class="how">
+      <summary>Цены в польских магазинах, с которыми нас сравнят</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Товар</th><th class="num">Розница в Польше</th><th>Что это и где смотреть</th></tr></thead>
+            <tbody id="market-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
   </section>
 
   <section id="tax" data-nav="Налоги">
     <div class="sec-head">
       <div class="eyebrow">Налоги</div>
-      <h2>Нагрузка при разных формах и режимах.</h2>
+      <h2>Сколько заберут налоги с прибыли.</h2>
     </div>
-    <div class="col">
-      <p>Сколько из прибыли уходит на налог на доход и взносы при разных формах бизнеса. Прибыль берётся из выбранного сценария целей — это результат первого года после постоянных расходов.</p>
-    </div>
-    <div class="row">
-      <span role="group" aria-label="Сценарий" class="row" id="tax-scenarios"></span>
-      <label class="check"><input type="checkbox" id="tax-employed"> Владелец работает по найму с зарплатой не ниже минимальной</label>
-      <label class="field inline"><span>ZUS для JDG</span>
-        <select id="tax-zus"><option value="start">Первый год: полгода без взносов</option><option value="pref">Льготный</option><option value="full">Полный</option></select>
-      </label>
-    </div>
-
-    <h3 class="sub mt">VAT: освобождение или плательщик</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Режим</th><th class="num">Вклад с заказа, этап 1</th><th class="num">Безубыточность, заказов в месяц</th><th class="num">Оборот за год</th><th class="num">Результат за год</th></tr></thead>
-        <tbody id="vat-body"></tbody>
-      </table>
-    </div>
-    <p class="note verify" id="vat-warn" hidden></p>
-
-    <h3 class="sub mt">Налог на доход и взносы по формам</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Форма</th><th class="num">Прибыль до налогов</th><th class="num">Налог на доход</th><th class="num">Взносы ZUS и здоровье</th><th class="num">Всего</th><th class="num">Остаётся</th><th class="num">Нагрузка</th></tr></thead>
-        <tbody id="tax-body"></tbody>
-      </table>
-    </div>
-    <p class="note">В JDG прибыль выше, потому что бухгалтерия дешевле, чем у sp. z o.o. Взносы владельца в sp. z o.o. он платит сам, компания их в расходы не берёт. «Нагрузка» — налог и взносы как доля прибыли; при убытке её нет, но взносы остаются.</p>
-
-    <h3 class="sub mt">Та же нагрузка, когда прибыль вырастет</h3>
-    <div class="table-wrap">
-      <table>
-        <thead id="lvl-head"></thead>
-        <tbody id="lvl-body"></tbody>
-      </table>
-    </div>
-    <p class="note" id="lvl-note"></p>
-
+    <div class="col"><p id="tax-lead"></p></div>
+    <div class="grid" id="tax-cards"></div>
+    <p class="note verify"><strong>Ориентир, не консультация.</strong> Ставки на 2026 год проверены поиском; форму бизнеса и режим VAT выбираем с бухгалтером.</p>
     <details class="how mt">
-      <summary>Ставки и суммы, на которых это посчитано</summary>
+      <summary>Сравнить все формы бизнеса</summary>
+      <div>
+        <div class="row">
+          <label class="check"><input type="checkbox" id="tax-employed"> Владелец работает по найму с зарплатой не ниже минимальной</label>
+          <label class="field inline"><span>ZUS для JDG</span>
+            <select id="tax-zus"><option value="start">Первый год: полгода без взносов</option><option value="pref">Льготный</option><option value="full">Полный</option></select>
+          </label>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Форма</th><th class="num">Прибыль до налогов</th><th class="num">Налог на доход</th><th class="num">Взносы ZUS и здоровье</th><th class="num">Всего</th><th class="num">Остаётся</th><th class="num">Нагрузка</th></tr></thead>
+            <tbody id="tax-body"></tbody>
+          </table>
+        </div>
+        <p class="legend">Прибыль — результат года из выбранного сценария. В JDG она выше, потому что бухгалтерия дешевле. Взносы владельца в sp. z o.o. он платит сам. При убытке налога нет, а взносы остаются.</p>
+      </div>
+    </details>
+    <details class="how">
+      <summary>Нагрузка, когда прибыль вырастет</summary>
+      <div>
+        <div class="table-wrap"><table><thead id="lvl-head"></thead><tbody id="lvl-body"></tbody></table></div>
+        <p class="legend" id="lvl-note"></p>
+      </div>
+    </details>
+    <details class="how">
+      <summary>VAT: освобождение или плательщик</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Режим</th><th class="num">Остаётся с заказа</th><th class="num">Заказов для нуля</th><th class="num">Оборот за год</th><th class="num">Результат за год</th></tr></thead>
+            <tbody id="vat-body"></tbody>
+          </table>
+        </div>
+        <p class="legend">Без VAT налог на ввозе и в закупке не возвращается и входит в себестоимость, зато с продаж его платить не нужно. Освобождение действует до 240 000 zł продаж в год.</p>
+      </div>
+    </details>
+    <details class="how">
+      <summary>Ставки, упрощения и источники</summary>
       <div>
         <div class="table-wrap"><table><tbody id="tax-params"></tbody></table></div>
+        <p class="legend">Упрощения: шкала посчитана без совместной декларации и льгот; у владельца с работой по найму необлагаемая сумма считается использованной зарплатой; вычет половины взноса на здоровье учтён только для ryczałt; у эстонского CIT есть условия по найму сотрудников, источники по ним расходятся.</p>
         <ul class="sources small" id="tax-sources"></ul>
       </div>
     </details>
-    <p class="note verify"><strong>Это ориентир, не консультация.</strong> Упрощения: шкала посчитана без совместной декларации и льгот; у владельца с работой по найму необлагаемая сумма считается уже использованной зарплатой; вычет половины взноса на здоровье учтён только для ryczałt; у эстонского CIT есть условия по найму сотрудников, источники по ним расходятся. Форму и режим выбираем с бухгалтером.</p>
   </section>
 
-  <section id="limits" data-nav="Что не учтено">
+  <section id="inputs" data-nav="Вводные">
     <div class="sec-head">
-      <div class="eyebrow">Что не учтено</div>
-      <h2>Границы расчёта.</h2>
+      <div class="eyebrow">Вводные</div>
+      <h2>На чём всё посчитано.</h2>
     </div>
     <div class="grid">
       <div class="card">
-        <h3>В расходах нет</h3>
+        <h3>Чего у нас нет фактом</h3>
         <ul class="small">
-          <li>зарплат и ZUS;</li>
-          <li>налога на доход в результатах сценариев — он посчитан отдельно, в разделе «Налоги»;</li>
-          <li>списаний остатков размеров и брака;</li>
-          <li>образцов и оборотных денег сверх закупки на месяц.</li>
+          <li>оптовых цен — ни украинских, ни польских, ни Merlot;</li>
+          <li>списка товаров Даши для польской базы;</li>
+          <li>наших цен в Польше — здесь стоят предложенные;</li>
+          <li>условий партнёрской программы — взят черновик из <a href="concept.html">концепции</a>.</li>
         </ul>
       </div>
       <div class="card">
-        <h3>На странице нет</h3>
+        <h3>Что не учтено</h3>
         <ul class="small">
-          <li>цен DIQPET: прайс пришёл в личном письме, расчёт по нему лежит у команды в файле;</li>
-          <li>оптовых цен польской базы: закупка посчитана от розницы через долю 40% из концепции.</li>
+          <li>зарплаты и ZUS команды;</li>
+          <li>остатки размеров и брак;</li>
+          <li>образцы и запас денег на товар;</li>
+          <li>цены DIQPET: прайс пришёл в личном письме.</li>
         </ul>
       </div>
       <div class="card">
-        <h3>Проверить</h3>
+        <h3>Где менять цифры</h3>
         <ul class="small">
-          <li>режим VAT и постоянные расходы — у бухгалтера;</li>
-          <li>пошлину и код товара — у таможенного агента, см. <a href="import.html">«Импорт»</a>;</li>
-          <li>условия партнёрской программы — это черновик из <a href="concept.html">концепции</a>.</li>
+          <li>для всех — в файле <code>economics-data.js</code>: новый прайс, цена, ссылка;</li>
+          <li>для себя — в полях на этой странице, правки остаются в вашем браузере;</li>
+          <li>пошлина и ввоз — см. <a href="import.html">«Импорт»</a>.</li>
         </ul>
       </div>
     </div>
+    <details class="how mt">
+      <summary>Все вводные: курсы, расходы, партнёрская программа</summary>
+      <div>
+        <div class="params" id="params"></div>
+        <p class="legend mt"><span class="guess">Точка</span> — допущение, которого у нас пока нет фактом.</p>
+      </div>
+    </details>
   </section>
 </main>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const KEY = "econ-02"; // bump when the order of items or scenarios changes: overrides are stored by position
+  const KEY = "econ-03"; // bump when the order of items or scenarios changes: overrides are stored by position
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const defs = ECON.inputs.flatMap(g => g.items);
-  const fresh = () => ({ v: {}, vatPayer: null, items: {}, mix: {}, orders: {} });
+  const fresh = () => ({ v: {}, items: {}, mix: {}, orders: {} });
   let saved = fresh();
   try { saved = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
-  let scenario = "normal", srcFilter = "all", employed = true, zus = "start";
+  // the three switches at the top are a what-if view and are never stored
+  const view = { scenario: "normal", payer: ECON.vatPayer, disc: null };
+  let srcFilter = "all", employed = true, zus = "start";
 
   const store = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
-  const dirty = () => saved.vatPayer !== null || [saved.v, saved.items, saved.mix, saved.orders].some(o => Object.keys(o).length);
+  const dirty = () => [saved.v, saved.items, saved.mix, saved.orders].some(o => Object.keys(o).length);
 
   const nf = (n, d = 0) => n.toLocaleString("ru-RU", { minimumFractionDigits: d, maximumFractionDigits: d });
   const zl = (n, d = 0) => `${n < 0 ? "−" : ""}${nf(Math.abs(n), d)} zł`;
   const pct = (n, d = 0) => `${n < 0 ? "−" : ""}${nf(Math.abs(n) * 100, d)}%`;
   const cls = n => n < 0 ? ' class="num neg"' : ' class="num"';
   const parse = s => { const n = parseFloat(String(s).replace(/\s/g, "").replace(",", ".")); return Number.isFinite(n) ? n : null; };
+  const kpi = (label, value, text) => `<div class="card kpi"><span>${label}</span><b${value.startsWith("−") ? ' class="neg"' : ""}>${value}</b><p>${text}</p></div>`;
 
   function model(forcePayer) {
     const p = Object.fromEntries(defs.map(d => [d.key, d.key in saved.v ? saved.v[d.key] : d.value]));
-    const payer = forcePayer !== undefined ? forcePayer : saved.vatPayer === null ? ECON.vatPayer : saved.vatPayer;
+    if (view.disc !== null) p.discUa = view.disc;
+    const payer = forcePayer !== undefined ? forcePayer : view.payer;
     const net = price => price / (1 + (payer ? p.vat : 0));
-    // costs that grow with the price, and costs paid once per order
-    const share = price => price * (1 - p.pShare * p.pDisc) * p.pay + p.pShare * p.pDisc * net(price) + p.pShare * p.pComm * price * (1 - p.pDisc);
-    const orderCosts = (price, sized, main) => share(price) + main * (p.payFix + p.pack + sized * p.exShare * p.exCost + (price >= p.freeFrom ? p.deliv : 0));
+    // costs that grow with the price: the payment fee, and the partner's discount and commission
+    const fee = price => price * (1 - p.pShare * p.pDisc) * p.pay;
+    const partner = price => p.pShare * p.pDisc * net(price) + p.pShare * p.pComm * price * (1 - p.pDisc);
+    const orderCosts = (price, sized, main) => fee(price) + partner(price) + main * (p.payFix + p.pack + sized * p.exShare * p.exCost + (price >= p.freeFrom ? p.deliv : 0));
 
     const items = ECON.items.map((it, i) => {
       const o = Object.assign({}, it, saved.items[i] || {});
@@ -310,15 +348,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const avg = (list, f) => list.length ? list.reduce((s, x) => s + f(x), 0) / list.length : 0;
     const groups = ECON.sources.map(name => {
       const list = items.filter(x => x.src === name && x.on && x.main), b = name === "Польская база" ? p.plBasket : 1;
-      const aov = avg(list, x => x.pl) * b;
+      const aov = avg(list, x => x.pl) * b, rev = avg(list, x => x.rev) * b, cost = avg(list, x => x.cost) * b;
       const delivery = b === 1 ? avg(list, x => x.pl >= p.freeFrom ? p.deliv : 0) : aov >= p.freeFrom ? p.deliv : 0;
-      const contrib = list.length ? b * avg(list, x => x.gross - share(x.pl)) - p.payFix - p.pack - avg(list, x => x.sized) * p.exShare * p.exCost - delivery : 0;
-      return { name, b, aov, cost: avg(list, x => x.cost) * b, contrib, n: list.length };
+      const part = b * avg(list, x => partner(x.pl));
+      const service = list.length ? b * avg(list, x => fee(x.pl)) + p.payFix + p.pack + avg(list, x => x.sized) * p.exShare * p.exCost + delivery : 0;
+      return { name, b, aov, rev, cost, part, service, contrib: rev - cost - part - service, n: list.length };
     });
     const stages = ECON.stages.map((st, s) => {
       const mix = st.mix.map((m, g) => `${s}-${g}` in saved.mix ? saved.mix[`${s}-${g}`] : m);
       const sum = f => groups.reduce((t, g, k) => t + f(g) * mix[k], 0);
-      return Object.assign({}, st, { mix, total: mix.reduce((a, b) => a + b, 0), aov: sum(g => g.aov), cost: sum(g => g.cost), contrib: sum(g => g.contrib) });
+      return Object.assign({}, st, { mix, total: mix.reduce((a, b) => a + b, 0), aov: sum(g => g.aov), rev: sum(g => g.rev), cost: sum(g => g.cost), part: sum(g => g.part), service: sum(g => g.service), contrib: sum(g => g.contrib) });
     });
     const fixed = p.platform + p.acc + p.adsDay * 30 + p.other;
     const scenarios = ECON.scenarios.map(sc => {
@@ -329,10 +368,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return { m, orders, changed: orders !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov, res, cum, repeat: ECON.repeat[m], fresh: Math.ceil(orders * (1 - ECON.repeat[m])), stock: orders * st.cost };
       });
       const tot = f => months.reduce((s, x) => s + f(x), 0);
-      return Object.assign({}, sc, { months, low, orders: tot(x => x.orders), rev: tot(x => x.rev), res: tot(x => x.res), fresh: tot(x => x.fresh), stock: tot(x => x.stock), run: months[11].rev * 12 });
+      return Object.assign({}, sc, { months, low, orders: tot(x => x.orders), rev: tot(x => x.rev), res: tot(x => x.res), fresh: tot(x => x.fresh), stock: tot(x => x.stock), run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
     });
     const even = stages.map(st => st.contrib > 0 ? Math.ceil(fixed / st.contrib) : null);
-    return { p, payer, items, groups, stages, fixed, scenarios, even, ceilOrders: stages[2].aov ? Math.ceil(p.ceiling / 12 / stages[2].aov) : null };
+    return { p, payer, items, groups, stages, fixed, scenarios, even };
   }
 
   // owner taxes and contributions for a year: profit is the company result before them, rev is yearly sales
@@ -358,93 +397,127 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
   }
 
+  const buttons = (attr, list, on) => list.map(([v, label]) => `<button class="btn" data-${attr}="${v}" aria-pressed="${String(v) === String(on)}">${label}</button>`).join("");
+
   function render() {
-    const M = model(), base = M.scenarios.find(s => s.id === "normal"), cur = M.scenarios.find(s => s.id === scenario);
+    const M = model(), T = ECON.tax, cur = M.scenarios.find(s => s.id === view.scenario), st = M.stages[0], last = M.stages[2];
     $("local-note").hidden = !dirty();
-    $("vat-off").setAttribute("aria-pressed", String(!M.payer)); $("vat-on").setAttribute("aria-pressed", String(M.payer));
 
-    const kpi = (label, value, text) => `<div class="card kpi"><span>${label}</span><b${value.startsWith("−") ? ' class="neg"' : ""}>${value}</b><p>${text}</p></div>`;
+    // main
+    const plus = cur.firstPlus;
+    $("headline").textContent = M.even[0] ? `Выходим в ноль с ${M.even[0]} заказов в месяц.` : "С заказа ничего не остаётся — в ноль не выйти.";
     $("kpis").innerHTML = [
-      kpi("Вклад с заказа", `${zl(M.stages[0].contrib)} → ${zl(M.stages[2].contrib)}`, `От этапа 1 к этапу 3, при среднем чеке ${zl(M.stages[0].aov)} → ${zl(M.stages[2].aov)}.`),
-      kpi("Безубыточность, заказов в месяц", M.even[0] ? String(M.even[0]) : "нет", `На этапе 1 при постоянных расходах ${zl(M.fixed)} в месяц; на этапе 3 — ${M.even[2] || "нет"}.`),
-      kpi("Оборот за первый год", zl(base.rev), `Сценарий «Нормально»: ${nf(base.orders)} заказов, ${nf(base.fresh)} новых клиентов.`),
-      kpi("Результат за первый год", zl(base.res), `После постоянных расходов. Самая глубокая просадка: ${zl(base.low)}.`),
-      kpi("Темп на 12-й месяц", zl(base.run), `Оборот месяца × 12 — это ${pct(base.run / M.p.ceiling)} от потолка ниши. До потолка нужно ${nf(M.ceilOrders)} заказов в месяц.`),
-      kpi("Закупка товара за год", zl(base.stock), `По себестоимости в сценарии «Нормально». Первая закупка — около 10 000 zł.`),
+      kpi("Остаётся с одного заказа", zl(st.contrib), `Из среднего заказа ${zl(st.aov)} — после товара и расходов на сам заказ.`),
+      kpi("Заказов в месяц для нуля", M.even[0] ? String(M.even[0]) : "нет", `Столько покрывает ${zl(M.fixed)} постоянных расходов: платформа, бухгалтерия, реклама.`),
+      kpi(`Первый год, «${cur.title}»`, zl(cur.res), plus < 0 ? `Ни одного месяца в плюсе. Оборот — ${zl(cur.rev)}.` : `Месяцы в плюсе — с ${plus + 1}-го. Оборот — ${zl(cur.rev)}.`),
     ].join("");
+    document.querySelector('[data-lever="scenario"]').innerHTML = buttons("sc", M.scenarios.map(s => [s.id, s.title]), view.scenario);
+    document.querySelector('[data-lever="vat"]').innerHTML = buttons("vat", [[false, "Без VAT"], [true, "Плательщик VAT"]], view.payer);
+    document.querySelector('[data-lever="disc"]').innerHTML = buttons("disc", [["0", "По рознице бренда"], ["0.2", "Опт −20%"], ["0.35", "Опт −35%"]], view.disc === null ? M.p.discUa : view.disc);
 
-    $("params").innerHTML = ECON.inputs.map(g => `<div class="card"><h3>${g.group}</h3>${g.items.map(d => {
-      const v = M.p[d.key], shown = d.unit === "%" ? nf(v * 100, v * 100 % 1 ? 1 : 0) : nf(v, d.digits || 0).replace(/\s/g, " ");
-      return `<div class="param"><label for="p-${d.key}"${d.guess ? ' class="guess"' : ""} title="${esc(d.src)}">${d.label}</label><input class="in${d.key in saved.v ? " changed" : ""}" type="text" inputmode="decimal" id="p-${d.key}" data-param="${d.key}" value="${shown}"><span class="unit">${d.unit || ""}</span></div>`;
-    }).join("")}</div>`).join("");
+    // one order
+    const vatPart = st.aov - st.rev;
+    const parts = [
+      ["c-goods", "Товар", "закупка, доставка, пошлина" + (M.payer ? "" : " и налог на ввозе"), st.cost],
+      ["c-partner", "Партнёрам", "скидка клиенту по коду и комиссия кинологу", st.part],
+      ["c-service", "Расходы на заказ", "оплата картой, упаковка, обмен размера, доставка", st.service],
+      ...(M.payer ? [["c-vat", "VAT с продажи", "уходит в бюджет", vatPart]] : []),
+      ["c-left", "Остаётся", "на постоянные расходы и прибыль", st.contrib],
+    ];
+    $("order-lead").textContent = `Средний заказ на старте — ${zl(st.aov)}. Из них магазину остаётся ${zl(st.contrib)}, то есть ${pct(st.contrib / st.aov)}.`;
+    $("split").innerHTML = parts.filter(x => x[3] > 0).map(x => `<i class="${x[0]}" style="width:${(x[3] / st.aov * 100).toFixed(2)}%" title="${x[1]}: ${zl(x[3])}"></i>`).join("");
+    $("split").setAttribute("aria-label", parts.map(x => `${x[1]} ${zl(x[3])}`).join(", "));
+    $("lines").innerHTML = parts.map((x, k) => `<li${k === parts.length - 1 ? ' class="sum"' : ""}><i class="${x[0]}"></i><span>${x[1]}<small>${x[2]}</small></span><b${x[3] < 0 ? ' class="neg"' : ""}>${zl(x[3])}</b></li>`).join("");
+    $("order-note").innerHTML = `Когда появятся корейские товары, средний заказ вырастет до ${zl(last.aov)}, а остаток — до ${zl(last.contrib)}.`;
+    M.stages.forEach((s, k) => { $("st-" + k).innerHTML = `${s.title}<br>${s.months}`; });
+    $("sources-body").innerHTML = M.groups.map((g, k) => `<tr><td class="name"><b>${g.name}</b><span>среднее по ${g.n} товарам</span></td>
+      <td class="num">${zl(g.aov)}</td><td class="num">${zl(g.cost)}</td><td${cls(g.contrib)}>${zl(g.contrib)}<br><span class="muted">${g.aov ? pct(g.contrib / g.aov) : "—"}</span></td>
+      ${M.stages.map((s, j) => `<td class="num${j ? "" : " sep"}"><input class="in${`${j}-${k}` in saved.mix ? " changed" : ""}" type="text" inputmode="decimal" data-mix="${j}-${k}" value="${nf(s.mix[k] * 100)}" aria-label="Доля заказов, %: ${g.name}, ${s.title}"> %</td>`).join("")}</tr>`).join("") +
+      [["Средний заказ на этапе", s => zl(s.aov)], ["Остаётся с заказа на этапе", s => zl(s.contrib)], ["Сумма долей", s => `<span${Math.abs(s.total - 1) > .001 ? ' class="neg"' : ""}>${pct(s.total)}</span>`]]
+        .map(([label, f]) => `<tr class="total"><td colspan="4">${label}</td>${M.stages.map((s, j) => `<td class="num${j ? "" : " sep"}">${f(s)}</td>`).join("")}</tr>`).join("");
 
-    $("src-filter").innerHTML = ["all", ...ECON.sources].map(v => `<button class="btn" data-src="${v}" aria-pressed="${v === srcFilter}">${v === "all" ? "Все" : v} · ${M.items.filter(x => v === "all" || x.src === v).length}</button>`).join("");
-    $("items-body").innerHTML = M.items.filter(x => srcFilter === "all" || x.src === srcFilter).map(x => {
-      const ch = saved.items[x.i] || {};
-      const first = x.local
-        ? `<input class="in${"buyNet" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="buyNet" value="${nf(x.buyNet, 2)}" aria-label="Опт без VAT, zł: ${esc(x.name)}"> zł<br><span class="muted">опт без VAT</span>`
-        : `<input class="in${"home" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="home" value="${nf(x.home)}" aria-label="Цена дома, ${x.cur}: ${esc(x.name)}"> ${x.cur}<br><span class="muted">${zl(x.homeZl)}</span>`;
-      return `<tr${x.on ? "" : ' class="off"'}><td class="name"><b><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a></b><span>${x.brand} · ${x.src}${x.main ? "" : " · добавка к заказу"}</span></td>
-        <td class="num">${first}</td>
-        <td class="num">${zl(x.cost)}</td>
-        <td class="num"><input class="in${"pl" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="pl" value="${nf(x.pl)}" aria-label="Цена в Польше, zł: ${esc(x.name)}"> zł</td>
-        <td${cls(x.gross)}>${zl(x.gross)}<br><span class="muted">${pct(x.gross / x.rev)}</span></td>
-        <td${cls(x.contrib)}>${zl(x.contrib)}<br><span class="muted">${pct(x.contrib / x.rev)}</span></td>
-        <td class="num">${x.need === null ? "—" : x.need <= 0 ? "не нужна" : pct(x.need)}</td>
-        <td><input type="checkbox" data-item="${x.i}" data-f="on"${x.on ? " checked" : ""} aria-label="В расчёте: ${esc(x.name)}"></td></tr>`;
+    // plan
+    $("plan-head").textContent = plus < 0 ? `«${cur.title}»: за год в плюс не выходим.` : `«${cur.title}»: в плюсе с ${plus + 1}-го месяца.`;
+    $("plan-lead").textContent = `За год — ${nf(cur.orders)} заказов и ${zl(cur.rev)} оборота. Итог после постоянных расходов: ${zl(cur.res)}. В худший момент в минусе ${zl(Math.abs(cur.low))}. На товар за год нужно около ${zl(cur.stock)}, первая закупка — 10 000 zł.`;
+    const top = Math.max(1, ...cur.months.map(x => x.res)), bottom = Math.max(1, ...cur.months.map(x => -x.res)), scale = Math.max(top / 110, bottom / 46);
+    $("chart").innerHTML = cur.months.map(x => `<div class="mon${x.m === plus ? " first" : ""}" title="Месяц ${x.m + 1}: ${nf(x.orders)} заказов, ${zl(x.res)}"><span>${nf(x.orders)}</span>
+      <div class="up">${x.res > 0 ? `<i style="height:${Math.max(2, x.res / scale).toFixed(1)}px"></i>` : ""}</div>
+      <div class="down">${x.res < 0 ? `<i style="height:${Math.max(2, -x.res / scale).toFixed(1)}px"></i>` : ""}</div><span>${x.m + 1}</span></div>`).join("");
+    $("chart").setAttribute("aria-label", cur.months.map(x => `месяц ${x.m + 1}: ${zl(x.res)}`).join("; "));
+    $("checks").innerHTML = ECON.checkpoints.filter(c => c.month).map(c => {
+      const x = cur.months[c.month - 1];
+      return kpi(c.title, `${nf(x.orders)} заказов в месяц`, `Оборот ${zl(x.rev)}, результат месяца ${zl(x.res)}. Повторных заказов ${pct(x.repeat)}, активных партнёров ${c.partners}.`);
     }).join("");
-
-    M.stages.forEach((st, s) => { $("st-" + s).innerHTML = `${st.title}<br>${st.months}`; });
-    $("sources-body").innerHTML = M.groups.map((g, k) => `<tr><td class="name"><b>${g.name}</b><span>среднее по ${g.n} поз. в расчёте${g.b !== 1 ? `, ${nf(g.b, 1)} товара в заказе` : ""}</span></td>
-      <td class="num">${zl(g.aov)}</td><td class="num">${zl(g.cost)}</td><td${cls(g.contrib)}>${zl(g.contrib)}</td><td class="num">${g.aov ? pct(g.contrib / g.aov) : "—"}</td>
-      ${M.stages.map((st, s) => `<td class="num${s ? "" : " sep"}"><input class="in${`${s}-${k}` in saved.mix ? " changed" : ""}" type="text" inputmode="decimal" data-mix="${s}-${k}" value="${nf(st.mix[k] * 100)}" aria-label="Доля заказов, %: ${g.name}, ${st.title}"> %</td>`).join("")}</tr>`).join("") +
-      [["Средний чек", st => zl(st.aov)], ["Вклад с заказа", st => zl(st.contrib)], ["Сумма долей", st => `<span${Math.abs(st.total - 1) > .001 ? ' class="neg"' : ""}>${pct(st.total)}</span>`]]
-        .map(([label, f]) => `<tr class="total"><td colspan="5">${label} на этапе</td>${M.stages.map((st, s) => `<td class="num${s ? "" : " sep"}">${f(st)}</td>`).join("")}</tr>`).join("");
-
-    $("scenarios").innerHTML = M.scenarios.map(s => `<button class="btn" data-sc="${s.id}" aria-pressed="${s.id === scenario}">${s.title}</button>`).join("");
     $("goals-body").innerHTML = cur.months.map(x => `<tr><td>${x.m + 1}</td>
       <td class="num"><input class="in${x.changed ? " changed" : ""}" type="text" inputmode="numeric" data-order="${cur.id}-${x.m}" value="${nf(x.orders)}" aria-label="Заказов, месяц ${x.m + 1}"></td>
       <td class="num">${zl(x.aov)}</td><td class="num">${zl(x.rev)}</td><td${cls(x.res)}>${zl(x.res)}</td><td${cls(x.cum)}>${zl(x.cum)}</td>
       <td class="num">${pct(x.repeat)}</td><td class="num">${nf(x.fresh)}</td><td class="num">${zl(x.stock)}</td></tr>`).join("") +
       `<tr class="total"><td>Год</td><td class="num">${nf(cur.orders)}</td><td></td><td class="num">${zl(cur.rev)}</td><td${cls(cur.res)}>${zl(cur.res)}</td><td></td><td></td><td class="num">${nf(cur.fresh)}</td><td class="num">${zl(cur.stock)}</td></tr>`;
-    $("goal-sum").innerHTML = [
-      kpi("Оборот за год", zl(cur.rev), `Сценарий «${cur.title}», ${nf(cur.orders)} заказов.`),
-      kpi("Результат за год", zl(cur.res), `Самая глубокая просадка: ${zl(cur.low)}.`),
-      kpi("Темп на 12-й месяц", zl(cur.run), `${pct(cur.run / M.p.ceiling)} от потолка ниши.`),
-    ].join("");
 
-    $("check-body").innerHTML = ECON.checkpoints.map(c => {
-      const x = c.month ? base.months[c.month - 1] : null;
-      return `<tr><td>${c.title}</td>${x ? `<td class="num">${nf(x.orders)}</td><td class="num">${zl(x.rev)}</td><td class="num">${zl(x.contrib)}</td><td${cls(x.res)}>${zl(x.res)}</td><td class="num">${pct(x.repeat)}</td><td class="num">${nf(x.fresh)}</td>` : `<td class="num">—</td>`.repeat(6)}<td>${c.partners}</td></tr>`;
+    // goods
+    const fit = x => x.contrib < 0 ? 2 : x.contrib / x.rev < .15 ? 1 : 0, byFit = [0, 1, 2].map(f => M.items.filter(x => fit(x) === f));
+    byFit.forEach(l => l.sort((x, y) => y.contrib - x.contrib));
+    const list = l => `<ul>${l.map(x => `<li><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)} <small>${x.brand}</small></a><span${x.contrib < 0 ? ' class="neg"' : ""}>${zl(x.contrib)}</span></li>`).join("") || "<li><small>нет</small></li>"}</ul>`;
+    $("goods-head").textContent = `В плюс продаются ${byFit[0].length + byFit[1].length} из ${M.items.length} товаров.`;
+    $("fits").innerHTML = [["Проходит", "tag"], ["На грани", "tag new"], ["Не проходит", "tag plain"]].map(([title, tag], f) => `<div class="card"><span class="${tag}">${title} · ${byFit[f].length}</span>
+      ${list(byFit[f].slice(0, 8))}${byFit[f].length > 8 ? `<details class="how"><summary>ещё ${byFit[f].length - 8}</summary>${list(byFit[f].slice(8))}</details>` : ""}</div>`).join("");
+    const bad = [...new Set(byFit[2].map(x => x.brand))];
+    $("goods-note").innerHTML = bad.length ? `<strong>Не проходит: ${bad.join(", ")}.</strong> При закупке по рознице бренда эти товары выходят дороже, чем похожие в польских магазинах. Им нужен опт: переключите «Закупка в Украине» наверху и посмотрите, что изменится.` : `<strong>Все товары продаются в плюс.</strong> Справа от названия — сколько остаётся с продажи одной штуки.`;
+    $("src-filter").innerHTML = buttons("src", ["all", ...ECON.sources].map(v => [v, `${v === "all" ? "Все" : v} · ${M.items.filter(x => v === "all" || x.src === v).length}`]), srcFilter);
+    $("items-body").innerHTML = M.items.filter(x => srcFilter === "all" || x.src === srcFilter).map(x => {
+      const ch = saved.items[x.i] || {};
+      const first = x.local
+        ? `<input class="in${"buyNet" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="buyNet" value="${nf(x.buyNet, 2)}" aria-label="Опт без VAT, zł: ${esc(x.name)}"> zł<br><span class="muted">опт без VAT</span>`
+        : `<input class="in${"home" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="home" value="${nf(x.home)}" aria-label="Цена бренда, ${x.cur}: ${esc(x.name)}"> ${x.cur}<br><span class="muted">${zl(x.homeZl)}</span>`;
+      return `<tr${x.on ? "" : ' class="off"'}><td class="name"><b><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a></b><span>${x.brand} · ${x.src}${x.main ? "" : " · добавка к заказу"}</span></td>
+        <td class="num">${first}</td><td class="num">${zl(x.cost)}</td>
+        <td class="num"><input class="in${"pl" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="pl" value="${nf(x.pl)}" aria-label="Наша цена, zł: ${esc(x.name)}"> zł</td>
+        <td${cls(x.gross)}>${zl(x.gross)}<br><span class="muted">${pct(x.gross / x.rev)}</span></td>
+        <td${cls(x.contrib)}>${zl(x.contrib)}<br><span class="muted">${pct(x.contrib / x.rev)}</span></td>
+        <td class="num">${x.need === null ? "—" : x.need <= 0 ? "не нужна" : pct(x.need)}</td>
+        <td><input type="checkbox" data-item="${x.i}" data-f="on"${x.on ? " checked" : ""} aria-label="В расчёте: ${esc(x.name)}"></td></tr>`;
     }).join("");
     $("market-body").innerHTML = ECON.market.map(r => `<tr><td>${r.what}</td><td class="num">${r.price}</td><td>${r.note}<span class="links">${r.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</span></td></tr>`).join("");
 
     // taxes
-    const T = ECON.tax;
-    $("tax-scenarios").innerHTML = M.scenarios.map(s => `<button class="btn" data-sc="${s.id}" aria-pressed="${s.id === scenario}">${s.title}</button>`).join("");
+    const rows = taxes(cur.res, cur.rev, M.p.acc), other = model(!M.payer), over = !M.payer && cur.rev > T.vatLimit;
+    const overMonth = over ? cur.months.findIndex((x, k) => cur.months.slice(0, k + 1).reduce((a, y) => a + y.rev, 0) > T.vatLimit) + 1 : 0;
+    $("tax-lead").textContent = cur.res > 0
+      ? `В сценарии «${cur.title}» прибыль за первый год — ${zl(cur.res)}. Компания у нас sp. z o.o.: налог зависит от того, оставляем прибыль в компании или выводим, и от числа участников.`
+      : `В сценарии «${cur.title}» первый год заканчивается в минус, налога на прибыль нет. Остаются только взносы — если они есть у выбранной формы.`;
+    $("tax-cards").innerHTML = [
+      kpi("Прибыль остаётся в компании", pct(T.cit), `CIT: ${zl(rows[3].tax)} в этом сценарии. Участники взносов не платят, если их двое или больше.`),
+      kpi("Прибыль выводим участникам", pct(1 - (1 - T.cit) * (1 - T.dividend)), `CIT плюс 19% с дивидендов: ${zl(rows[4].tax)} в этом сценарии.`),
+      kpi("Если участник один", `+${zl(rows[5].contrib)} в год`, `Взносы, которые он платит сам, даже при убытке. ${employed ? "Посчитано для участника с работой по найму." : "Посчитано для участника без работы по найму."}`),
+      kpi("VAT", M.payer ? "Плательщик" : "Без VAT", over
+        ? `Продажи за год ${zl(cur.rev)} — выше лимита ${zl(T.vatLimit)}: освобождение закончится примерно на ${overMonth}-м месяце.`
+        : `${M.payer ? "Без VAT" : "Плательщиком"} с заказа оставалось бы ${zl(other.stages[0].contrib)} вместо ${zl(st.contrib)}.`),
+    ].join("");
     $("tax-employed").checked = employed; $("tax-zus").value = zus; $("tax-zus").disabled = employed;
-    $("vat-body").innerHTML = [[false, "Без VAT (освобождение)"], [true, "Плательщик VAT"]].map(([mode, label]) => {
-      const V = model(mode), sc = V.scenarios.find(s => s.id === scenario);
-      return `<tr><td class="name"><b>${label}</b><span>${mode === M.payer ? "выбран в калькуляторе" : ""}</span></td><td class="num">${zl(V.stages[0].contrib)}</td><td class="num">${V.even[0] || "нет"}</td><td class="num">${zl(sc.rev)}</td><td${cls(sc.res)}>${zl(sc.res)}</td></tr>`;
-    }).join("");
-    const over = !M.payer && cur.rev > T.vatLimit;
-    $("vat-warn").hidden = !over;
-    if (over) { const m = cur.months.findIndex((x, k) => cur.months.slice(0, k + 1).reduce((a, y) => a + y.rev, 0) > T.vatLimit); $("vat-warn").innerHTML = `<strong>Лимит освобождения.</strong> В сценарии «${cur.title}» продажи за год — ${zl(cur.rev)}, это выше лимита ${zl(T.vatLimit)}: освобождение закончится примерно на ${m + 1}-м месяце, дальше расчёт без VAT завышает результат.`; }
-    const taxRow = r => `<tr><td class="name"><b>${r.name}</b><span>${r.hint}</span></td><td${cls(r.base)}>${zl(r.base)}</td><td class="num">${zl(r.tax)}</td><td class="num">${zl(r.contrib)}</td><td class="num">${zl(r.total)}</td><td${cls(r.left)}>${zl(r.left)}</td><td class="num">${r.load === null ? "—" : pct(r.load)}</td></tr>`;
-    $("tax-body").innerHTML = taxes(cur.res, cur.rev, M.p.acc).map(taxRow).join("");
+    $("tax-body").innerHTML = rows.map(r => `<tr><td class="name"><b>${r.name}</b><span>${r.hint}</span></td><td${cls(r.base)}>${zl(r.base)}</td><td class="num">${zl(r.tax)}</td><td class="num">${zl(r.contrib)}</td><td class="num">${zl(r.total)}</td><td${cls(r.left)}>${zl(r.left)}</td><td class="num">${r.load === null ? "—" : pct(r.load)}</td></tr>`).join("");
     const byLevel = T.levels.map(l => taxes(l, l / T.profitShare, M.p.acc));
     $("lvl-head").innerHTML = `<tr><th>Форма</th>${T.levels.map(l => `<th class="num">Прибыль ${zl(l)}</th>`).join("")}</tr>`;
-    $("lvl-body").innerHTML = byLevel[0].map((r, k) => `<tr><td class="name"><b>${r.name}</b></td>${byLevel.map(rows => `<td class="num">${zl(rows[k].total)}<br><span class="muted">${rows[k].load === null ? "—" : pct(rows[k].load)}</span></td>`).join("")}</tr>`).join("");
-    $("lvl-note").textContent = `Прибыль — результат компании до налога на доход и взносов владельца. Для ryczałt оборот посчитан так, будто прибыль составляет ${pct(T.profitShare)} от него.`;
+    $("lvl-body").innerHTML = byLevel[0].map((r, k) => `<tr><td class="name"><b>${r.name}</b></td>${byLevel.map(list => `<td class="num">${zl(list[k].total)}<br><span class="muted">${list[k].load === null ? "—" : pct(list[k].load)}</span></td>`).join("")}</tr>`).join("");
+    $("lvl-note").textContent = `Сумма — налог и взносы за год, процент — их доля в прибыли. Для ryczałt оборот посчитан так, будто прибыль составляет ${pct(T.profitShare)} от него.`;
+    $("vat-body").innerHTML = [[false, "Без VAT (освобождение)"], [true, "Плательщик VAT"]].map(([mode, label]) => {
+      const V = mode === M.payer ? M : other, sc = V.scenarios.find(s => s.id === view.scenario);
+      return `<tr><td class="name"><b>${label}</b><span>${mode === M.payer ? "выбран наверху" : ""}</span></td><td class="num">${zl(V.stages[0].contrib)}</td><td class="num">${V.even[0] || "нет"}</td><td class="num">${zl(sc.rev)}</td><td${cls(sc.res)}>${zl(sc.res)}</td></tr>`;
+    }).join("");
     $("tax-params").innerHTML = T.params.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join("");
     $("tax-sources").innerHTML = T.sources.map(r => `<li><a href="${esc(r[1])}" target="_blank" rel="noopener">${r[0]}</a></li>`).join("");
+
+    // all inputs
+    $("params").innerHTML = ECON.inputs.map(g => `<div class="card"><h3>${g.group}</h3>${g.items.map(d => {
+      const v = d.key in saved.v ? saved.v[d.key] : d.value, shown = d.unit === "%" ? nf(v * 100, v * 100 % 1 ? 1 : 0) : nf(v, d.digits || 0);
+      return `<div class="param"><label for="p-${d.key}"${d.guess ? ' class="guess"' : ""} title="${esc(d.src)}">${d.label}</label><input class="in${d.key in saved.v ? " changed" : ""}" type="text" inputmode="decimal" id="p-${d.key}" data-param="${d.key}" value="${shown}"><span class="unit">${d.unit || ""}</span></div>`;
+    }).join("")}</div>`).join("");
   }
 
   // a field keeps the shared value until it is edited; an edit equal to the shared value clears the override
   const put = (bag, key, value, def) => { if (value === def) delete bag[key]; else bag[key] = value; };
   document.addEventListener("change", e => {
     const t = e.target, n = parse(t.value);
-    if (t.dataset.param) { const d = defs.find(x => x.key === t.dataset.param); if (n !== null) put(saved.v, d.key, d.unit === "%" ? n / 100 : n, d.value); }
+    if (t.dataset.param) { const d = defs.find(x => x.key === t.dataset.param); if (n !== null) put(saved.v, d.key, d.unit === "%" ? n / 100 : n, d.value); if (d.key === "discUa") view.disc = null; }
     else if (t.dataset.item) {
       const i = +t.dataset.item, f = t.dataset.f, bag = saved.items[i] || {};
       if (f === "on") put(bag, f, t.checked ? 1 : 0, ECON.items[i].on); else if (n !== null && n > 0) put(bag, f, n, f === "buyNet" ? undefined : ECON.items[i][f]);
@@ -458,15 +531,17 @@ document.addEventListener("DOMContentLoaded", () => {
     store(); render();
   });
   document.addEventListener("click", e => {
-    const sc = e.target.closest("[data-sc]"), src = e.target.closest("[data-src]");
-    if (sc) { scenario = sc.dataset.sc; render(); } else if (src) { srcFilter = src.dataset.src; render(); }
+    const b = e.target.closest("button[data-sc], button[data-vat], button[data-disc], button[data-src]"); if (!b) return;
+    if ("sc" in b.dataset) view.scenario = b.dataset.sc;
+    else if ("vat" in b.dataset) view.payer = b.dataset.vat === "true";
+    else if ("disc" in b.dataset) view.disc = +b.dataset.disc;
+    else srcFilter = b.dataset.src;
+    render();
   });
-  $("vat-off").addEventListener("click", () => { saved.vatPayer = ECON.vatPayer === false ? null : false; store(); render(); });
-  $("vat-on").addEventListener("click", () => { saved.vatPayer = ECON.vatPayer === true ? null : true; store(); render(); });
   $("reset").addEventListener("click", () => { saved = fresh(); store(); render(); });
   render();
-  // the tables are built after load, so a link to a section has to be followed again
-  if (location.hash.length > 1) { const el = document.getElementById(location.hash.slice(1)); if (el) el.scrollIntoView({ behavior: "instant" }); }
+  // the page is built after load, so a link to a section has to be followed again
+  if (location.hash.length > 1) { const el = document.getElementById(location.hash.slice(1)); if (el) { if (el.tagName === "DETAILS") el.open = true; el.scrollIntoView({ behavior: "instant" }); } }
 });
 </script>
 </body>
