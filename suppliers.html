@@ -52,6 +52,19 @@
   .links { display: flex; flex-wrap: wrap; gap: 5px; }
   .links a { font: 500 12.5px/1 var(--font-body); padding: 6px 8px; border-radius: 6px; border: 1px solid var(--line); text-decoration: none; background: var(--paper); }
   .links a:hover { border-color: var(--accent); }
+  .letter-btn { background: var(--ink); color: var(--paper); border-color: var(--ink); padding: 6px 9px; }
+  dialog.letter { width: min(680px, calc(100vw - 32px)); max-height: calc(100dvh - 48px); padding: 0; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: var(--ink); }
+  dialog.letter::backdrop { background: rgb(0 0 0 / .55); }
+  .letter-in { display: grid; gap: 14px; padding: 18px; }
+  .letter-head { display: flex; gap: 12px; align-items: start; justify-content: space-between; }
+  .letter-head h3 { margin: 0; font-size: 18px; }
+  .lf { display: grid; gap: 4px; }
+  .lf-top { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+  .lf-top span { font: 500 11px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .lf-val { margin: 0; padding: 9px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); font: 14px/1.5 var(--font-body); white-space: pre-wrap; overflow-wrap: anywhere; }
+  .lf-val.long { max-height: 42dvh; overflow-y: auto; }
+  .letter-foot { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .letter-foot .msg { font: 12px var(--font-body); color: var(--muted); margin-right: auto; }
   .review { display: grid; gap: 6px; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); }
   .review p { font-size: 14px; }
   .review b { color: var(--accent); }
@@ -76,6 +89,7 @@
   #tableView table { min-width: 1240px; font-size: 13.5px; }
   #tableView .top { margin: 0; min-width: 260px; }
   #tableView td a { display: inline-block; margin-right: 8px; white-space: nowrap; }
+  dialog.letter [hidden] { display: none; }
   @media print { .controls { display: none !important; } .sup { break-inside: avoid; } }
 </style>
 </head>
@@ -153,6 +167,21 @@
   </section>
 </main>
 
+<dialog class="letter" id="letter" aria-labelledby="letter-title">
+  <div class="letter-in">
+    <div class="letter-head">
+      <div><h3 id="letter-title"></h3><p class="small muted" id="letter-hint" style="margin:4px 0 0"></p></div>
+      <button class="btn" id="letter-close" aria-label="Закрыть">Закрыть</button>
+    </div>
+    <div id="letter-fields" style="display:grid;gap:12px"></div>
+    <div class="letter-foot">
+      <span class="msg" id="letter-msg" role="status"></span>
+      <a class="btn" id="letter-mail" target="_blank" rel="noopener">Открыть в почте</a>
+      <button class="btn letter-btn" data-copy="all">Скопировать всё</button>
+    </div>
+  </div>
+</dialog>
+
 <footer class="wrap">
   <span>Рядом с собакой · поставщики · версия 03 · 13.10.2026</span>
   <a href="index.html">Вернуться к концепции</a>
@@ -222,7 +251,14 @@ const SUPPLIERS = [
     "url": "https://rozetka.com.ua/ua/252786746/p252786746/",
     "img": "https://content2.rozetka.com.ua/goods/images/big/559221037.jpg"
    }
-  ]
+  ],
+  "letter": {
+   "to": "noblepetco@gmail.com",
+   "channel": "Почта",
+   "subject": "Гуртова співпраця — магазин для собак у Польщі",
+   "body": "Добрий день!\n\nМене звати Дар'я, я кінологиня з Познані. Разом із командою ми запускаємо в Польщі інтернет-магазин для собак: невеликий асортимент, який я сама рекомендую клієнтам, і продаж через мережу кінологів та грумерів.\n\nНам сподобалися ваші моделі та те, як докладно описані товари й заміри. Найбільше цікавлять дощовики Moss, пуховики Bobby та комбінезони Travis — зокрема через широку розмірну сітку з варіантами Long і Short.\n\nПідкажіть, будь ласка:\n1. Чи можете надіслати гуртовий каталог із цінами та мінімальним замовленням?\n2. Чи можна змішувати розміри в одному замовленні й замовити невеликий набір зразків?\n3. Чи маєте досвід гуртових відправлень до ЄС і які документи оформлюєте (експортна декларація, декларація про походження)?\n4. Чи можете надати склад тканин і дані про водовідштовхувальне просочення? Вони потрібні нам для маркування в ЄС.\n\nНам зручно листуватися українською або англійською.\n\nДякую і гарного дня!\nДар'я [прізвище]\n[телефон, Instagram]",
+   "hint": "Перед отправкой вписать фамилию и контакты и дать текст прочитать носителю украинского."
+  }
  },
  {
   "name": "BioIntellect",
@@ -285,7 +321,14 @@ const SUPPLIERS = [
     "url": "https://biointellect.net/perestibka-dlia-sobak-do-10kh-3m/566/",
     "img": "https://biointellect.net/content/images/17/500x500l85nn0/perestibka-dlia-sobak-do-10kh-3m566-92747142288749.webp"
    }
-  ]
+  ],
+  "letter": {
+   "to": "biointellectanimals@gmail.com",
+   "channel": "Почта",
+   "subject": "Гуртова співпраця — магазин для собак у Польщі",
+   "body": "Добрий день!\n\nМене звати Дар'я, я кінологиня з Познані. Разом із командою ми запускаємо в Польщі інтернет-магазин амуніції для собак: невеликий асортимент, який я сама рекомендую клієнтам, і продаж через мережу кінологів та грумерів.\n\nАмуніцію з BioThane ми знаємо з власного досвіду — вона служить роками. Прочитали вашу статтю про гуртове партнерство й хочемо обговорити співпрацю. Найбільше нас цікавлять повідці з полегшеного біотану для собак до 10 кг, класичні повідці, анатомічні шлейки та перестібки.\n\nПідкажіть, будь ласка:\n1. Чи можете надіслати комерційну пропозицію: гуртові ціни та мінімальне замовлення?\n2. Чи можна замовити невелику пробну партію або зразки?\n3. Чи маєте досвід відправлень до ЄС для магазинів і які документи оформлюєте (експортна декларація, декларація про походження)?\n4. Чи є у вас уже партнери в Польщі?\n5. Які умови брендування амуніції логотипом магазину?\n\nНам зручно листуватися українською або англійською.\n\nДякую і гарного дня!\nДар'я [прізвище]\n[телефон, Instagram]",
+   "hint": "Перед отправкой вписать фамилию и контакты и дать текст прочитать носителю украинского."
+  }
  },
  {
   "name": "IPO4YOU",
@@ -355,7 +398,14 @@ const SUPPLIERS = [
     "url": "https://www.ipo4you.com.ua/ua/product/kusalka-dynya-mini/",
     "img": "https://www.ipo4you.com.ua/wp-content/uploads/2018/10/ESB_0747-480x721.jpg"
    }
-  ]
+  ],
+  "letter": {
+   "to": "+380677062274",
+   "channel": "Мессенджер или Instagram",
+   "subject": "",
+   "body": "Добрий день! Мене звати Дар'я, я кінологиня з Познані. Ми з командою запускаємо в Польщі інтернет-магазин амуніції для собак і шукаємо постачальника спорядження для дресирування.\n\nУ вас нас цікавлять біотанові та слідові повідці, шлейки, сумки для ласощів та іграшки для тренувань.\n\nПідкажіть, будь ласка:\n1. Чи працюєте ви з магазинами гуртом і які умови: ціни, мінімальне замовлення?\n2. Що з асортименту ви виготовляєте самі?\n3. Чи відправляли вже замовлення до Польщі й які документи оформлюєте?\n\nНа яку пошту зручно надіслати докладніший лист? Дякую!",
+   "hint": "Почты на сайте нет: отправлять сообщением по телефону или в Instagram. Дать текст прочитать носителю украинского."
+  }
  },
  {
   "name": "Bark&Go",
@@ -425,7 +475,8 @@ const SUPPLIERS = [
     "url": "https://barkandgo.com.ua/shop/romper-flisoviy-hygge/",
     "img": "https://barkandgo.com.ua/WebCache/Media/shop-12198/_assets/%D0%A0%D0%BE%D0%BC%D0%BF%D0%B5%D1%80%D0%B8/ChatGPT_Image_21_%D1%81%D0%B5%D0%BD%D1%82._2026_%D0%B3.%2C_19_25_49-ratio-10x9-proportions-png.png"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "Dogs Bomba",
@@ -488,7 +539,8 @@ const SUPPLIERS = [
     "url": "https://rozetka.com.ua/ua/417762108/p417762108/",
     "img": "https://content.rozetka.com.ua/goods/images/big/408614938.jpg"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "Woofit",
@@ -550,7 +602,8 @@ const SUPPLIERS = [
     "url": "https://www.woofitdogwear.com/product/sviter-dogufljazh-2/",
     "img": "https://www.woofitdogwear.com/wp-content/uploads/2021/11/dsc_6518-640x640.png"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "ЛавГав",
@@ -605,7 +658,8 @@ const SUPPLIERS = [
     "url": "https://lavgav.ua/products/putin_cleanup-bags",
     "img": "https://lavgav.ua/rails/active_storage/disk/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaDdDVG9JYTJWNVNTSnJkbUZ5YVdGdWRITXZOSEZpTVdKMGIzUm1aWEZpY0dKcGNEZzFZbWhyZFhSMmRERnJlQzh3TVdNM1lqY3dZamd6WlRCa05UbGpNVGRsWldNME5XRTJOekk1TVRJeFkyWXpZMlpsWWpaaE5EUTJNelkwT0RWbE5UVXdNVGxqWmpjMk4yVTJNREEzQmpvR1JWUTZFR1JwYzNCdmMybDBhVzl1U1NKSGFXNXNhVzVsT3lCbWFXeGxibUZ0WlQwaWNIVjBhVzR5TFcxcGJpNXdibWNpT3lCbWFXeGxibUZ0WlNvOVZWUkdMVGduSjNCMWRHbHVNaTF0YVc0dWNHNW5CanNHVkRvUlkyOXVkR1Z1ZEY5MGVYQmxTU0lPYVcxaFoyVXZjRzVuQmpzR1ZEb1JjMlZ5ZG1salpWOXVZVzFsT2dwc2IyTmhiQT09IiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2tleSJ9fQ==--cbc620ba409c6ce0e0a0d35f71869c16640c32d4/putin2-min.png"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "Vitameat",
@@ -660,7 +714,8 @@ const SUPPLIERS = [
     "url": "https://vitameat.com.ua/product/rubets-kovbaskamy/",
     "img": "https://vitameat.com.ua/wp-content/uploads/2026/09/T3l8w7WybC-300x300.webp"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "BASIC.FOOD",
@@ -693,7 +748,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "Не начаты",
   "reviews": "Данных нет: на Rozetka бренда нет, сайт не отдаёт список товаров.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "Pet Fashion",
@@ -755,7 +811,8 @@ const SUPPLIERS = [
     "url": "https://rozetka.com.ua/ua/569534710/p569534710/",
     "img": "https://content.rozetka.com.ua/goods/images/big/434422528.jpg"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "Montmorency",
@@ -788,7 +845,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "Не начаты",
   "reviews": "Данных не нашли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "БроніК9",
@@ -821,7 +879,8 @@ const SUPPLIERS = [
   "catalog": "https://bronik9.com.ua/category/5268-nashijniki-ta-povodki",
   "talks": "Не начаты",
   "reviews": "Данных не нашли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "Best 4 Dogs",
@@ -854,7 +913,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "Не начаты",
   "reviews": "Данных не нашли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "Mr. Snoopy",
@@ -888,7 +948,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "Не начаты",
   "reviews": "Данных не нашли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "Rebellious Collars",
@@ -921,7 +982,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "Не начаты",
   "reviews": "Данных не нашли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "Dogtag",
@@ -954,7 +1016,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "Не начаты",
   "reviews": "Данных не нашли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "Ласощі з села",
@@ -987,7 +1050,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "Не начаты",
   "reviews": "Данных не нашли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "SNACK'ON",
@@ -1020,7 +1084,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "Не начаты",
   "reviews": "Данных не нашли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "Harley&Cho",
@@ -1075,7 +1140,8 @@ const SUPPLIERS = [
     "url": "https://rozetka.com.ua/ua/575716819/p575716819/",
     "img": "https://content.rozetka.com.ua/goods/images/big/242718694.jpg"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "Collar / WAUDOG",
@@ -1138,7 +1204,8 @@ const SUPPLIERS = [
     "url": "https://rozetka.com.ua/ua/569423944/p569423944/",
     "img": "https://content1.rozetka.com.ua/goods/images/big/643318174.jpg"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "Bronzedog",
@@ -1194,7 +1261,8 @@ const SUPPLIERS = [
     "url": "https://rozetka.com.ua/ua/305319368/p305319368/",
     "img": "https://content1.rozetka.com.ua/goods/images/big/187828547.jpg"
    }
-  ]
+  ],
+  "letter": null
  },
  {
   "name": "DIQPET",
@@ -1227,7 +1295,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "В переписке",
   "reviews": "Не проверяли.",
-  "top": []
+  "top": [],
+  "letter": null
  },
  {
   "name": "Merlot Studio",
@@ -1260,7 +1329,8 @@ const SUPPLIERS = [
   "catalog": "",
   "talks": "В переписке",
   "reviews": "Не проверяли.",
-  "top": []
+  "top": [],
+  "letter": null
  }
 ];
 
@@ -1292,7 +1362,8 @@ function selected() {
 }
 
 function linksHtml(s) {
-  const out = LINKS.filter(([key]) => s[key]).map(([key, label]) => `<a href="${esc(s[key])}" target="_blank" rel="noopener">${label}</a>`);
+  const out = s.letter ? [`<button class="btn letter-btn" data-letter="${esc(s.name)}">Письмо поставщику</button>`] : [];
+  out.push(...LINKS.filter(([key]) => s[key]).map(([key, label]) => `<a href="${esc(s[key])}" target="_blank" rel="noopener">${label}</a>`));
   if (s.email) out.push(`<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`);
   if (s.phone) out.push(`<a href="tel:${esc(s.phone)}">${esc(s.phone)}</a>`);
   return out.join("");
@@ -1377,6 +1448,39 @@ $("reset").addEventListener("click", () => { FILTERS.forEach(key => { $("f-" + k
 $("view-cards").addEventListener("click", () => setView("cards"));
 $("view-table").addEventListener("click", () => setView("table"));
 $("csv").addEventListener("click", downloadCsv);
+
+let letter = null;
+const LETTER_FIELDS = [["to", "Кому"], ["subject", "Тема"], ["body", "Текст"]];
+function openLetter(name) {
+  const s = SUPPLIERS.find(x => x.name === name);
+  letter = s.letter;
+  $("letter-title").textContent = `Письмо: ${s.name}`;
+  $("letter-hint").textContent = `${letter.channel}. ${letter.hint}`;
+  $("letter-fields").innerHTML = LETTER_FIELDS.filter(([key]) => letter[key]).map(([key, label]) =>
+    `<div class="lf"><div class="lf-top"><span>${label}</span><button class="btn" data-copy="${key}">Скопировать</button></div><p class="lf-val${key === "body" ? " long" : ""}">${esc(letter[key])}</p></div>`).join("");
+  const mail = letter.to.includes("@");
+  $("letter-mail").hidden = !mail;
+  if (mail) $("letter-mail").href = `mailto:${letter.to}?subject=${encodeURIComponent(letter.subject)}&body=${encodeURIComponent(letter.body)}`;
+  $("letter-msg").textContent = "";
+  $("letter").showModal();
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+}
+document.addEventListener("click", async e => {
+  const open = e.target.closest("[data-letter]");
+  if (open) { e.preventDefault(); openLetter(open.dataset.letter); return; }
+  const copy = e.target.closest("[data-copy]");
+  if (!copy || !letter) return;
+  const key = copy.dataset.copy;
+  const text = key === "all" ? LETTER_FIELDS.filter(([k]) => letter[k]).map(([k, label]) => k === "body" ? `\n${letter[k]}` : `${label}: ${letter[k]}`).join("\n") : letter[key];
+  await copyText(text);
+  const m = $("letter-msg"), note = key === "all" ? "Скопировано всё письмо." : "Скопировано.";
+  m.textContent = note; setTimeout(() => { if (m.textContent === note) m.textContent = ""; }, 3000);
+});
+$("letter-close").addEventListener("click", () => $("letter").close());
+$("letter").addEventListener("click", e => { if (e.target === $("letter")) $("letter").close(); });
 $("toggle-filters").addEventListener("click", e => {
   const open = $("filters").hidden;
   $("filters").hidden = !open;
