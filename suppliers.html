@@ -109,7 +109,7 @@
     <summary>Как читать список</summary>
     <div class="col small">
       <p>Производители и бренды, которых мы рассматриваем: кто что делает, где находится, как с ним связаться и на каком этапе разговор.</p>
-      <p><span class="tag">первая очередь</span> изучаем подробно. <span class="tag new">вторая очередь</span> — проверяем коммерческий потенциал: цены, качество, аудитория в Польше. <span class="tag plain">третья очередь</span> — низкий приоритет. <span class="tag plain">без приоритета</span> — очередь не назначена.</p>
+      <p><span class="tag">первая очередь</span> изучаем подробно. <span class="tag new">вторая очередь</span> — проверяем коммерческий потенциал: цены, качество, аудитория в Польше. <span class="tag plain">третья очередь</span> — низкий приоритет. <span class="tag none">без приоритета</span> — очередь не назначена.</p>
       <p><span class="tag info">в переписке</span> — разговор с поставщиком идёт. <span class="tag plain">не начаты</span> — переговоры не начаты. <span class="tag line">одежда</span> — тип товара.</p>
       <p>Приоритеты, «Оценка команды» и «Следующий шаг» — предварительная оценка команды от 13.10.2026 по первому впечатлению; цены, наличие и условия поставки требуют отдельной проверки.</p>
       <p>«Сверка с концепцией» — черновая оценка от 13.10.2026: в какие готовые наборы попадают товары поставщика и что мешает. Это не решение команды.</p>
@@ -193,7 +193,7 @@
 const FILTERS = ["country", "types", "bundles", "fit", "priority", "talks", "segment", "eu", "sizes"];
 const FILTER_LABEL = { country: "Страна", types: "Тип", bundles: "Набор", fit: "Сверка", priority: "Приоритет", talks: "Переговоры", segment: "Сегмент", eu: "В ЕС", sizes: "Размеры" };
 const PRIORITY_ORDER = ["Первая очередь", "Вторая очередь", "Третья очередь", "Без приоритета"];
-const PRIORITY_CLASS = { "Первая очередь": "tag", "Вторая очередь": "tag new", "Третья очередь": "tag plain", "Без приоритета": "tag plain" };
+const PRIORITY_CLASS = { "Первая очередь": "tag", "Вторая очередь": "tag new", "Третья очередь": "tag plain", "Без приоритета": "tag none" };
 const TALKS_IDLE = "Не начаты";
 const LINKS = [["site", "Сайт"], ["catalog", "Каталог"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"]];
 const CSV_COLS = [["name", "Название"], ["country", "Страна"], ["city", "Город"], ["types", "Тип товара"], ["sizes", "Размеры собак"], ["priority", "Приоритет"], ["talks", "Переговоры"], ["segment", "Ценовой сегмент"], ["eu", "Присутствие в ЕС"], ["opinion", "Оценка команды"], ["next", "Следующий шаг"], ["fit", "Сверка с концепцией"], ["bundles", "Наборы"], ["fit_text", "Сверка: пояснение"], ["reviews", "Отзывы и рейтинг"], ["top", "Популярные товары"], ["what", "Что делает"], ["why", "Из поиска"], ["terms", "Условия и цены"], ["note", "Заметка"], ["site", "Сайт"], ["catalog", "Каталог"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"], ["email", "Email"], ["phone", "Телефон"], ["source", "Источник"], ["checked", "Проверено"]];

@@ -141,6 +141,8 @@ li { margin-bottom: 4px; }
 .tag.new { background: var(--signal-soft); color: var(--signal); }
 .tag.plain { background: var(--line); color: var(--muted); }
 .tag.info { background: var(--info-soft); color: var(--info); }
+/* nothing assigned yet: an empty dashed slot, unlike a filled low-priority grey */
+.tag.none { background: transparent; color: var(--muted); padding: 4px 6px; border: 1px dashed var(--line-strong); }
 .tag.line { background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); }
 .tags { display: flex; flex-wrap: wrap; gap: 5px; }
 .tags .tag, .row .tag, p .tag, td .tag { margin: 0; }
