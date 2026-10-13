@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=05" defer></script>
+<script src="economics-data.js?v=06" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -144,6 +144,7 @@
     </div>
     <div class="chart" id="chart" role="img"></div>
     <p class="legend">Столбик — результат месяца после постоянных расходов: вверх плюс, вниз минус. Над столбиком — заказов в месяц, под ним — месяц года.</p>
+    <p class="note" id="pre-note"></p>
     <p class="note" id="season-note"></p>
     <h3 class="sub mt">Что для этого нужно</h3>
     <div class="grid" id="needs"></div>
@@ -379,8 +380,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return Object.assign({}, st, { mix, total: mix.reduce((a, b) => a + b, 0), aov: sum(g => g.aov), rev: sum(g => g.rev), cost: sum(g => g.cost), part: sum(g => g.part), service: sum(g => g.service), contrib: sum(g => g.contrib) });
     });
     const fixed = p.platform + p.acc + p.adsDay * 30 + p.other + p.community + p.samples + p.charity + p.assistant;
+    // pre-orders come from our own audience before launch: no partner or referral costs, and the money arrives before the first purchase
+    const pre = { orders: p.preOrders, res: p.preOrders * (stages[0].contrib + stages[0].part), rev: p.preOrders * stages[0].aov, stock: p.preOrders * stages[0].cost };
     const scenarios = ECON.scenarios.map(sc => {
-      let cum = 0, low = 0;
+      let cum = pre.res, low = 0;
       const months = sc.orders.map((def, m) => {
         const plan = `${sc.id}-${m}` in saved.orders ? saved.orders[`${sc.id}-${m}`] : def, st = stages[ECON.stageOfMonth[m]];
         const cal = (view.start + m) % 12, coef = view.season ? ECON.season.coef[cal] : 1, orders = Math.round(plan * coef);
@@ -388,10 +391,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return { m, cal, coef, plan, byCode: orders * p.pShare, payout: orders * p.pShare * p.pComm * st.aov * (1 - p.pDisc), orders, changed: plan !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov, res, cum, repeat: ECON.repeat[m], fresh: Math.ceil(orders * (1 - ECON.repeat[m])), stock: orders * st.cost };
       });
       const tot = f => months.reduce((s, x) => s + f(x), 0);
-      return Object.assign({}, sc, { months, low, perHour: tot(x => x.res) / (sc.hours * 52), orders: tot(x => x.orders), rev: tot(x => x.rev), res: tot(x => x.res), fresh: tot(x => x.fresh), stock: tot(x => x.stock), run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
+      return Object.assign({}, sc, { months, low, perHour: (tot(x => x.res) + pre.res) / (sc.hours * 52), orders: tot(x => x.orders) + pre.orders, rev: tot(x => x.rev) + pre.rev, res: tot(x => x.res) + pre.res, fresh: tot(x => x.fresh) + pre.orders, stock: tot(x => x.stock) + pre.stock, run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
     });
     const even = stages.map(st => st.contrib > 0 ? Math.ceil(fixed / st.contrib) : null);
-    return { p, payer, items, groups, stages, fixed, scenarios, even };
+    return { p, payer, items, groups, stages, fixed, pre, scenarios, even };
   }
 
   // owner taxes and contributions for a year: profit is the company result before them, rev is yearly sales
@@ -458,11 +461,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // plan
     $("plan-head").textContent = plus < 0 ? `«${cur.title}»: за год в плюс не выходим.` : `«${cur.title}»: в плюсе с ${plus + 1}-го месяца.`;
-    $("plan-lead").textContent = `За год — ${nf(cur.orders)} заказов и ${zl(cur.rev)} оборота. Итог после постоянных расходов: ${zl(cur.res)}. В худший момент в минусе ${zl(Math.abs(cur.low))}. На товар за год нужно около ${zl(cur.stock)}, первая закупка — 10 000 zł.`;
+    $("plan-lead").textContent = `За год вместе с предзаказом — ${nf(cur.orders)} заказов и ${zl(cur.rev)} оборота. Итог после постоянных расходов: ${zl(cur.res)}. ${cur.low < 0 ? `В худший момент в минусе ${zl(Math.abs(cur.low))}.` : "В минус по накоплению не уходим."} На товар за год нужно около ${zl(cur.stock)}, первая закупка — 10 000 zł.`;
     const top = Math.max(1, ...cur.months.map(x => x.res)), bottom = Math.max(1, ...cur.months.map(x => -x.res)), scale = Math.max(top / 110, bottom / 46);
-    $("chart").innerHTML = cur.months.map(x => `<div class="mon${x.m === plus ? " first" : ""}" title="${x.m + 1}-й месяц, ${MONTHS[x.cal]}: ${nf(x.orders)} заказов, ${zl(x.res)}"><span>${nf(x.orders)}</span>
+    const bars = [...(M.pre.orders ? [{ m: -1, orders: M.pre.orders, res: M.pre.res, label: "до", tip: "Предзаказ до запуска" }] : []), ...cur.months.map(x => Object.assign({ label: MONTHS[x.cal].slice(0, 3), tip: `${x.m + 1}-й месяц, ${MONTHS[x.cal]}` }, x))];
+    $("chart").style.gridTemplateColumns = `repeat(${bars.length}, 1fr)`;
+    $("chart").innerHTML = bars.map(x => `<div class="mon${x.m === plus ? " first" : ""}" title="${x.tip}: ${nf(x.orders)} заказов, ${zl(x.res)}"><span>${nf(x.orders)}</span>
       <div class="up">${x.res > 0 ? `<i style="height:${Math.max(2, x.res / scale).toFixed(1)}px"></i>` : ""}</div>
-      <div class="down">${x.res < 0 ? `<i style="height:${Math.max(2, -x.res / scale).toFixed(1)}px"></i>` : ""}</div><span>${MONTHS[x.cal].slice(0, 3)}</span></div>`).join("");
+      <div class="down">${x.res < 0 ? `<i style="height:${Math.max(2, -x.res / scale).toFixed(1)}px"></i>` : ""}</div><span>${x.label}</span></div>`).join("");
+    $("pre-note").hidden = !M.pre.orders;
+    $("pre-note").innerHTML = `<strong>Сначала предзаказ.</strong> Первые продажи — ${nf(M.pre.orders)} предзаказов от аудитории Даши и друзей, ещё до запуска (столбик «до»). Они приходят без рекламы и партнёрской комиссии, поэтому с каждого остаётся больше: всего ${zl(M.pre.res)}. Предоплата ${zl(M.pre.rev)} приходит раньше, чем мы платим за товар, и показывает, какие размеры брать. Число предзаказов — оценка, его можно поменять во вводных.`;
     $("start").innerHTML = MONTHS.map((n, k) => `<option value="${k}"${k === view.start ? " selected" : ""}>${n}</option>`).join("");
     $("season").checked = view.season;
     const peak = cur.months.reduce((a, x) => x.coef > a.coef ? x : a), dip = cur.months.reduce((a, x) => x.coef < a.coef ? x : a);
@@ -473,7 +480,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const before = ECON.startup.filter(x => x.when === 0), later = ECON.startup.filter(x => x.when > 0), sum = l => l.reduce((a, x) => a + x.zl, 0);
     $("needs").innerHTML = [
       kpi("Время команды", `${nf(cur.hours, cur.hours % 1 ? 1 : 0)} ч в неделю`, `${cur.team}. На час работы выходит ${zl(cur.perHour)}.`),
-      kpi("Деньги до запуска", zl(sum(before)), `Первая закупка, упаковка, образцы и регистрация. Ещё ${zl(Math.abs(cur.low))} — запас на минусовые месяцы.`),
+      kpi("Свои деньги до запуска", zl(Math.max(0, sum(before) - M.pre.rev)), `Нужно ${zl(sum(before))}: первая закупка, упаковка, образцы и регистрация. Из них ${zl(Math.min(M.pre.rev, sum(before)))} принесёт предоплата по предзаказам. ${cur.low < 0 ? `Ещё ${zl(Math.abs(cur.low))} — запас на минусовые месяцы.` : "Запас на минусовые месяцы не нужен."}`),
       kpi("Деньги на Корею", zl(sum(later)), `Тест через посредника и первая закупка — после ${later[0].when}-го месяца, если чекпоинт пройден.`),
     ].join("");
     $("startup-body").innerHTML = ECON.startup.map(x => `<tr><td>${x.what}</td><td class="num">${zl(x.zl)}</td><td>${x.when ? `после ${x.when}-го месяца` : "до запуска"}</td><td>${x.note}</td></tr>`).join("") +
