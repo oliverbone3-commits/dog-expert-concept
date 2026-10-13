@@ -68,7 +68,9 @@
   .letter-foot { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
   .letter-foot .msg { margin-right: auto; }
   .review { display: grid; gap: 6px; padding: 10px 12px; border-radius: var(--r-md); background: var(--accent-soft); }
-  .review p { font-size: var(--fs-work); }
+  .review p, .fit p { font-size: var(--fs-work); }
+  .fit { display: grid; gap: var(--sp-2); padding: 10px 12px; border-radius: var(--r-md); border: 1px solid var(--line); background: var(--paper); }
+  .fit p { margin: 0; }
   .review b { color: var(--accent); }
   .shelf-wrap { display: grid; gap: var(--sp-2); }
   .shelf { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 6px; scrollbar-width: thin; }
@@ -110,6 +112,7 @@
       <p><span class="tag">первая очередь</span> изучаем подробно. <span class="tag new">вторая очередь</span> — проверяем коммерческий потенциал: цены, качество, аудитория в Польше. <span class="tag plain">третья очередь</span> — низкий приоритет. <span class="tag plain">без приоритета</span> — очередь не назначена.</p>
       <p><span class="tag info">в переписке</span> — разговор с поставщиком идёт. <span class="tag plain">не начаты</span> — переговоры не начаты. <span class="tag line">одежда</span> — тип товара.</p>
       <p>Приоритеты, «Оценка команды» и «Следующий шаг» — предварительная оценка команды от 13.10.2026 по первому впечатлению; цены, наличие и условия поставки требуют отдельной проверки.</p>
+      <p>«Сверка с концепцией» — черновая оценка от 13.10.2026: в какие готовые наборы попадают товары поставщика и что мешает. Это не решение команды.</p>
       <p class="muted">«Присутствие в ЕС» — результат поиска 12.10.2026: «не найдено» значит, что мы не нашли польского дистрибьютора, а не что его точно нет. Цены в гривнах — розничные, с сайтов и из статей.</p>
     </div>
   </details>
@@ -125,6 +128,8 @@
   <div class="fields" id="filters" hidden>
     <label class="field"><span>Страна</span><select id="f-country"></select></label>
     <label class="field"><span>Тип товара</span><select id="f-types"></select></label>
+    <label class="field"><span>Набор</span><select id="f-bundles"></select></label>
+    <label class="field"><span>Сверка с концепцией</span><select id="f-fit"></select></label>
     <label class="field"><span>Приоритет</span><select id="f-priority"></select></label>
     <label class="field"><span>Переговоры</span><select id="f-talks"></select></label>
     <label class="field"><span>Ценовой сегмент</span><select id="f-segment"></select></label>
@@ -185,13 +190,13 @@
 
 <script src="suppliers-data.js"></script>
 <script>
-const FILTERS = ["country", "types", "priority", "talks", "segment", "eu", "sizes"];
-const FILTER_LABEL = { country: "Страна", types: "Тип", priority: "Приоритет", talks: "Переговоры", segment: "Сегмент", eu: "В ЕС", sizes: "Размеры" };
+const FILTERS = ["country", "types", "bundles", "fit", "priority", "talks", "segment", "eu", "sizes"];
+const FILTER_LABEL = { country: "Страна", types: "Тип", bundles: "Набор", fit: "Сверка", priority: "Приоритет", talks: "Переговоры", segment: "Сегмент", eu: "В ЕС", sizes: "Размеры" };
 const PRIORITY_ORDER = ["Первая очередь", "Вторая очередь", "Третья очередь", "Без приоритета"];
 const PRIORITY_CLASS = { "Первая очередь": "tag", "Вторая очередь": "tag new", "Третья очередь": "tag plain", "Без приоритета": "tag plain" };
 const TALKS_IDLE = "Не начаты";
 const LINKS = [["site", "Сайт"], ["catalog", "Каталог"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"]];
-const CSV_COLS = [["name", "Название"], ["country", "Страна"], ["city", "Город"], ["types", "Тип товара"], ["sizes", "Размеры собак"], ["priority", "Приоритет"], ["talks", "Переговоры"], ["segment", "Ценовой сегмент"], ["eu", "Присутствие в ЕС"], ["opinion", "Оценка команды"], ["next", "Следующий шаг"], ["reviews", "Отзывы и рейтинг"], ["top", "Популярные товары"], ["what", "Что делает"], ["why", "Из поиска"], ["terms", "Условия и цены"], ["note", "Заметка"], ["site", "Сайт"], ["catalog", "Каталог"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"], ["email", "Email"], ["phone", "Телефон"], ["source", "Источник"], ["checked", "Проверено"]];
+const CSV_COLS = [["name", "Название"], ["country", "Страна"], ["city", "Город"], ["types", "Тип товара"], ["sizes", "Размеры собак"], ["priority", "Приоритет"], ["talks", "Переговоры"], ["segment", "Ценовой сегмент"], ["eu", "Присутствие в ЕС"], ["opinion", "Оценка команды"], ["next", "Следующий шаг"], ["fit", "Сверка с концепцией"], ["bundles", "Наборы"], ["fit_text", "Сверка: пояснение"], ["reviews", "Отзывы и рейтинг"], ["top", "Популярные товары"], ["what", "Что делает"], ["why", "Из поиска"], ["terms", "Условия и цены"], ["note", "Заметка"], ["site", "Сайт"], ["catalog", "Каталог"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["etsy", "Etsy"], ["tiktok", "TikTok"], ["telegram", "Telegram"], ["youtube", "YouTube"], ["email", "Email"], ["phone", "Телефон"], ["source", "Источник"], ["checked", "Проверено"]];
 let view = "cards";
 
 const $ = id => document.getElementById(id);
@@ -219,7 +224,7 @@ function selected() {
   const q = $("q").value.trim().toLowerCase();
   return SUPPLIERS
     .filter(s => FILTERS.every(key => { const v = $("f-" + key).value; return !v || asList(s[key]).includes(v); }))
-    .filter(s => !q || [s.name, s.city, s.what, s.why, s.note, s.opinion, s.next, s.reviews, s.top.map(p => p.title).join(" "), s.types.join(" ")].join(" ").toLowerCase().includes(q))
+    .filter(s => !q || [s.name, s.city, s.what, s.why, s.note, s.opinion, s.next, s.fit_text, s.bundles.join(" "), s.reviews, s.top.map(p => p.title).join(" "), s.types.join(" ")].join(" ").toLowerCase().includes(q))
     .sort(SORTS[$("sort").value]);
 }
 
@@ -243,6 +248,7 @@ function card(s) {
     </summary>
     <div class="sup-body">
       ${s.opinion ? `<div class="review"><p><b>Оценка команды.</b> ${esc(s.opinion)}</p><p><b>Следующий шаг.</b> ${esc(s.next)}</p></div>` : ""}
+      ${s.fit ? `<div class="fit"><p><b>Сверка с концепцией: ${esc(s.fit.toLowerCase())}.</b> ${esc(s.fit_text)}</p><div class="tags">${s.bundles.map(b => `<span class="tag line">${esc(b)}</span>`).join("")}</div></div>` : ""}
       <div class="row actions">${s.letter ? `<button class="btn primary" data-letter="${esc(s.name)}">Письмо поставщику</button>` : ""}<button class="btn quiet" data-link="${slug(s)}">Скопировать ссылку на карточку</button></div>
       <dl class="facts">
         <div><dt>Контакты</dt><dd class="links">${contacts(s) || `<span class="muted">пока нет</span>`}</dd></div>

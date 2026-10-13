@@ -178,6 +178,7 @@ td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-sp
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: var(--control-h); padding: 0 var(--sp-3); font: 500 var(--fs-sm)/1.2 var(--font-body); border-radius: var(--r-md); border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); cursor: pointer; text-decoration: none; white-space: nowrap; }
 .btn[aria-pressed="true"], .btn[aria-expanded="true"], .btn.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
 .btn.on { border-color: var(--accent); color: var(--accent); }
+.btn.on[aria-expanded="true"] { color: var(--paper); border-color: var(--ink); }
 .btn.danger { color: var(--signal); }
 .btn.quiet { border-color: transparent; background: transparent; color: var(--muted); font-size: var(--fs-xs); }
 .btn.quiet[aria-expanded="true"] { background: transparent; color: var(--ink); border-color: transparent; }
