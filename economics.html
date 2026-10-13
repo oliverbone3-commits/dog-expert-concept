@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=11" defer></script>
+<script src="economics-data.js?v=12" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -88,7 +88,7 @@
     <div class="eyebrow" data-meta>Работа</div>
     <h1>Экономика</h1>
     <p class="lead">Три вопроса: сколько остаётся с одного заказа, сколько заказов нужно, чтобы выйти в ноль, и что будет по месяцам. Всё остальное — подробности, они свёрнуты.</p>
-    <p class="status-note">Посчитано для теста: без рекламы, встреч, образцов и помощи фонду, а число заказов в сценариях осталось прежним — без рекламы оно может быть ниже. Цели для сверки, не прогноз. Оптовых прайсов пока нет, поэтому закупка посчитана с запасом: украинские товары — по розничной цене бренда.</p>
+    <p class="status-note">Посчитано для теста: реклама 15 zł в день вместо 30, без встреч, образцов и помощи фонду. Число заказов в сценариях осталось прежним — с таким бюджетом оно может быть ниже. Цели для сверки, не прогноз. Оптовых прайсов пока нет, поэтому закупка посчитана с запасом: украинские товары — по розничной цене бренда.</p>
   </div>
 
   <section id="main" data-nav="Главное">
@@ -522,7 +522,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("headline").textContent = M.even[0] ? `Выходим в ноль с ${M.even[0]} заказов в месяц.` : "С заказа ничего не остаётся — в ноль не выйти.";
     $("kpis").innerHTML = [
       kpi("Остаётся с одного заказа", zl(st.contrib), `Из среднего заказа ${zl(st.aov)} — после товара и расходов на сам заказ.`),
-      kpi("Заказов в месяц для нуля", M.even[0] ? String(M.even[0]) : "нет", `Столько покрывает ${zl(M.fixed)} постоянных расходов в месяц: платформа, бухгалтерия и взнос на здоровье Даши. Реклама, встречи, образцы, помощь фонду и прочие сервисы на время теста выключены.`),
+      kpi("Заказов в месяц для нуля", M.even[0] ? String(M.even[0]) : "нет", `Столько покрывает ${zl(M.fixed)} постоянных расходов в месяц: платформа, бухгалтерия, взнос на здоровье Даши и реклама. Встречи, образцы, помощь фонду и прочие сервисы на время теста выключены.`),
       kpi(`Первый год, «${cur.title}»`, zl(cur.res), plus < 0 ? `Ни одного месяца в плюсе. Оборот — ${zl(cur.rev)}.` : `Месяцы в плюсе — с ${plus + 1}-го. Оборот — ${zl(cur.rev)}.`),
     ].join("");
     document.querySelector('[data-lever="scenario"]').innerHTML = buttons("sc", M.scenarios.map(s => [s.id, s.title]), view.scenario);
