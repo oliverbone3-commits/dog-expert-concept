@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=12" defer></script>
+<script src="economics-data.js?v=16" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -75,6 +75,18 @@
   td.sep, th.sep { border-left: 1px solid var(--line); }
   input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
   .legend { font-size: var(--fs-work); color: var(--muted); }
+
+  /* plan B: a lever per row — tick, what it is, what it adds over the year */
+  .opts { list-style: none; margin: var(--sp-5) 0 var(--sp-3); padding: 0; }
+  .opts li { display: grid; grid-template-columns: 18px 1fr auto; gap: var(--sp-3); align-items: start; margin: 0; padding-block: var(--sp-3); border-top: 1px solid var(--line); }
+  .opts li:last-child { border-bottom: 1px solid var(--line); }
+  .opts input { margin-top: 3px; }
+  .opts b { font-weight: 500; }
+  .opts small { display: block; color: var(--muted); font-size: var(--fs-xs); }
+  .opts li > span { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .opts label { min-width: 0; }
+  .opts .links { display: block; margin-top: 2px; }
+  .opts .links a { display: inline-block; margin-right: var(--sp-3); }
   .field.inline { display: inline-grid; max-width: 100%; }
   .field.inline select { width: auto; max-width: 100%; }
   .check { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); min-height: var(--control-h); }
@@ -88,7 +100,7 @@
     <div class="eyebrow" data-meta>Работа</div>
     <h1>Экономика</h1>
     <p class="lead">Три вопроса: сколько остаётся с одного заказа, сколько заказов нужно, чтобы выйти в ноль, и что будет по месяцам. Всё остальное — подробности, они свёрнуты.</p>
-    <p class="status-note">Посчитано для теста: реклама 15 zł в день вместо 30, без встреч, образцов и помощи фонду. Число заказов в сценариях осталось прежним — с таким бюджетом оно может быть ниже. Цели для сверки, не прогноз. Оптовых прайсов пока нет, поэтому закупка посчитана с запасом: украинские товары — по розничной цене бренда.</p>
+    <p class="status-note">Посчитано для теста: реклама 15 zł в день вместо 30, без встреч, образцов и помощи фонду. Число заказов в сценариях осталось прежним — с таким бюджетом оно может быть ниже. Цели для сверки, не прогноз. Оптовых прайсов пока нет, поэтому закупка посчитана с запасом: украинские товары — по розничной цене бренда. Корм посчитан как повод вернуться: повторные заказы сверх плана и допродажа к ним — в «Оптимизации».</p>
   </div>
 
   <section id="main" data-nav="Главное">
@@ -127,7 +139,7 @@
             <tbody id="sources-body"></tbody>
           </table>
         </div>
-        <p class="legend">Справа — какую долю заказов даёт каждый источник на этапе; её можно менять. Корейские товары появляются после 6-го месяца. В заказе из польской базы считается 1,4 товара, в импортном — один.</p>
+        <p class="legend">Справа — какую долю заказов даёт каждый источник на этапе; её можно менять. Корейские товары появляются после 6-го месяца. В заказе из польской базы считается 1,4 товара, в импортном — один. Корм в доли не входит: это повторные заказы клиентов, которые у нас уже покупали, они идут сверх плана — см. <a href="#optimize">«Оптимизацию»</a>.</p>
       </div>
     </details>
   </section>
@@ -163,7 +175,7 @@
         <div class="table-wrap">
           <table>
             <thead><tr>
-              <th>Месяц</th><th class="num">Заказов по плану</th><th class="num">Сезон</th><th class="num">Заказов</th><th class="num">Оборот</th><th class="num">Результат месяца</th>
+              <th>Месяц</th><th class="num">Заказов по плану</th><th class="num">Сезон</th><th class="num">Заказов</th><th class="num">Заказов корма</th><th class="num">Оборот</th><th class="num">Результат месяца</th>
               <th class="num">Накопительно</th><th class="num">Повторные</th><th class="num">Новых клиентов</th><th class="num">Закупка товара</th>
             </tr></thead>
             <tbody id="goals-body"></tbody>
@@ -195,7 +207,7 @@
             <tbody id="items-body"></tbody>
           </table>
         </div>
-        <p class="legend">«Цена бренда» — розница на его сайте; у польской базы вместо неё оптовая цена без VAT, пока она считается от розницы. «Нужная скидка» — какую скидку от розницы бренда надо получить, чтобы выйти на целевую наценку. Товары без галочки не входят в средние. Состав польской базы примерный: списка Даши пока нет.</p>
+        <p class="legend">«Цена бренда» — розница на его сайте; у польской базы вместо неё оптовая цена без VAT, пока она считается от розницы. «Нужная скидка» — какую скидку от розницы бренда надо получить, чтобы выйти на целевую наценку. Товары без галочки не входят в средние. Состав польской базы примерный: списка Даши пока нет. Корма — кандидаты из поиска 13.10.2026: цена — розница в Польше, закупка считается от неё через нашу долю в цене (сухой корм 18%, консервы 20%, лакомства 35% — оценки), доставка мешка — 19,5 zł.</p>
       </div>
     </details>
     <details class="how">
@@ -207,6 +219,33 @@
             <tbody id="market-body"></tbody>
           </table>
         </div>
+      </div>
+    </details>
+  </section>
+
+  <section id="optimize" data-nav="Оптимизация">
+    <div class="sec-head">
+      <div class="eyebrow">Оптимизация · план Б</div>
+      <h2 id="opt-head"></h2>
+    </div>
+    <div class="col"><p id="opt-lead"></p></div>
+    <div class="grid" id="opt-cards"></div>
+    <ul class="opts" id="opt-list"></ul>
+    <p class="msg">Справа — сколько мера добавляет к результату года сама по себе, в выбранном наверху сценарии. Галочки ничего не сохраняют и остальную страницу не меняют. Как часто берут корм и допродажу — оценки, они меняются во вводных, в группе «Корма».</p>
+    <details class="how mt">
+      <summary>Что ещё можно сделать — без расчёта</summary>
+      <div><ul class="small" id="opt-more"></ul></div>
+    </details>
+    <details class="how">
+      <summary>Что известно про наценку на корм</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Что</th><th class="num">Цифра</th><th>Откуда</th></tr></thead>
+            <tbody id="food-facts"></tbody>
+          </table>
+        </div>
+        <p class="legend" id="food-facts-note"></p>
       </div>
     </details>
   </section>
@@ -365,7 +404,7 @@
       <div class="card">
         <h3>Чего у нас нет фактом</h3>
         <ul class="small">
-          <li>оптовых цен — ни украинских, ни польских, ни Merlot;</li>
+          <li>оптовых цен — ни украинских, ни польских, ни Merlot, ни на корм;</li>
           <li>списка товаров Даши для польской базы;</li>
           <li>наших цен в Польше — здесь стоят предложенные;</li>
           <li>условий партнёрской программы — взят черновик из <a href="concept.html">концепции</a>.</li>
@@ -375,6 +414,8 @@
         <h3>Что не учтено</h3>
         <ul class="small">
           <li>зарплаты и ZUS команды (помощницу можно задать во вводных);</li>
+          <li>уход клиентов с корма: считаем, что начавший покупать корм покупает его весь год;</li>
+          <li>списание корма с истёкшим сроком;</li>
           <li>остатки размеров и брак;</li>
           <li>сезонность по товарам: одежда продаётся осенью и зимой, в плане сезон влияет только на число заказов;</li>
           <li>образцы и запас денег на товар;</li>
@@ -402,7 +443,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const KEY = "econ-04"; const MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]; // bump when the order of items or scenarios changes: overrides are stored by position
+  const KEY = "econ-06"; const MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]; // bump when the order of items or scenarios changes: overrides are stored by position
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const defs = ECON.inputs.flatMap(g => g.items);
@@ -412,6 +453,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // the three switches at the top are a what-if view and are never stored
   const view = { scenario: "normal", payer: ECON.vatPayer, disc: null, start: ECON.season.start, season: true };
   let srcFilter = "all", employed = true, zus = "start";
+  const levers = new Set(); // plan B: which levers are ticked; a what-if view, never stored
 
   const store = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
   const dirty = () => [saved.v, saved.items, saved.mix, saved.orders].some(o => Object.keys(o).length);
@@ -423,26 +465,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const parse = s => { const n = parseFloat(String(s).replace(/\s/g, "").replace(",", ".")); return Number.isFinite(n) ? n : null; };
   const kpi = (label, value, text) => `<div class="card kpi"><span>${label}</span><b${value.startsWith("−") ? ' class="neg"' : ""}>${value}</b><p>${text}</p></div>`;
 
-  function model(forcePayer) {
+  function model(forcePayer, over) {
     const p = Object.fromEntries(defs.map(d => [d.key, d.key in saved.v ? saved.v[d.key] : d.value]));
     if (view.disc !== null) p.discUa = view.disc;
+    if (over) Object.assign(p, over); // plan B levers replace inputs for one run and are never stored
     const payer = forcePayer !== undefined ? forcePayer : view.payer;
-    const net = price => price / (1 + (payer ? p.vat : 0));
+    const net = (price, food) => price / (1 + (payer ? food ? p.vatFood : p.vat : 0));
     // costs that grow with the price: the payment fee, and the partner's discount and commission
-    const fee = price => price * (1 - p.pShare * p.pDisc) * p.pay;
-    const partner = price => p.pShare * p.pDisc * net(price) + p.pShare * p.pComm * price * (1 - p.pDisc) + p.refShare * 2 * p.refDisc * net(price);
+    // food has its own partner terms, gift and delivery: it is reordered every month and leaves less
+    const fee = (price, food) => price * (1 - p.pShare * (food ? p.foodDisc : p.pDisc)) * p.pay;
+    const partner = (price, food) => { const d = food ? p.foodDisc : p.pDisc, c = food ? p.foodComm : p.pComm; return p.pShare * d * net(price, food) + p.pShare * c * price * (1 - d) + p.refShare * 2 * p.refDisc * net(price, food); };
+    const ship = food => food ? p.foodDeliv : p.deliv, free = food => food ? p.foodFree : p.freeFrom;
     // paid once per order: packaging, gift, loyalty, and what a refused order leaves us with; an exchange is paid on sized goods
-    const perOrder = p.payFix + p.pack + p.gift + p.loyal + p.retShare * (p.deliv + p.pack + p.gift + p.payFix);
+    const perOrder = food => p.payFix + p.pack + (food ? p.foodGift : p.gift + p.loyal) + p.retShare * (ship(food) + p.pack + p.gift + p.payFix);
     const exchange = p.exShare * p.deliv * (1 + p.exOurs);
-    const orderCosts = (price, sized, main) => fee(price) + partner(price) + main * (perOrder + sized * exchange + (price >= p.freeFrom ? p.deliv : 0));
+    const orderCosts = (price, sized, main, food) => fee(price, food) + partner(price, food) + main * (perOrder(food) + sized * exchange + (price >= free(food) ? ship(food) : 0));
 
     const items = ECON.items.map((it, i) => {
       const o = Object.assign({}, it, saved.items[i] || {});
-      const rev = net(o.pl), local = o.src === "Польская база";
+      const local = o.home == null, food = o.src === "Корма", v = food ? p.vatFood : p.vat;
+      const rev = net(o.pl, food);
       let cost, homeZl = null, need = null, buyNet = null;
       if (local) {
-        buyNet = o.buyNet != null ? o.buyNet : o.pl / (1 + p.vat) * (1 - p.plGm);
-        cost = buyNet * (payer ? 1 : 1 + p.vat);
+        buyNet = o.buyNet != null ? o.buyNet : o.pl / (1 + v) * (1 - (o.gm != null ? o.gm : food ? p.foodGm : p.plGm));
+        cost = buyNet * (payer ? 1 : 1 + v);
       } else {
         const ua = o.src === "Украина";
         const rate = o.cur === "UAH" ? p.uah : p.krw, disc = ua ? p.discUa : p.discKr, fr = ua ? p.frUa : p.frKr, duty = ua ? p.dutyUa : p.dutyKr;
@@ -451,40 +497,48 @@ document.addEventListener("DOMContentLoaded", () => {
         cost = (buy + ship + dutyZl) * (payer ? 1 : 1 + p.vat);
         need = 1 - rev * (1 - p.target) / ((1 + fr) * (1 + duty) * (payer ? 1 : 1 + p.vat)) / homeZl;
       }
-      const gross = rev - cost, contrib = gross - orderCosts(o.pl, o.sized, o.main);
-      return Object.assign(o, { i, local, homeZl, buyNet, cost, rev, gross, contrib, need });
+      const gross = rev - cost, contrib = gross - orderCosts(o.pl, o.sized, o.main, food);
+      return Object.assign(o, { i, local, food, homeZl, buyNet, cost, rev, gross, contrib, need });
     });
 
     const avg = (list, f) => list.length ? list.reduce((s, x) => s + f(x), 0) / list.length : 0;
     const groups = ECON.sources.map(name => {
-      const list = items.filter(x => x.src === name && x.on && x.main), b = name === "Польская база" ? p.plBasket : 1;
-      const aov = avg(list, x => x.pl) * b, rev = avg(list, x => x.rev) * b, cost = avg(list, x => x.cost) * b;
-      const delivery = b === 1 ? avg(list, x => x.pl >= p.freeFrom ? p.deliv : 0) : aov >= p.freeFrom ? p.deliv : 0;
-      const part = b * avg(list, x => partner(x.pl));
-      const service = list.length ? b * avg(list, x => fee(x.pl)) + perOrder + avg(list, x => x.sized) * exchange + delivery : 0;
+      const food = name === "Корма", all = items.filter(x => x.src === name && x.on), list = all.filter(x => x.main), b = name === "Польская база" ? p.plBasket : 1;
+      // a share of food orders also takes a can or a treat: the add-ons of the food list
+      const add = food ? all.filter(x => !x.main) : [], k = food ? p.foodAddon : 0, sum = f => avg(list, f) * b + avg(add, f) * k;
+      const aov = sum(x => x.pl), rev = sum(x => x.rev), cost = sum(x => x.cost);
+      const delivery = b === 1 ? avg(list, x => x.pl >= free(food) ? ship(food) : 0) : aov >= p.freeFrom ? p.deliv : 0;
+      const part = sum(x => partner(x.pl, food));
+      const service = list.length ? sum(x => fee(x.pl, food)) + perOrder(food) + avg(list, x => x.sized) * exchange + delivery : 0;
       return { name, b, aov, rev, cost, part, service, contrib: rev - cost - part - service, n: list.length };
     });
     const stages = ECON.stages.map((st, s) => {
       const mix = st.mix.map((m, g) => `${s}-${g}` in saved.mix ? saved.mix[`${s}-${g}`] : m);
-      const sum = f => groups.reduce((t, g, k) => t + f(g) * mix[k], 0);
+      const sum = f => groups.reduce((t, g, k) => t + f(g) * (mix[k] || 0), 0);
       return Object.assign({}, st, { mix, total: mix.reduce((a, b) => a + b, 0), aov: sum(g => g.aov), rev: sum(g => g.rev), cost: sum(g => g.cost), part: sum(g => g.part), service: sum(g => g.service), contrib: sum(g => g.contrib) });
     });
     const fixed = p.platform + p.acc + p.health + p.adsDay * 30 + p.other + p.community + p.samples + p.charity + p.assistant;
     // pre-orders come from our own audience before launch: no partner or referral costs, and the money arrives before the first purchase
     const pre = { orders: p.preOrders, res: p.preOrders * (stages[0].contrib + stages[0].part), rev: p.preOrders * stages[0].aov, stock: p.preOrders * stages[0].cost };
+    // food is a reason to come back, not a way to earn: extra orders from customers we already have,
+    // and some of them take an ordinary item on top — it rides in a parcel that is already paid for
+    const fg = groups[ECON.sources.indexOf("Корма")], basic = items.filter(x => x.src === "Польская база" && x.on && x.main);
+    const upOne = avg(basic, x => x.gross - fee(x.pl) - partner(x.pl) - x.sized * exchange), perYear = 52 / p.foodEvery;
+    const food = { own: fg.contrib, up: p.foodUpsell * upOne, upOne, contrib: fg.contrib + p.foodUpsell * upOne, aov: fg.aov + p.foodUpsell * avg(basic, x => x.pl), cost: fg.cost + p.foodUpsell * avg(basic, x => x.cost), perYear };
     const scenarios = ECON.scenarios.map(sc => {
-      let cum = pre.res, low = 0;
+      let cum = pre.res, low = 0, clients = pre.orders; // clients: everyone who has bought before this month
       const months = sc.orders.map((def, m) => {
         const plan = `${sc.id}-${m}` in saved.orders ? saved.orders[`${sc.id}-${m}`] : def, st = stages[ECON.stageOfMonth[m]];
         const cal = (view.start + m) % 12, coef = view.season ? ECON.season.coef[cal] : 1, orders = Math.round(plan * coef);
-        const res = orders * st.contrib - fixed - (m < p.lossMonths ? p.lossLimit : 0); cum += res; low = Math.min(low, cum);
-        return { m, cal, coef, plan, byCode: orders * p.pShare, payout: orders * p.pShare * p.pComm * st.aov * (1 - p.pDisc), orders, changed: plan !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov, res, cum, repeat: ECON.repeat[m], fresh: Math.ceil(orders * (1 - ECON.repeat[m])), stock: orders * st.cost };
+        const fo = Math.round(clients * p.foodBuyers * perYear / 12), foodRes = fo * food.contrib, fresh = Math.ceil(orders * (1 - ECON.repeat[m]));
+        const res = orders * st.contrib + foodRes - fixed - (m < p.lossMonths ? p.lossLimit : 0); cum += res; low = Math.min(low, cum); clients += fresh;
+        return { m, cal, coef, plan, byCode: orders * p.pShare, payout: orders * p.pShare * p.pComm * st.aov * (1 - p.pDisc), orders, food: fo, foodRes, changed: plan !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov + fo * food.aov, res, cum, repeat: ECON.repeat[m], fresh, stock: orders * st.cost + fo * food.cost };
       });
       const tot = f => months.reduce((s, x) => s + f(x), 0);
-      return Object.assign({}, sc, { months, low, perHour: (tot(x => x.res) + pre.res) / (sc.hours * 52), orders: tot(x => x.orders) + pre.orders, rev: tot(x => x.rev) + pre.rev, res: tot(x => x.res) + pre.res, fresh: tot(x => x.fresh) + pre.orders, stock: tot(x => x.stock) + pre.stock, run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
+      return Object.assign({}, sc, { months, low, perHour: (tot(x => x.res) + pre.res) / (sc.hours * 52), orders: tot(x => x.orders) + pre.orders, foodOrders: tot(x => x.food), foodRes: tot(x => x.foodRes), rev: tot(x => x.rev) + pre.rev, res: tot(x => x.res) + pre.res, fresh: tot(x => x.fresh) + pre.orders, stock: tot(x => x.stock) + pre.stock, run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
     });
     const even = stages.map(st => st.contrib > 0 ? Math.ceil(fixed / st.contrib) : null);
-    return { p, payer, items, groups, stages, fixed, pre, scenarios, even };
+    return { p, payer, items, groups, stages, fixed, pre, food, scenarios, even };
   }
 
   // owner taxes and contributions for a year: pj is the JDG result before the owner's contributions, rev is yearly sales.
@@ -546,13 +600,13 @@ document.addEventListener("DOMContentLoaded", () => {
     M.stages.forEach((s, k) => { $("st-" + k).innerHTML = `${s.title}<br>${s.months}`; });
     $("sources-body").innerHTML = M.groups.map((g, k) => `<tr><td class="name"><b>${g.name}</b><span>среднее по ${g.n} товарам</span></td>
       <td class="num">${zl(g.aov)}</td><td class="num">${zl(g.cost)}</td><td${cls(g.contrib)}>${zl(g.contrib)}<br><span class="muted">${g.aov ? pct(g.contrib / g.aov) : "—"}</span></td>
-      ${M.stages.map((s, j) => `<td class="num${j ? "" : " sep"}"><input class="in${`${j}-${k}` in saved.mix ? " changed" : ""}" type="text" inputmode="decimal" data-mix="${j}-${k}" value="${nf(s.mix[k] * 100)}" aria-label="Доля заказов, %: ${g.name}, ${s.title}"> %</td>`).join("")}</tr>`).join("") +
+      ${k < st.mix.length ? M.stages.map((s, j) => `<td class="num${j ? "" : " sep"}"><input class="in${`${j}-${k}` in saved.mix ? " changed" : ""}" type="text" inputmode="decimal" data-mix="${j}-${k}" value="${nf(s.mix[k] * 100)}" aria-label="Доля заказов, %: ${g.name}, ${s.title}"> %</td>`).join("") : `<td class="sep muted" colspan="${M.stages.length}">сверх плана — повторные заказы</td>`}</tr>`).join("") +
       [["Средний заказ на этапе", s => zl(s.aov)], ["Остаётся с заказа на этапе", s => zl(s.contrib)], ["Сумма долей", s => `<span${Math.abs(s.total - 1) > .001 ? ' class="neg"' : ""}>${pct(s.total)}</span>`]]
         .map(([label, f]) => `<tr class="total"><td colspan="4">${label}</td>${M.stages.map((s, j) => `<td class="num${j ? "" : " sep"}">${f(s)}</td>`).join("")}</tr>`).join("");
 
     // plan
     $("plan-head").textContent = plus < 0 ? `«${cur.title}»: за год в плюс не выходим.` : `«${cur.title}»: в плюсе с ${plus + 1}-го месяца.`;
-    $("plan-lead").textContent = `За год вместе с предзаказом — ${nf(cur.orders)} заказов и ${zl(cur.rev)} оборота. Итог после постоянных расходов: ${zl(cur.res)}. ${cur.low < 0 ? `В худший момент в минусе ${zl(Math.abs(cur.low))}.` : "В минус по накоплению не уходим."} На товар за год нужно около ${zl(cur.stock)}, первая закупка — 10 000 zł.`;
+    $("plan-lead").textContent = `За год вместе с предзаказом — ${nf(cur.orders)} заказов, ещё ${nf(cur.foodOrders)} заказов корма от вернувшихся клиентов и ${zl(cur.rev)} оборота. Итог после постоянных расходов: ${zl(cur.res)}. ${cur.low < 0 ? `В худший момент в минусе ${zl(Math.abs(cur.low))}.` : "В минус по накоплению не уходим."} На товар за год нужно около ${zl(cur.stock)}, первая закупка — 10 000 zł.`;
     const top = Math.max(1, ...cur.months.map(x => x.res)), bottom = Math.max(1, ...cur.months.map(x => -x.res)), scale = Math.max(top / 110, bottom / 46);
     const bars = [...(M.pre.orders ? [{ m: -1, orders: M.pre.orders, res: M.pre.res, label: "до", tip: "Предзаказ до запуска" }] : []), ...cur.months.map(x => Object.assign({ label: MONTHS[x.cal].slice(0, 3), tip: `${x.m + 1}-й месяц, ${MONTHS[x.cal]}` }, x))];
     $("chart").style.gridTemplateColumns = `repeat(${bars.length}, 1fr)`;
@@ -582,9 +636,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }).join("");
     $("goals-body").innerHTML = cur.months.map(x => `<tr><td>${x.m + 1} · ${MONTHS[x.cal]}</td>
       <td class="num"><input class="in${x.changed ? " changed" : ""}" type="text" inputmode="numeric" data-order="${cur.id}-${x.m}" value="${nf(x.plan)}" aria-label="Заказов по плану, месяц ${x.m + 1}"></td>
-      <td class="num">×${nf(x.coef, 2)}</td><td class="num">${nf(x.orders)}</td><td class="num">${zl(x.rev)}</td><td${cls(x.res)}>${zl(x.res)}</td><td${cls(x.cum)}>${zl(x.cum)}</td>
+      <td class="num">×${nf(x.coef, 2)}</td><td class="num">${nf(x.orders)}</td><td class="num">${nf(x.food)}</td><td class="num">${zl(x.rev)}</td><td${cls(x.res)}>${zl(x.res)}</td><td${cls(x.cum)}>${zl(x.cum)}</td>
       <td class="num">${pct(x.repeat)}</td><td class="num">${nf(x.fresh)}</td><td class="num">${zl(x.stock)}</td></tr>`).join("") +
-      `<tr class="total"><td>Год</td><td></td><td></td><td class="num">${nf(cur.orders)}</td><td class="num">${zl(cur.rev)}</td><td${cls(cur.res)}>${zl(cur.res)}</td><td></td><td></td><td class="num">${nf(cur.fresh)}</td><td class="num">${zl(cur.stock)}</td></tr>`;
+      `<tr class="total"><td>Год</td><td></td><td></td><td class="num">${nf(cur.orders)}</td><td class="num">${nf(cur.foodOrders)}</td><td class="num">${zl(cur.rev)}</td><td${cls(cur.res)}>${zl(cur.res)}</td><td></td><td></td><td class="num">${nf(cur.fresh)}</td><td class="num">${zl(cur.stock)}</td></tr>`;
 
     // goods
     const fit = x => x.contrib < 0 ? 2 : x.contrib / x.rev < .15 ? 1 : 0, byFit = [0, 1, 2].map(f => M.items.filter(x => fit(x) === f));
@@ -610,6 +664,25 @@ document.addEventListener("DOMContentLoaded", () => {
         <td><input type="checkbox" data-item="${x.i}" data-f="on"${x.on ? " checked" : ""} aria-label="В расчёте: ${esc(x.name)}"></td></tr>`;
     }).join("");
     $("market-body").innerHTML = ECON.market.map(r => `<tr><td>${r.what}</td><td class="num">${r.price}</td><td>${r.note}<span class="links">${r.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</span></td></tr>`).join("");
+
+    // plan B: each lever is a set of replaced inputs; its own effect is counted alone, the cards show the ticked ones together
+    const O = ECON.optimize, year = V => V.scenarios.find(s => s.id === view.scenario).res;
+    const on = O.levers.filter(l => levers.has(l.id)), B = on.length ? model(undefined, Object.assign({}, ...on.map(l => l.set))) : M;
+    const F = M.food, G = B.food, sb = B.scenarios.find(x => x.id === view.scenario), yr = f => f.contrib * f.perYear;
+    $("opt-head").textContent = on.length ? `С выбранными мерами клиент на корме приносит ${zl(yr(G))} в год вместо ${zl(yr(F))}.` : `Клиент на корме приносит ${zl(yr(F))} в год: ${zl(F.own * F.perYear)} с корма и ${zl(F.up * F.perYear)} с допродаж.`;
+    $("opt-lead").textContent = `${O.lead} ${F.own < 5 ? `Сейчас с заказа корма остаётся ${zl(F.own)}: на общих условиях партнёрской программы корм сам себя не окупает, первая мера в списке — условие, а не улучшение.` : `Сейчас с заказа корма остаётся ${zl(F.own)}.`} Отметьте меры — цифры пересчитаются.`;
+    const hint = (a, b, f, text) => a === b ? text : `Было ${f(a)}. ${text}`;
+    $("opt-cards").innerHTML = [
+      kpi("Клиент на корме за год", zl(yr(G)), hint(yr(F), yr(G), zl, `${nf(G.perYear, 1)} заказа: ${zl(G.own * G.perYear)} с корма и ${zl(G.up * G.perYear)} с допродаж.`)),
+      kpi("С одного заказа корма", zl(G.contrib), hint(F.contrib, G.contrib, zl, `Корм ${zl(G.own)} и допродажа ${zl(G.up)}: обычный товар в ${pct(B.p.foodUpsell)} заказов, с него остаётся ${zl(G.upOne)}.`)),
+      kpi("Корм за первый год", zl(sb.foodRes), hint(cur.foodRes, sb.foodRes, zl, `${nf(sb.foodOrders)} заказов сверх плана: корм берут ${pct(B.p.foodBuyers)} клиентов.`)),
+      kpi(`Первый год, «${cur.title}»`, zl(year(B)), hint(cur.res, year(B), zl, on.length ? `Выбрано мер: ${on.length}.` : "Меры не выбраны — это текущая модель.")),
+    ].join("");
+    $("opt-list").innerHTML = O.levers.map(l => { const d = year(model(undefined, l.set)) - cur.res;
+      return `<li><input type="checkbox" id="lv-${l.id}" data-lever="${l.id}"${levers.has(l.id) ? " checked" : ""}><label for="lv-${l.id}"><b>${l.title}</b><small>${l.text}${l.links ? ` <span class="links">${l.links.map(a => `<a href="${esc(a[1])}" target="_blank" rel="noopener">${a[0]}</a>`).join("")}</span>` : ""}</small></label><span${d < 0 ? ' class="neg"' : ""}>${d < 0 ? "" : "+"}${zl(d)}<small>за год</small></span></li>`; }).join("");
+    $("opt-more").innerHTML = O.more.map(r => `<li><b>${r[0]}.</b> ${r[1]}${r[2] ? ` <span class="links">${r[2].map(a => `<a href="${esc(a[1])}" target="_blank" rel="noopener">${a[0]}</a>`).join("")}</span>` : ""}</li>`).join("");
+    $("food-facts").innerHTML = O.facts.map(r => `<tr><td>${r.what}</td><td class="num">${r.value}</td><td>${r.note}<span class="links">${r.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</span></td></tr>`).join("");
+    $("food-facts-note").textContent = O.factsNote;
 
     // taxes
     const rows = taxes(cur.res + 12 * M.p.health, cur.rev, M.p), other = model(!M.payer), over = !M.payer && cur.rev > T.vatLimit;
@@ -673,6 +746,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     else if (t.dataset.mix) { const [s, g] = t.dataset.mix.split("-"); if (n !== null) put(saved.mix, t.dataset.mix, n / 100, ECON.stages[s].mix[g]); }
     else if (t.dataset.order) { const [id, m] = t.dataset.order.split("-"); if (n !== null && n >= 0) put(saved.orders, t.dataset.order, Math.round(n), ECON.scenarios.find(s => s.id === id).orders[m]); }
+    else if (t.dataset.lever) { if (t.checked) levers.add(t.dataset.lever); else levers.delete(t.dataset.lever); render(); return; }
     else if (t.id === "tax-employed") { employed = t.checked; render(); return; }
     else if (t.id === "tax-zus") { zus = t.value; render(); return; }
     else if (t.id === "start") { view.start = +t.value; render(); return; }

@@ -41,6 +41,19 @@ const ECON = {
       { key: "plGm", label: "Наша доля в розничной цене без VAT", value: 0.4, unit: "%", guess: true, src: "Допущение из концепции (маржа 40%); оптовых цен польской базы пока нет" },
       { key: "plBasket", label: "Основных товаров в заказе", value: 1.4, digits: 1, guess: true, src: "Допущение: с ним средний заказ выходит около 150 zł, как в концепции" },
     ] },
+    { group: "Корма", items: [
+      { key: "foodGm", label: "Наша доля в розничной цене сухого корма", value: 0.18, unit: "%", guess: true, src: "Оценка по исследованию 13.10.2026: 10–15% при цене крупных интернет-магазинов, 15–18% у нишевых брендов, 25% — потолок при прямом договоре. Оптовых прайсов нет. У консервов стоит 20%, у лакомств 35% — в самих позициях" },
+      { key: "vatFood", label: "Ставка VAT на корм", value: 0.08, unit: "%", src: "Корм и лакомства для домашних животных — 8%, поз. 10 приложения 3 к закону о VAT; подтвердить у бухгалтера" },
+      { key: "foodDisc", label: "Скидка клиенту по коду партнёра на корм", value: 0.1, unit: "%", guess: true, src: "Пока как на остальной товар — черновик условий из концепции" },
+      { key: "foodComm", label: "Комиссия партнёра с корма", value: 0.1, unit: "%", guess: true, src: "Пока как на остальной товар — черновик условий из концепции" },
+      { key: "foodGift", label: "Подарок и лояльность в заказе корма", value: 4, unit: "zł", guess: true, src: "Пока как в обычном заказе: подарок 2 zł и лояльность 2 zł" },
+      { key: "foodDeliv", label: "Доставка мешка 9–12 кг за счёт магазина", value: 19.5, unit: "zł", src: "InPost Paczkomat, размер C до 25 кг, через Furgonetka: 18,61–19,44 zł с VAT (13.10.2026)" },
+      { key: "foodFree", label: "Порог бесплатной доставки корма", value: 250, unit: "zł", guess: true, src: "Пока как на остальной товар. У zooplus и Fera порог 99 zł, у John Dog 139 zł, у Maxi Zoo 149 zł" },
+      { key: "foodBuyers", label: "Доля клиентов, которые берут у нас корм", value: 0.15, unit: "%", guess: true, src: "Оценка, данных нет. В интернет-зоомагазинах корм покупают около 4% владельцев; у нас выше за счёт рекомендации Даши" },
+      { key: "foodEvery", label: "Раз в сколько недель возвращаются за кормом", value: 6, guess: true, src: "Расчёт по норме кормления: мешка 12 кг собаке 20 кг хватает на 38 дней, мешка 9 кг собаке 10 кг — на 48" },
+      { key: "foodUpsell", label: "Доля заказов корма с допродажей обычного товара", value: 0.25, unit: "%", guess: true, src: "Оценка, данных нет: миска, игрушка, амуниция по совету в корзине или от Даши" },
+      { key: "foodAddon", label: "Доля заказов корма с консервой или лакомством", value: 0.3, unit: "%", guess: true, src: "Оценка, данных нет" },
+    ] },
     { group: "Постоянные расходы в месяц", items: [
       { key: "platform", label: "Платформа магазина", value: 150, unit: "zł", guess: true, src: "Оценка: базовый тариф готовой платформы" },
       { key: "acc", label: "Бухгалтерия JDG", value: 340, unit: "zł", src: "ifirma: 277 zł нетто при 16–20 расходных документах, с VAT 341 zł — без регистрации по VAT он не возвращается. См. «Форма и учёт»" },
@@ -71,6 +84,8 @@ const ECON = {
   // Польская база: pl — розница в польских магазинах 13.10.2026, закупка считается от неё через «нашу долю»;
   // когда придёт оптовый прайс, добавляем позиции buyNet — закупочную цену без VAT.
   // Состав польской базы — примерный, по категориям из концепции: списка Даши пока нет.
+  // Корма: кандидаты от Claude, поиск 13.10.2026, командой и Дашей не обсуждались. pl — розница в Польше на эту дату,
+  // закупка считается от неё через «нашу долю в цене сухого корма»; gm — своя доля позиции (консервы, лакомства).
   items: [
     { src: "Польская база", brand: "amiPlay", name: "Шлейка guard Samba, M", url: "https://www.ceneo.pl/102399388", pl: 44, sized: 1, main: 1, on: 1 },
     { src: "Польская база", brand: "Dingo", name: "Шлейка Guard Energy", url: "https://dingo-shop.com.pl/szelki-guard-energy", pl: 78, sized: 1, main: 1, on: 1 },
@@ -87,6 +102,22 @@ const ECON = {
     { src: "Польская база", brand: "без бренда", name: "Нюхательный коврик", url: "https://zdrowepieski.pl/products/mata-wechowa-dla-psa", pl: 60, sized: 0, main: 1, on: 1 },
     { src: "Польская база", brand: "Trixie", name: "Кликер", url: "https://www.ceneo.pl/16513520", pl: 12, sized: 0, main: 0, on: 1 },
     { src: "Польская база", brand: "без бренда", name: "Компостируемые пакеты, 135 шт", url: "https://sprzedajemy.pl/zwierzeta/akcesoria-dla-zwierzat/dla-psow/temat/rolk%C4%99", pl: 30, sized: 0, main: 0, on: 1 },
+    { src: "Корма", brand: "Wiejska Zagroda", name: "Сухой беззерновой, индейка с ягнёнком, 9 кг", url: "https://www.doz.pl/p/wiejska-zagroda-indyk-z-jagniecina-karma-sucha-dla-psa-9-kg-205570", pl: 173, sized: 0, main: 1, on: 1 },
+    { src: "Корма", brand: "Wiejska Zagroda", name: "Сухой монобелковый, индейка, 2 кг", url: "https://wiejskazagroda.pl/pl/products/karma-sucha-dla-psa-wiejska-zagroda-monoproteinowa-indyk-s-m-2-kg-dorosly-3784", pl: 62, sized: 0, main: 1, on: 1 },
+    { src: "Корма", brand: "Wiejska Zagroda", name: "Консерва монобелковая, говядина, 500 г", url: "https://wiejskazagroda.pl/pl/products/karma-mokra-dla-psa-wiejska-zagroda-monoproteinowa-wolowina-dorosly-500g-4456", pl: 16.5, sized: 0, main: 0, on: 1, gm: 0.2 },
+    { src: "Корма", brand: "Pan Mięsko", name: "Сухой, телятина с индейкой, 9 кг", url: "https://wiejskazagroda.pl/pl/products/karma-sucha-dla-psa-pan-miesko-cielecina-z-indykiem-xs-9-kg-1783", pl: 136, sized: 0, main: 1, on: 1 },
+    { src: "Корма", brand: "Pan Mięsko", name: "Полувлажный, говядина с ягнёнком, 1 кг", url: "https://wiejskazagroda.pl/pl/products/karma-polwilgotna-dla-psa-pan-miesko-wolowina-z-jagniecina-dorosly-1kg-4774", pl: 23, sized: 0, main: 0, on: 1 },
+    { src: "Корма", brand: "Alpha Spirit", name: "Влажный Real Food, говядина, 280 г", url: "https://wiejskazagroda.pl/pl/products/karma-mokra-dla-psa-alpha-spirit-real-food-beef-dorosly-280g-4503", pl: 13.9, sized: 0, main: 0, on: 1, gm: 0.2 },
+    { src: "Корма", brand: "Baltica", name: "Сухой гипоаллергенный, лосось, 12 кг", url: "https://www.okazje.info.pl/szukaj/baltica-salmon-hypoallergenic-ml-12kg/ceny.html", pl: 284, sized: 0, main: 1, on: 1 },
+    { src: "Корма", brand: "Baltica", name: "Сухой гипоаллергенный, лосось, мелкие породы, 3 кг", url: "https://mediamarkt.pl/pl/product/_karma-sucha-dla-psa-baltica-excellent-losos-hypoallergenic-xs-s-3kg-168615315.html", pl: 85, sized: 0, main: 1, on: 1 },
+    { src: "Корма", brand: "John Dog", name: "Сухой Fresh, утка с кроликом, 3 кг", url: "https://johndog.pl/produkt/karma-sucha-john-dog-fresh-kaczka-z-krolikiem/", pl: 83, sized: 0, main: 1, on: 1 },
+    { src: "Корма", brand: "John Dog", name: "Консерва Pure Black, утка, 400 г", url: "https://johndog.pl/produkt/karma-mokra-pure-black-kaczka/", pl: 12.5, sized: 0, main: 0, on: 1, gm: 0.2 },
+    { src: "Корма", brand: "John Dog", name: "Лакомство Minis, минтай и форель, 80 г", url: "https://johndog.pl/produkt/przysmak-dla-psa-i-kota-mintaj-i-pstrag-john-dog-minis-80-g/", pl: 13.9, sized: 0, main: 0, on: 1, gm: 0.35 },
+    { src: "Корма", brand: "John Dog", name: "Сушёное жевательное лакомство, 3 шт", url: "https://johndog.pl/produkt/suszony-gryzak-dla-psa-penis-wolowy-3-szt/", pl: 36.9, sized: 0, main: 0, on: 1, gm: 0.35 },
+    { src: "Корма", brand: "Syta Micha", name: "Консервы, ягнёнок с овощами, 12 × 400 г", url: "https://mediamarkt.pl/pl/product/_karma-mokra-dla-psa-syta-micha-jagniecina-z-warzywami-puszka-12x400g-182881900.html", pl: 167, sized: 0, main: 1, on: 1, gm: 0.2 },
+    { src: "Корма", brand: "Brit Care", name: "Сухой гипоаллергенный, ягнёнок, 12 кг", url: "https://www.okazje.info.pl/szukaj/brit-care-dog-hypoallergenic-adult-large-breed-jagniecina-i-ryz-12-kg/ceny.html", pl: 166, sized: 0, main: 1, on: 1 },
+    { src: "Корма", brand: "Farmina N&D", name: "Сухой Ocean, треска, 12 кг", url: "https://www.okazje.info.pl/szukaj/farmina-n-d-ocean-canine-cod-pumpkin-orange-adult-medium-maxi-12kg/ceny.html", pl: 280, sized: 0, main: 1, on: 1 },
+    { src: "Корма", brand: "Wolfsblut", name: "Сухой Wild Duck, утка, 12,5 кг", url: "https://mediamarkt.pl/pl/product/_sucha-karma-dla-psa-wolfsblut-wild-duck-adult-125kg-165890763.html", pl: 288, sized: 0, main: 1, on: 1 },
     { src: "Украина", brand: "BioIntellect", name: "Поводок облегчённый 3 м, до 10 кг", url: "https://biointellect.net/povidets-z-polehshenoho-biothane-dlia-malykh-sobak-i-kotiv-3m/942/", home: 1265, cur: "UAH", pl: 129, sized: 0, main: 1, on: 0 },
     { src: "Украина", brand: "BioIntellect", name: "Поводок классический 3 м", url: "https://biointellect.net/povidets-z-klasychnoho-biotanu-3m-dlia-sobak-vid-10-kh/", home: 1550, cur: "UAH", pl: 139, sized: 0, main: 1, on: 0 },
     { src: "Украина", brand: "BioIntellect", name: "Перестёжка «свободные руки», до 10 кг", url: "https://biointellect.net/perestibky/", home: 1620, cur: "UAH", pl: 169, sized: 0, main: 1, on: 0 },
@@ -110,8 +141,9 @@ const ECON = {
     { src: "Корея", brand: "Merlot", name: "Комбинезон Ain Suit", url: "https://merlotstore.com/", home: 162000, cur: "KRW", pl: 649, sized: 1, main: 1, on: 1 },
   ],
 
-  // доля заказов по источникам на каждом этапе; корейский ассортимент появляется после чекпоинта на 6-м месяце
-  sources: ["Польская база", "Украина", "Корея"],
+  // доля заказов по источникам на каждом этапе; корейский ассортимент появляется после чекпоинта на 6-м месяце;
+  // корм в доли не входит: это повторные заказы сверх плана, они считаются от числа клиентов (вводные группы «Корма»)
+  sources: ["Польская база", "Украина", "Корея", "Корма"],
   stages: [
     { title: "Этап 1", months: "мес. 1–3", mix: [0.75, 0.25, 0] },
     { title: "Этап 2", months: "мес. 4–6", mix: [0.6, 0.4, 0] },
@@ -175,8 +207,71 @@ const ECON = {
       links: [["Trixie, 21 zł", "https://psiedobre.pl/TRIXIE-Smycz-Treningowa-dla-psa-10m-turkus-p742"], ["Dingo Gear, 95 zł", "https://www.duzepsy.pl/linki-i-smycze-treningowe-dla-psa/smycz-treningowa-dla-psa-10-m-dingo-gear"], ["Dingo, нескользящий", "https://dingo-shop.com.pl/antyposlizgowa-linka-treningowa-dla-psa"]] },
     { what: "Кликер, KONG Classic M, нюхательный коврик", price: "6–25, 35–60 и 45–100 zł", note: "",
       links: [["кликер Trixie", "https://www.ceneo.pl/16513520"], ["KONG Classic M", "https://www.ceneo.pl/27092826"], ["нюхательные коврики", "https://allegro.pl/listing?string=mata+w%C4%99chowa+dla+psa"]] },
+    { what: "Корм Wiejska Zagroda, 9 кг", price: "161–266 zł", note: "У бренда на сайте 224–266 zł, у перепродавцов 161–195 zł: корм продают со скидкой от цены бренда. Производитель MPPK Group, у него же Pan Mięsko и дистрибуция Alpha Spirit; для магазинов есть закрытая оптовая платформа",
+      links: [["doz.pl, 173 zł", "https://www.doz.pl/p/wiejska-zagroda-indyk-z-jagniecina-karma-sucha-dla-psa-9-kg-205570"], ["сайт бренда, сухие корма", "https://wiejskazagroda.pl/pl/menu/karma-sucha-192"], ["оптовая платформа", "https://b2b.wiejskazagroda.pl/logowanie"]] },
+    { what: "Корм Pan Mięsko, 9 кг", price: "136–199 zł", note: "У бренда 136–162 zł, в аптечной сети doz.pl — 199 zł",
+      links: [["сайт бренда, 136 zł", "https://wiejskazagroda.pl/pl/products/karma-sucha-dla-psa-pan-miesko-cielecina-z-indykiem-xs-9-kg-1783"], ["doz.pl, 199 zł", "https://www.doz.pl/p/pan-miesko-sucha-karma-dla-psa-m-cielecina-z-indykiem-9-kg-205507"]] },
+    { what: "Корм Baltica, лосось, 12 кг", price: "270–330 zł", note: "Польский производитель Baltica Pet Food, Мысленице; 3 кг — 85 zł",
+      links: [["Empik, 284 zł", "https://www.okazje.info.pl/szukaj/baltica-salmon-hypoallergenic-ml-12kg/ceny.html"], ["MediaMarkt, 3 кг", "https://mediamarkt.pl/pl/product/_karma-sucha-dla-psa-baltica-excellent-losos-hypoallergenic-xs-s-3kg-168615315.html"]] },
+    { what: "Европейские корма, 12 кг", price: "165–305 zł", note: "Brit Care (Чехия) 165–250 zł, Farmina N&D Ocean (Италия) 280–306 zł, Wolfsblut (Германия) 288 zł за 12,5 кг. Продаются во всех крупных магазинах, цену сравнивают",
+      links: [["Brit Care", "https://www.okazje.info.pl/szukaj/brit-care-dog-hypoallergenic-adult-large-breed-jagniecina-i-ryz-12-kg/ceny.html"], ["Farmina N&D", "https://www.okazje.info.pl/szukaj/farmina-n-d-ocean-canine-cod-pumpkin-orange-adult-medium-maxi-12kg/ceny.html"], ["Wolfsblut", "https://mediamarkt.pl/pl/product/_sucha-karma-dla-psa-wolfsblut-wild-duck-adult-125kg-165890763.html"]] },
+    { what: "Консервы 400–500 г", price: "12–17 zł", note: "John Dog Pure Black 12,50 zł, Syta Micha около 14 zł в упаковке из 12, Wiejska Zagroda 500 г — 16,49 zł",
+      links: [["John Dog", "https://johndog.pl/produkt/karma-mokra-pure-black-kaczka/"], ["Syta Micha, 12 шт", "https://mediamarkt.pl/pl/product/_karma-mokra-dla-psa-syta-micha-jagniecina-z-warzywami-puszka-12x400g-182881900.html"], ["Wiejska Zagroda", "https://wiejskazagroda.pl/pl/products/karma-mokra-dla-psa-wiejska-zagroda-monoproteinowa-wolowina-dorosly-500g-4456"]] },
   ],
 
+  // план Б: меры, которые меняют вводные (set), меры без расчёта (more) и то, что нашли про наценку на корм (facts).
+  // Исследование Claude от 13.10.2026, командой не обсуждалось; оптовых прайсов нет, цифры — из открытых источников.
+  optimize: {
+    lead: "Корм для нас — повод вернуться, а не заработок: за ним приходят каждые 4–9 недель, и в части заказов к мешку добавляется обычный товар, на котором мы и зарабатываем. Условие одно: сам заказ корма не должен быть в минус.",
+    levers: [
+      { id: "terms", title: "Корм — без скидки по коду, партнёру 5%", set: { foodDisc: 0, foodComm: 0.05 },
+        text: "Условие, без которого корм не работает. Сейчас он идёт на общих условиях: 10% скидки клиенту и 10% партнёру, а у нас с мешка остаётся 18%. Магазины с партнёрскими программами на корм платят 4–5%. Решение по программе — за командой.",
+        links: [["dlaPsiaka — 5%", "https://dlapsiaka.pl/content/11-program-partnerski"], ["MobilKarm — 4%", "https://www.mobilkarm.pl/program-partnerski/"]] },
+      { id: "upsell", title: "Допродажа обычного товара в каждом втором заказе корма", set: { foodUpsell: 0.5 },
+        text: "Сейчас стоит в каждом четвёртом. Миска, игрушка, амуниция: подсказка в корзине «к этому корму берут», совет Даши, напоминание перед сезоном. Товар едет в уже оплаченной посылке." },
+      { id: "addon", title: "Лакомство или консерва в 7 из 10 заказов корма", set: { foodAddon: 0.7 },
+        text: "Сейчас стоит 3 из 10. На лакомствах остаётся 35–60% цены против 10–18% на сухом корме: набор «мешок + лакомство», подсказка в корзине, совет Даши в карточке." },
+      { id: "direct", title: "Специализированные корма и бренды, которые держат цену: наша доля 25%", set: { foodGm: 0.25 },
+        text: "Вместо 18%. Гипоаллергенные и монобелковые корма берут по рекомендации, а не по цене: на ветеринарных диетах клиникам оставалось 30–40%, интернет-магазинам — 10–15%. У John Dog перепродавцы на 8–17% дешевле сайта бренда, у Wiejska Zagroda — на 27–34%. Какие корма берём — пока не решено.",
+        links: [["Hurtowniakarm — «до 25%»", "https://www.hurtowniakarm.pl/dropshipping-hurtownia-karm"], ["John Dog на Ceneo", "https://www.ceneo.pl/182265954"], ["Wiejska Zagroda на Ceneo", "https://www.ceneo.pl/139615137"]] },
+      { id: "ship", title: "Мешок — дешёвым перевозчиком, 14,5 zł", set: { foodDeliv: 14.5 },
+        text: "Вместо 19,5 zł в InPost: автомат DPD до 20 кг — 13,15 zł, Orlen Paczka — 15,98 zł.",
+        links: [["DPD", "https://furgonetka.pl/cennik/dpd"], ["Orlen Paczka", "https://furgonetka.pl/cennik/orlen"], ["InPost", "https://furgonetka.pl/cennik/inpost"]] },
+      { id: "gift", title: "Подарок и открытка — только в первом заказе", set: { foodGift: 0 },
+        text: "Корм заказывают снова и снова; подарок за 4 zł в каждом заказе — это пятая часть того, что с него остаётся." },
+      { id: "all", title: "Комиссия партнёра 7% на весь товар", set: { pComm: 0.07, foodComm: 0.07 },
+        text: "Не только про корм: вместо 10% из черновика программы. Основателям условия обещаны щедрые — это мера для следующих уровней." },
+      { id: "stress", title: "Риск: цена и доставка как у крупных магазинов", set: { foodGm: 0.1, foodFree: 149 },
+        text: "Не мера, а проверка на прочность: наша доля 10% и бесплатная доставка от 149 zł. За кормом возвращаются, только если он не дороже, чем у Fera и zooplus. Интернет-магазинам на корме оставалось 10–15% (UOKiK), Krakvet — 9–13%.",
+        links: [["UOKiK о наценках", "https://tvn24.pl/biznes/najnowsze/zbyt-droga-karma-dla-zwierzat-uokik-nalozyl-3-mln-zl-kary-ra392182-ls4437412"], ["Krakvet в Forbes", "https://www.forbes.pl/przywodztwo/marek-batko-tworca-krakvetu-najwiekszego-sklepu-zoologicznego-w-polsce-wywiad/mh9ngj8"]] },
+    ],
+    more: [
+      ["Продавать корм без склада", "Оптовик сам отправляет мешок клиенту: не нужны деньги на запас, нет риска срока годности. Hurtowniakarm — доставка клиенту за их счёт от 80 zł; 2Dog — от 1 штуки, сбор 10 zł за заказ; ZooMax возит Wiejska Zagroda, Pan Mięsko и Alpha Spirit.", [["Hurtowniakarm", "https://hurtowniakarm.pl/dropshipping-hurtownia-karm"], ["2Dog", "https://2dog.pl/dropshipping/"], ["ZooMax", "https://zoomax.pl/dropshipping/"]]],
+      ["Рекомендовать корм за комиссию, не продавая его", "Тяжёлые мешки можно вообще не возить: dlaPsiaka платит 5% с корзины и даёт клиенту −10%, PsiBufet платит кинологам за первый заказ и продления подписки (сумма не опубликована). С заказа на 160 zł это около 8 zł без склада и доставки.", [["dlaPsiaka", "https://dlapsiaka.pl/content/11-program-partnerski"], ["PsiBufet", "https://join.psibufet.com/ambasadorzy/"]]],
+      ["Свои лакомства", "Жевательные лакомства под своей маркой: Petmex — от одной смешанной палеты, запуск 4–8 недель; ZAREA — от 10–50 кг. Hubun после четырёх убыточных лет на чужих кормах ушёл именно сюда (42 Bites).", [["Petmex", "https://petmex.pl/wlasna-marka/"], ["ZAREA", "https://zarea.com.pl/en/"], ["42 Bites", "https://42bites.pl/"]]],
+      ["Маленькие мешки и пробники", "Килограмм в мешке 2–3 кг дороже на 19–24%, пробник 120 г стоит 6–7 zł; посылка лёгкая, а Даша может дать пробник на занятии.", [["John Dog — цены по фасовкам", "https://johndog.pl/kategoria-produktu/pies/karma-przysmaki-dla-psa/karma-sucha-dla-psa/"]]],
+      ["Подписка на корм", "Скидка 5–15% за автоматический дозаказ. У Chewy на подписчиков приходится 83% выручки; польских данных об эффекте нет.", [["Animal Island — 15%", "https://www.animalisland.eu/pages/subskrypcja"], ["Chewy", "https://www.subscriptioninsider.com/article-type/news/chewys-autoship-customer-sales-reached-83-3-of-net-sales-in-fiscal-2025"]]],
+      ["Запас не больше чем на 2–3 месяца продаж", "Сухой корм хранится 12–18 месяцев, магазины уценяют его, когда остаётся меньше трёх. Остаточный срок при поставке спрашивать у каждого оптовика.", [["сроки хранения", "https://zoopers.pl/czy-sucha-karma-moze-sie-popsuc-jak-ja-przechowywac/193/b"]]],
+      ["До первой закупки спросить ветеринарную инспекцию", "Главная инспекция пишет, что розница корма для домашних животных регистрации не требует; отраслевой сайт утверждает обратное про склад и интернет-магазин. Нужен письменный ответ инспекции в Познани.", [["Главная ветеринарная инспекция", "https://www.wetgiw.gov.pl/handel-eksport-import/pytania-i-odpp/printpage"], ["Petinsider", "https://petinsider.pl/sprzedaz-karmy-pod-marka-wlasna-jak-to-zrobic/"]]],
+    ],
+    facts: [
+      { what: "Что остаётся интернет-магазину с корма", value: "10–15%", note: "Установил антимонопольный орган по ветеринарным диетам Royal Canin; у ветклиник — 30–40%. Данные 2010–2014 годов.", links: [["tvn24", "https://tvn24.pl/biznes/najnowsze/zbyt-droga-karma-dla-zwierzat-uokik-nalozyl-3-mln-zl-kary-ra392182-ls4437412"]] },
+      { what: "Krakvet, мешок 15 кг", value: "9–13%", note: "Основатель в 2017 году: в опте около 100 zł, клиенту 110–115 zł с бесплатной доставкой. Процент — наш расчёт.", links: [["Forbes", "https://www.forbes.pl/przywodztwo/marek-batko-tworca-krakvetu-najwiekszego-sklepu-zoologicznego-w-polsce-wywiad/mh9ngj8"]] },
+      { what: "Обычный зоомагазин, 2025", value: "до 8%", note: "Один владелец: сети продают по цене, по которой он закупает у дистрибьютора.", links: [["PetInsider", "https://petinsider.pl/aktualnosci-co-o-2024-mowi-branza/"]] },
+      { what: "Оптовик с отправкой клиенту", value: "до 25%", note: "Рекламное обещание Hurtowniakarm, то есть потолок.", links: [["Hurtowniakarm", "https://www.hurtowniakarm.pl/dropshipping-hurtownia-karm"]] },
+      { what: "Советы для открывающих зоомагазин", value: "20–30% и 40–60%", note: "Сухой премиум-корм и лакомства. Источник цифр не указан, доверять осторожно.", links: [["nssd.pl", "https://nssd.pl/sklep-zoologiczny-2026-koszty-otwarcia-i-marza/"]] },
+      { what: "Гиганты: zooplus и Chewy", value: "28–30%", note: "Валовая наценка всей компании, с прямыми контрактами и своими марками (у zooplus они 16% продаж). После расходов у zooplus оставалось 0,8% продаж.", links: [["zooplus", "https://www.petbusinessworld.co.uk/trade-news/retailers/zooplus-reveals-record-year.html"], ["Chewy", "https://www.sec.gov/Archives/edgar/data/1766502/000176650224000012/chwyq42023exhibit991.htm"]] },
+      { what: "Перепродавцы дешевле сайта бренда", value: "на 8–34%", note: "Wiejska Zagroda 9 кг: 224–266 zł у бренда, 155–194 zł на Ceneo. John Dog 12 кг: 260–280 против 219–258 zł.", links: [["Wiejska Zagroda", "https://www.ceneo.pl/139615137"], ["John Dog", "https://www.ceneo.pl/182012569"], ["Brit Care", "https://www.ceneo.pl/147015559"]] },
+      { what: "Бренд не может защитить нашу цену", value: "запрещено", note: "За минимальные интернет-цены для партнёров Empire Brands оштрафована почти на 0,5 млн zł (2025).", links: [["UOKiK", "https://archiwum.uokik.gov.pl/aktualnosci.php?news_id=19705"]] },
+      { what: "Кто зарабатывает на корме", value: "владельцы марок", note: "Paka Zwierzaka: 17 млн zł выручки и 2,2 млн zł прибыли. Перепродавец Hubun: 16,6 млн zł и убыток 1,7 млн zł. Fera: 246 млн zł и убыток 9 млн zł. Данные из сводок реестра, напрямую не сверены.", links: [["Fera", "https://monitorkrs.pl/pl/0000501167/krs/fera"], ["Hubun", "https://aleo.com/int/company/hubun-spolka-akcyjna-mszana-dolna"], ["Bankier о наценке", "https://www.bankier.pl/wiadomosc/Miliardy-w-miskach-Branza-zoologiczna-walczy-o-portfele-wlascicieli-zwierzat-9206967.html"]] },
+      { what: "На сколько хватает мешка", value: "4–9 недель", note: "Собака 20 кг съедает около 9,6 кг в месяц: мешка 12 кг хватает на 38 дней, 9 кг — на 28. Собаке 10 кг мешка 9 кг хватает на 48 дней. Расчёт по норме на упаковке.", links: [["норма кормления", "https://www.doz.pl/p/pan-miesko-sucha-karma-dla-psa-xl-cielecina-z-indykiem-20-kg-205508"]] },
+      { what: "Расход владельца на корм", value: "100–300 zł в месяц", note: "Так отвечают 61% владельцев собак; каждый десятый тратит до 500 zł.", links: [["Rzeczpospolita", "https://www.rp.pl/biznes/art43800461-pies-lub-kot-tylko-dla-bogatych-ile-wydajemy-na-domowe-zwierzeta"]] },
+      { what: "Где покупают корм", value: "4% — в интернет-зоомагазинах", note: "Дискаунтеры — 40% покупателей, супермаркеты — 26%, обычные зоомагазины — 8%. Массовый рынок, собаки и кошки вместе.", links: [["dlahandlu.pl", "https://www.dlahandlu.pl/nonfood/miska-wazniejsza-niz-wlasny-portfel-polacy-kupuja-to-jak-szaleni,167505.html"]] },
+      { what: "Бесплатная доставка у конкурентов", value: "от 99–149 zł", note: "zooplus и Fera — 99 zł, Wiejska Zagroda — 100 zł, John Dog — 139 zł, Maxi Zoo — 149 zł. Наш порог 250 zł для корма высок.", links: [["zooplus", "https://www.zooplus.pl/info/about/shippingcosts"], ["Fera", "https://fera.pl/centrum-pomocy/pomoc-dostawa-jakie-opcje-dostawy-oferuje-fera-pl/"], ["John Dog", "https://johndog.pl/dostawa/"]] },
+      { what: "Минимальный заказ у небольших поставщиков", value: "450–600 zł", note: "dlaPsiaka — от 599 zł, Slowdog (лакомства) — доставка бесплатно от 450 zł, Bazar Pupila — от 500 zł. Условия MPPK и Baltica — только по запросу.", links: [["dlaPsiaka", "https://b2b.dlapsiaka.pl/"], ["Slowdog", "https://slowdog.pl/wspolpracuj-z-nami"], ["Bazar Pupila", "https://bazarpupila.pl/hurtownia-zooologiczna-dla-psa-kota/"], ["Baltica", "https://balticapets.pl/pl/content/6-wspolpraca-b2b"]] },
+    ],
+    factsNote: "Не нашли: ни одного открытого прайса с оптовой и рекомендованной розничной ценой, скидки и минимальный заказ у MPPK, Baltica и John Dog, наценку перепродавца на консервы, польские данные о том, как часто дозаказывают корм. Настоящие цифры даст только запрос прайсов: bok@mppk.pl, hurt@balticapetfood.pl, info@johndog.pl.",
+  },
 
   // налоги и взносы: ставки и суммы на 2026 год, проверено поиском 13.10.2026; перед решением подтвердить у бухгалтера
   tax: {
