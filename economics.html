@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=04" defer></script>
+<script src="economics-data.js?v=05" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -138,8 +138,13 @@
       <h2 id="plan-head"></h2>
     </div>
     <div class="col"><p id="plan-lead"></p></div>
+    <div class="row">
+      <label class="field inline"><span>Запуск в</span><select id="start"></select></label>
+      <label class="check"><input type="checkbox" id="season"> Учитывать сезон</label>
+    </div>
     <div class="chart" id="chart" role="img"></div>
-    <p class="legend">Столбик — результат месяца после постоянных расходов: вверх плюс, вниз минус. Над столбиком — заказов в месяц.</p>
+    <p class="legend">Столбик — результат месяца после постоянных расходов: вверх плюс, вниз минус. Над столбиком — заказов в месяц, под ним — месяц года.</p>
+    <p class="note" id="season-note"></p>
     <h3 class="sub mt">Что для этого нужно</h3>
     <div class="grid" id="needs"></div>
     <details class="how">
@@ -157,13 +162,13 @@
         <div class="table-wrap">
           <table>
             <thead><tr>
-              <th>Месяц</th><th class="num">Заказов</th><th class="num">Средний заказ</th><th class="num">Оборот</th><th class="num">Результат месяца</th>
+              <th>Месяц</th><th class="num">Заказов по плану</th><th class="num">Сезон</th><th class="num">Заказов</th><th class="num">Оборот</th><th class="num">Результат месяца</th>
               <th class="num">Накопительно</th><th class="num">Повторные</th><th class="num">Новых клиентов</th><th class="num">Закупка товара</th>
             </tr></thead>
             <tbody id="goals-body"></tbody>
           </table>
         </div>
-        <p class="legend">Заказы на 6-й месяц взяты из концепции: слабо 15–25, нормально 60–90, максимум 150–250. Остальные месяцы — предложенная траектория. Доля повторных заказов — цель; на рынке за год возвращаются 28–31% покупателей.</p>
+        <p class="legend">Заказы на 6-й месяц взяты из концепции: слабо 15–25, нормально 60–90, максимум 150–250. Остальные месяцы — предложенная траектория; сезон умножает её на коэффициент месяца. Доля повторных заказов — цель; на рынке за год возвращаются 28–31% покупателей.</p>
       </div>
     </details>
   </section>
@@ -279,8 +284,8 @@
         <h3>Что не учтено</h3>
         <ul class="small">
           <li>зарплаты и ZUS команды (помощницу можно задать во вводных);</li>
-          <li>сезонность: всплеск перед Sylwester и зимой;</li>
           <li>остатки размеров и брак;</li>
+          <li>сезонность по товарам: одежда продаётся осенью и зимой, в плане сезон влияет только на число заказов;</li>
           <li>образцы и запас денег на товар;</li>
           <li>цены DIQPET: прайс пришёл в личном письме.</li>
         </ul>
@@ -306,7 +311,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const KEY = "econ-04"; // bump when the order of items or scenarios changes: overrides are stored by position
+  const KEY = "econ-04"; const MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]; // bump when the order of items or scenarios changes: overrides are stored by position
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const defs = ECON.inputs.flatMap(g => g.items);
@@ -314,7 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let saved = fresh();
   try { saved = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
   // the three switches at the top are a what-if view and are never stored
-  const view = { scenario: "normal", payer: ECON.vatPayer, disc: null };
+  const view = { scenario: "normal", payer: ECON.vatPayer, disc: null, start: ECON.season.start, season: true };
   let srcFilter = "all", employed = true, zus = "start";
 
   const store = () => { try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (e) {} };
@@ -377,9 +382,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const scenarios = ECON.scenarios.map(sc => {
       let cum = 0, low = 0;
       const months = sc.orders.map((def, m) => {
-        const orders = `${sc.id}-${m}` in saved.orders ? saved.orders[`${sc.id}-${m}`] : def, st = stages[ECON.stageOfMonth[m]];
+        const plan = `${sc.id}-${m}` in saved.orders ? saved.orders[`${sc.id}-${m}`] : def, st = stages[ECON.stageOfMonth[m]];
+        const cal = (view.start + m) % 12, coef = view.season ? ECON.season.coef[cal] : 1, orders = Math.round(plan * coef);
         const res = orders * st.contrib - fixed - (m < p.lossMonths ? p.lossLimit : 0); cum += res; low = Math.min(low, cum);
-        return { m, byCode: orders * p.pShare, payout: orders * p.pShare * p.pComm * st.aov * (1 - p.pDisc), orders, changed: orders !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov, res, cum, repeat: ECON.repeat[m], fresh: Math.ceil(orders * (1 - ECON.repeat[m])), stock: orders * st.cost };
+        return { m, cal, coef, plan, byCode: orders * p.pShare, payout: orders * p.pShare * p.pComm * st.aov * (1 - p.pDisc), orders, changed: plan !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov, res, cum, repeat: ECON.repeat[m], fresh: Math.ceil(orders * (1 - ECON.repeat[m])), stock: orders * st.cost };
       });
       const tot = f => months.reduce((s, x) => s + f(x), 0);
       return Object.assign({}, sc, { months, low, perHour: tot(x => x.res) / (sc.hours * 52), orders: tot(x => x.orders), rev: tot(x => x.rev), res: tot(x => x.res), fresh: tot(x => x.fresh), stock: tot(x => x.stock), run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
@@ -454,9 +460,15 @@ document.addEventListener("DOMContentLoaded", () => {
     $("plan-head").textContent = plus < 0 ? `«${cur.title}»: за год в плюс не выходим.` : `«${cur.title}»: в плюсе с ${plus + 1}-го месяца.`;
     $("plan-lead").textContent = `За год — ${nf(cur.orders)} заказов и ${zl(cur.rev)} оборота. Итог после постоянных расходов: ${zl(cur.res)}. В худший момент в минусе ${zl(Math.abs(cur.low))}. На товар за год нужно около ${zl(cur.stock)}, первая закупка — 10 000 zł.`;
     const top = Math.max(1, ...cur.months.map(x => x.res)), bottom = Math.max(1, ...cur.months.map(x => -x.res)), scale = Math.max(top / 110, bottom / 46);
-    $("chart").innerHTML = cur.months.map(x => `<div class="mon${x.m === plus ? " first" : ""}" title="Месяц ${x.m + 1}: ${nf(x.orders)} заказов, ${zl(x.res)}"><span>${nf(x.orders)}</span>
+    $("chart").innerHTML = cur.months.map(x => `<div class="mon${x.m === plus ? " first" : ""}" title="${x.m + 1}-й месяц, ${MONTHS[x.cal]}: ${nf(x.orders)} заказов, ${zl(x.res)}"><span>${nf(x.orders)}</span>
       <div class="up">${x.res > 0 ? `<i style="height:${Math.max(2, x.res / scale).toFixed(1)}px"></i>` : ""}</div>
-      <div class="down">${x.res < 0 ? `<i style="height:${Math.max(2, -x.res / scale).toFixed(1)}px"></i>` : ""}</div><span>${x.m + 1}</span></div>`).join("");
+      <div class="down">${x.res < 0 ? `<i style="height:${Math.max(2, -x.res / scale).toFixed(1)}px"></i>` : ""}</div><span>${MONTHS[x.cal].slice(0, 3)}</span></div>`).join("");
+    $("start").innerHTML = MONTHS.map((n, k) => `<option value="${k}"${k === view.start ? " selected" : ""}>${n}</option>`).join("");
+    $("season").checked = view.season;
+    const peak = cur.months.reduce((a, x) => x.coef > a.coef ? x : a), dip = cur.months.reduce((a, x) => x.coef < a.coef ? x : a);
+    $("season-note").innerHTML = view.season
+      ? `<strong>Сезон учтён.</strong> Заказы каждого месяца умножены на сезонный коэффициент: сильнее всего ${MONTHS[peak.cal]} (×${nf(peak.coef, 2)}), слабее всего ${MONTHS[dip.cal]} (×${nf(dip.coef, 2)}). ${ECON.season.note} Месяц запуска не решён — выберите свой. <span class="links">${ECON.season.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join(" · ")}</span>`
+      : `<strong>Сезон выключен.</strong> План ровный: заказы растут по траектории сценария без поправки на время года.`;
     $("chart").setAttribute("aria-label", cur.months.map(x => `месяц ${x.m + 1}: ${zl(x.res)}`).join("; "));
     const before = ECON.startup.filter(x => x.when === 0), later = ECON.startup.filter(x => x.when > 0), sum = l => l.reduce((a, x) => a + x.zl, 0);
     $("needs").innerHTML = [
@@ -468,13 +480,13 @@ document.addEventListener("DOMContentLoaded", () => {
       `<tr class="total"><td>Всего</td><td class="num">${zl(sum(ECON.startup))}</td><td></td><td></td></tr>`;
     $("checks").innerHTML = ECON.checkpoints.map((c, k) => {
       const x = cur.months[c.month - 1], n = cur.partners[k], each = x.byCode / n, one = x.payout / x.byCode;
-      return kpi(c.title, `${nf(x.orders)} заказов в месяц`, `Оборот ${zl(x.rev)}, результат ${zl(x.res)}, повторных ${pct(x.repeat)}. По кодам партнёров — ${nf(x.byCode)} заказов: при ${nf(n, n % 1 ? 1 : 0)} активных это около ${nf(each, 1)} на каждого. Партнёрам выплатим ${zl(x.payout)}; до порога ${zl(ECON.payoutFrom)} нужно ${Math.ceil(ECON.payoutFrom / one)} заказа.`);
+      return kpi(`${c.title} · ${MONTHS[x.cal]}`, `${nf(x.orders)} заказов в месяц`, `Оборот ${zl(x.rev)}, результат ${zl(x.res)}, повторных ${pct(x.repeat)}. По кодам партнёров — ${nf(x.byCode)} заказов: при ${nf(n, n % 1 ? 1 : 0)} активных это около ${nf(each, 1)} на каждого. Партнёрам выплатим ${zl(x.payout)}; до порога ${zl(ECON.payoutFrom)} нужно ${Math.ceil(ECON.payoutFrom / one)} заказа.`);
     }).join("");
-    $("goals-body").innerHTML = cur.months.map(x => `<tr><td>${x.m + 1}</td>
-      <td class="num"><input class="in${x.changed ? " changed" : ""}" type="text" inputmode="numeric" data-order="${cur.id}-${x.m}" value="${nf(x.orders)}" aria-label="Заказов, месяц ${x.m + 1}"></td>
-      <td class="num">${zl(x.aov)}</td><td class="num">${zl(x.rev)}</td><td${cls(x.res)}>${zl(x.res)}</td><td${cls(x.cum)}>${zl(x.cum)}</td>
+    $("goals-body").innerHTML = cur.months.map(x => `<tr><td>${x.m + 1} · ${MONTHS[x.cal]}</td>
+      <td class="num"><input class="in${x.changed ? " changed" : ""}" type="text" inputmode="numeric" data-order="${cur.id}-${x.m}" value="${nf(x.plan)}" aria-label="Заказов по плану, месяц ${x.m + 1}"></td>
+      <td class="num">×${nf(x.coef, 2)}</td><td class="num">${nf(x.orders)}</td><td class="num">${zl(x.rev)}</td><td${cls(x.res)}>${zl(x.res)}</td><td${cls(x.cum)}>${zl(x.cum)}</td>
       <td class="num">${pct(x.repeat)}</td><td class="num">${nf(x.fresh)}</td><td class="num">${zl(x.stock)}</td></tr>`).join("") +
-      `<tr class="total"><td>Год</td><td class="num">${nf(cur.orders)}</td><td></td><td class="num">${zl(cur.rev)}</td><td${cls(cur.res)}>${zl(cur.res)}</td><td></td><td></td><td class="num">${nf(cur.fresh)}</td><td class="num">${zl(cur.stock)}</td></tr>`;
+      `<tr class="total"><td>Год</td><td></td><td></td><td class="num">${nf(cur.orders)}</td><td class="num">${zl(cur.rev)}</td><td${cls(cur.res)}>${zl(cur.res)}</td><td></td><td></td><td class="num">${nf(cur.fresh)}</td><td class="num">${zl(cur.stock)}</td></tr>`;
 
     // goods
     const fit = x => x.contrib < 0 ? 2 : x.contrib / x.rev < .15 ? 1 : 0, byFit = [0, 1, 2].map(f => M.items.filter(x => fit(x) === f));
@@ -549,6 +561,8 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (t.dataset.order) { const [id, m] = t.dataset.order.split("-"); if (n !== null && n >= 0) put(saved.orders, t.dataset.order, Math.round(n), ECON.scenarios.find(s => s.id === id).orders[m]); }
     else if (t.id === "tax-employed") { employed = t.checked; render(); return; }
     else if (t.id === "tax-zus") { zus = t.value; render(); return; }
+    else if (t.id === "start") { view.start = +t.value; render(); return; }
+    else if (t.id === "season") { view.season = t.checked; render(); return; }
     else return;
     store(); render();
   });
