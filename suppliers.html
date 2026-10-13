@@ -37,15 +37,16 @@
   .chev { font: 500 12px var(--font-mono); color: var(--muted); white-space: nowrap; padding-top: 2px; }
   .chev::after { content: "Подробнее ▾"; }
   .sup[open] .chev::after { content: "Свернуть ▴"; }
-  .sup-body { display: grid; gap: 16px 28px; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); padding: 16px 18px 18px; border-top: 1px solid var(--line); }
-  .sup-body > div { display: grid; gap: 12px; align-content: start; min-width: 0; }
-  @media (max-width: 760px) { .sup > summary { grid-template-columns: 1fr auto; } .sum-main, .sum-side { grid-column: 1 / -1; } .sup-body { grid-template-columns: 1fr; } }
+  .sup-body { display: grid; gap: 16px; padding: 16px 18px 18px; border-top: 1px solid var(--line); }
+  .sup-body > * { min-width: 0; }
+  .sup-body > .review, .sup-body > .facts { max-width: 86ch; }
+  @media (max-width: 760px) { .sup > summary { grid-template-columns: 1fr auto; } .sum-main, .sum-side { grid-column: 1 / -1; } .facts div { grid-template-columns: 1fr; gap: 0; } }
   .place { font: 500 12px var(--font-mono); color: var(--muted); }
   .tags { display: flex; flex-wrap: wrap; gap: 5px; }
   .tags .tag { margin: 0; }
   .tag.plain { background: var(--line); color: var(--muted); }
   .facts { display: grid; gap: 6px; margin: 0; font-size: 13.5px; }
-  .facts div { display: grid; grid-template-columns: 92px 1fr; gap: 8px; }
+  .facts div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; }
   .facts dt { color: var(--muted); }
   .facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
   .links { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -54,7 +55,7 @@
   .review { display: grid; gap: 6px; padding: 10px 12px; border-radius: 8px; background: var(--accent-soft); }
   .review p { font-size: 14px; }
   .review b { color: var(--accent); }
-  .sup-body > .shelf-wrap { grid-column: 1 / -1; gap: 8px; }
+  .shelf-wrap { display: grid; gap: 8px; }
   .shelf { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x proximity; padding-bottom: 6px; scrollbar-width: thin; }
   .prod { flex: 0 0 190px; scroll-snap-align: start; display: grid; gap: 3px; align-content: start; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); text-decoration: none; font-size: 12.5px; line-height: 1.35; }
   .prod:hover { border-color: var(--accent); }
@@ -1313,10 +1314,7 @@ function card(s) {
       <span class="chev" aria-hidden="true"></span>
     </summary>
     <div class="sup-body">
-      <div>
-        ${s.opinion ? `<div class="review"><p><b>Оценка команды.</b> ${esc(s.opinion)}</p><p><b>Следующий шаг.</b> ${esc(s.next)}</p></div>` : ""}
-        <div class="links">${linksHtml(s) || `<span class="muted small">Контактов пока нет</span>`}</div>
-      </div>
+      ${s.opinion ? `<div class="review"><p><b>Оценка команды.</b> ${esc(s.opinion)}</p><p><b>Следующий шаг.</b> ${esc(s.next)}</p></div>` : ""}
       <dl class="facts">
         <div><dt>Отзывы</dt><dd>${esc(s.reviews)}</dd></div>
         <div><dt>Из поиска</dt><dd>${esc(s.why)}</dd></div>
@@ -1327,6 +1325,7 @@ function card(s) {
         <div><dt>Заметка</dt><dd>${esc(s.note)}</dd></div>
         <div><dt>Источник</dt><dd>${sourceHtml(s)}</dd></div>
       </dl>
+      <div class="links">${linksHtml(s) || `<span class="muted small">Контактов пока нет</span>`}</div>
       ${s.top.length ? `<div class="shelf-wrap"><p class="place">Популярные товары</p><div class="shelf">${s.top.map(p => `<a class="prod" href="${esc(p.url)}" target="_blank" rel="noopener">
         <span class="thumb">${p.img ? `<img src="${esc(p.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">` : ""}</span>
         <span class="prod-title">${esc(p.title)}</span><span class="prod-price">${esc(p.price)}</span><span class="muted">${esc(p.meta)}</span>
