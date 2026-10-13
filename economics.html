@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=16" defer></script>
+<script src="economics-data.js?v=17" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -619,7 +619,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("season").checked = view.season;
     const peak = cur.months.reduce((a, x) => x.coef > a.coef ? x : a), dip = cur.months.reduce((a, x) => x.coef < a.coef ? x : a);
     $("season-note").innerHTML = view.season
-      ? `<strong>Сезон учтён.</strong> Заказы каждого месяца умножены на сезонный коэффициент: сильнее всего ${MONTHS[peak.cal]} (×${nf(peak.coef, 2)}), слабее всего ${MONTHS[dip.cal]} (×${nf(dip.coef, 2)}). ${ECON.season.note} Месяц запуска не решён — выберите свой. <span class="links">${ECON.season.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join(" · ")}</span>`
+      ? `<strong>Сезон учтён.</strong> Заказы каждого месяца умножены на сезонный коэффициент: сильнее всего ${MONTHS[peak.cal]} (×${nf(peak.coef, 2)}), слабее всего ${MONTHS[dip.cal]} (×${nf(dip.coef, 2)}). ${ECON.season.note} Запуск планируем на декабрь 2026 года. <span class="links">${ECON.season.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join(" · ")}</span>`
       : `<strong>Сезон выключен.</strong> План ровный: заказы растут по траектории сценария без поправки на время года.`;
     $("chart").setAttribute("aria-label", cur.months.map(x => `месяц ${x.m + 1}: ${zl(x.res)}`).join("; "));
     const before = ECON.startup.filter(x => x.when === 0), later = ECON.startup.filter(x => x.when > 0), sum = l => l.reduce((a, x) => a + x.zl, 0);
