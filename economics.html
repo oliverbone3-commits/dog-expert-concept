@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=21" defer></script>
+<script src="economics-data.js?v=22" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -127,6 +127,20 @@
     <div class="split" id="split" role="img"></div>
     <ul class="lines" id="lines"></ul>
     <p class="note" id="order-note"></p>
+    <details class="how mt" id="pack" data-nav="Упаковка">
+      <summary>Упаковка: из чего складываются расходы на коробку</summary>
+      <div>
+        <div class="row" role="group" aria-label="Вариант упаковки" id="pack-variant"></div>
+        <p class="legend" id="pack-lead"></p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Что</th><th class="num">Цена за штуку</th><th class="num">На заказ</th><th class="num">Первая закупка</th><th>Откуда цифра</th></tr></thead>
+            <tbody id="pack-body"></tbody>
+          </table>
+        </div>
+        <p class="legend" id="pack-note"></p>
+      </div>
+    </details>
     <details class="how mt">
       <summary>По источникам товара</summary>
       <div>
@@ -464,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let saved = fresh();
   try { saved = Object.assign(fresh(), JSON.parse(localStorage.getItem(KEY) || "{}")); } catch (e) {}
   // the three switches at the top are a what-if view and are never stored
-  const view = { scenario: "normal", payer: ECON.vatPayer, disc: null, start: ECON.season.start, season: true };
+  const view = { pack: "basic", scenario: "normal", payer: ECON.vatPayer, disc: null, start: ECON.season.start, season: true };
   let srcFilter = "all", employed = true, zus = "start";
   const levers = new Set(); // plan B: which levers are ticked; a what-if view, never stored
 
@@ -494,6 +508,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const exchange = p.exShare * p.deliv * (1 + p.exOurs);
     const orderCosts = (price, sized, main, food) => fee(price, food) + partner(price, food) + main * (perOrder(food) + sized * exchange + (price >= free(food) ? ship(food) : 0));
 
+    // packaging per order: the chosen variant, with big orders in a bigger box; a typed value in the inputs wins
+    const PK = ECON.packaging, inV = l => l.in.includes(view.pack);
+    const lineCost = l => l.price * l.per * (l.big ? PK.bigShare : l.small ? 1 - PK.bigShare : 1);
+    const packCost = PK.lines.filter(inV).reduce((t, l) => t + lineCost(l), 0);
+    if (!("pack" in saved.v)) p.pack = packCost;
     const items = ECON.items.map((it, i) => {
       const o = Object.assign({}, it, saved.items[i] || {});
       const local = o.home == null, food = o.src === "Корма", v = food ? p.vatFood : p.vat;
@@ -556,7 +575,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return Object.assign({}, sc, { months, low, perHour: (tot(x => x.res) + pre.res) / (sc.hours * 52), orders: tot(x => x.orders) + pre.orders, foodOrders: tot(x => x.food), foodRes: tot(x => x.foodRes), rev: tot(x => x.rev) + pre.rev, res: tot(x => x.res) + pre.res, fresh: tot(x => x.fresh) + pre.orders, stock: tot(x => x.stock) + pre.stock, run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
     });
     const even = stages.map(st => st.contrib > 0 ? Math.ceil(fixed / st.contrib) : null);
-    return { p, payer, items, groups, stages, fixed, pre, food, scenarios, even };
+    return { p, payer, packCost, items, groups, stages, fixed, pre, food, scenarios, even };
   }
 
   // owner taxes and contributions for a year: pj is the JDG result before the owner's contributions, rev is yearly sales.
@@ -615,6 +634,13 @@ document.addEventListener("DOMContentLoaded", () => {
     $("split").setAttribute("aria-label", parts.map(x => `${x[1]} ${zl(x[3])}`).join(", "));
     $("lines").innerHTML = parts.map((x, k) => `<li${k === parts.length - 1 ? ' class="sum"' : ""}><i class="${x[0]}"></i><span>${x[1]}<small>${x[2]}</small></span><b${x[3] < 0 ? ' class="neg"' : ""}>${zl(x[3])}</b></li>`).join("");
     $("order-note").innerHTML = `Когда появятся корейские товары, средний заказ вырастет до ${zl(last.aov)}, а остаток — до ${zl(last.contrib)}.`;
+    const PK = ECON.packaging, packFirst = l => (l.firstPrice != null ? l.firstPrice : l.price) * l.first;
+    const used = PK.lines.filter(l => l.in.includes(view.pack)), firstSum = used.reduce((t, l) => t + packFirst(l), 0);
+    $("pack-variant").innerHTML = buttons("pk", [["basic", "Простая"], ["brand", "Фирменная коробка"]], view.pack);
+    $("pack-lead").textContent = `Упаковка одного заказа — ${zl(M.packCost, 2)}${"pack" in saved.v ? `; во вводных стоит своя цифра ${zl(M.p.pack, 2)}, расчёт идёт по ней` : ""}. Первая закупка упаковки — около ${zl(firstSum)}: она входит в строку «Упаковка, образцы, размерные линейки» денег на старт. В большой коробке едет ${pct(PK.bigShare)} заказов.`;
+    $("pack-body").innerHTML = used.map(l => `<tr><td class="name"><a href="${esc(l.url)}" target="_blank" rel="noopener">${l.what}</a></td><td class="num">${zl(l.price, 2)}${l.per > 1 ? ` × ${l.per}` : ""}</td><td class="num">${zl(l.price * l.per * (l.big ? PK.bigShare : l.small ? 1 - PK.bigShare : 1), 2)}</td><td class="num">${nf(l.first)} шт. · ${zl(packFirst(l))}</td><td>${l.src}</td></tr>`).join("") +
+      `<tr class="total"><td>На заказ</td><td></td><td class="num">${zl(M.packCost, 2)}</td><td class="num">${zl(firstSum)}</td><td></td></tr>`;
+    $("pack-note").innerHTML = `${PK.note} <span class="links">${PK.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</span>`;
     M.stages.forEach((s, k) => { $("st-" + k).innerHTML = `${s.title}<br>${s.months}`; });
     $("sources-body").innerHTML = M.groups.map((g, k) => `<tr><td class="name"><b>${g.name}</b><span>среднее по ${g.n} товарам</span></td>
       <td class="num">${zl(g.aov)}</td><td class="num">${zl(g.cost)}</td><td${cls(g.contrib)}>${zl(g.contrib)}<br><span class="muted">${g.aov ? pct(g.contrib / g.aov) : "—"}</span></td>
@@ -756,7 +782,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // all inputs
     $("params").innerHTML = ECON.inputs.map(g => `<div class="card"><h3>${g.group}</h3>${g.items.map(d => {
-      const v = d.key in saved.v ? saved.v[d.key] : d.value, shown = d.unit === "%" ? nf(v * 100, v * 100 % 1 ? 1 : 0) : nf(v, d.digits || 0);
+      const v = d.key in saved.v ? saved.v[d.key] : d.key === "pack" ? M.packCost : d.value, shown = d.unit === "%" ? nf(v * 100, v * 100 % 1 ? 1 : 0) : nf(v, d.digits || 0);
       return `<div class="param"><label for="p-${d.key}"${d.guess ? ' class="guess"' : ""} title="${esc(d.src)}">${d.label}</label><input class="in${d.key in saved.v ? " changed" : ""}" type="text" inputmode="decimal" id="p-${d.key}" data-param="${d.key}" value="${shown}"><span class="unit">${d.unit || ""}</span></div>`;
     }).join("")}</div>`).join("");
   }
@@ -782,10 +808,11 @@ document.addEventListener("DOMContentLoaded", () => {
     store(); render();
   });
   document.addEventListener("click", e => {
-    const b = e.target.closest("button[data-sc], button[data-vat], button[data-disc], button[data-src]"); if (!b) return;
+    const b = e.target.closest("button[data-sc], button[data-vat], button[data-disc], button[data-src], button[data-pk]"); if (!b) return;
     if ("sc" in b.dataset) view.scenario = b.dataset.sc;
     else if ("vat" in b.dataset) view.payer = b.dataset.vat === "true";
     else if ("disc" in b.dataset) view.disc = +b.dataset.disc;
+    else if ("pk" in b.dataset) view.pack = b.dataset.pk;
     else srcFilter = b.dataset.src;
     render();
   });

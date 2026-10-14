@@ -24,7 +24,7 @@ const ECON = {
     { group: "Расходы на заказ", items: [
       { key: "pay", label: "Платёжный провайдер, от оплаты", value: 0.015, unit: "%", guess: true, src: "Оценка, не тариф конкретного провайдера" },
       { key: "payFix", label: "Платёжный провайдер, фикс за заказ", value: 0.3, unit: "zł", digits: 2, guess: true, src: "Оценка" },
-      { key: "pack", label: "Упаковка и открытка с именем собаки", value: 3, unit: "zł", guess: true, src: "Оценка; открытка — из концепции" },
+      { key: "pack", label: "Упаковка и открытка с именем собаки", value: 3.42, unit: "zł", digits: 2, src: "Считается в блоке «Упаковка» (простой вариант, 14.10.2026): коробка, бумага, наполнитель, скотч, наклейка, открытка. Поле здесь — чтобы поставить свою цифру" },
       { key: "gift", label: "Подарок в посылке: пакеты и памятка", value: 2, unit: "zł", guess: true, src: "Концепция, «Подарки и сертификаты»; сумма — оценка" },
       { key: "loyal", label: "Лояльность на заказ: день рождения собаки, бонус за фото", value: 2, unit: "zł", guess: true, src: "Концепция, «Поводы написать» и «Мотивация клиентов»; сумма — оценка" },
       { key: "exShare", label: "Доля заказов с обменом размера", value: 0.15, unit: "%", guess: true, src: "Оценка; возвраты в зоотоварах около 12%" },
@@ -175,13 +175,32 @@ const ECON = {
     { src: "Польская база", brand: "Petsy", name: "Бальзам для лап", url: "https://www.ceneo.pl/162403149", pl: 28.53, sized: 0, main: 0, on: 1 },
   ],
 
+  // упаковка заказа, цены польских магазинов упаковки 14.10.2026 (с VAT, за штуку при покупке от 50–500 шт.).
+  // per — сколько штук на заказ; in — в каком варианте: basic — простая, brand — фирменная, оба — ["basic", "brand"]; first — первая закупка
+  packaging: {
+    bigShare: 0.15, // доля заказов в большой коробке (удлинитель сиденья, лежанки, комплекты одежды)
+    lines: [
+      { what: "Коробка для пачкомата, размер A (400×300×80 мм)", price: 1.84, per: 1, in: ["basic"], small: true, first: 100, url: "https://mybox24.pl/kartony-inpost", src: "Mybox24, 1,84 zł; маленькая 220×140×60 мм с вкладышем — 1,88 zł от 50 шт. у Opak-System" },
+      { what: "Коробка с нашим логотипом, цифровая печать", price: 3.64, per: 1, in: ["brand"], small: true, first: 100, url: "https://www.openprint.pl/produkty/pudelka-wysylkowe", src: "100 шт. — около 296 zł без VAT (2,96 zł за штуку); тиражи от 30–50 шт. стоят 6–15 zł за штуку" },
+      { what: "Большая коробка, размер B (375×275×125 мм)", price: 2.12, per: 1, in: ["basic", "brand"], big: true, first: 20, url: "https://sklep.brandbox.com.pl/produkt/02-kartony/021-paczkomat/0212-b/karton-fasonowy-bialy-f427-375x275x125mm-3w-e400g/", src: "Brandbox, 2,12 zł" },
+      { what: "Папиросная бумага, лист 50×75 см", price: 0.34, per: 1, in: ["basic"], first: 240, url: "https://sklep.margopack.pl/pl/p/Bibula-pakowa-ZOLTA-ryza-50x75cm-240-arkuszy/27370", src: "Margopack: пачка 240 листов — 82,50 zł" },
+      { what: "Папиросная бумага, два листа", price: 0.34, per: 2, in: ["brand"], first: 240, url: "https://sklep.margopack.pl/pl/p/Bibula-pakowa-ZOLTA-ryza-50x75cm-240-arkuszy/27370", src: "Margopack: пачка 240 листов — 82,50 zł" },
+      { what: "Бумажный наполнитель, лист", price: 0.42, per: 1, in: ["basic", "brand"], first: 50, url: "https://sklep.brandbox.com.pl/produkt/03-materialy-opakowaniowe/035-wypelniacze/wypelniacz-papierowy-50-arkuszy/", src: "Brandbox: 0,42 zł за лист в упаковке 50 шт." },
+      { what: "Бумажный скотч, около 1 м", price: 0.13, per: 1, in: ["basic", "brand"], first: 3, firstPrice: 6.6, url: "https://opaksystem.pl/pl/c/Tasmy-papierowe/185", src: "Opak-System: рулон 48 мм × 50 м — 6,60 zł" },
+      { what: "Наклейка с логотипом, круглая 40–60 мм", price: 0.23, per: 1, in: ["basic", "brand"], first: 500, url: "https://lilladecor.pl/pl/p/Okragle-naklejki-z-logo-Twoj-projekt-fi40-fi60-500-szt.-/809", src: "Lilladecor: 500 шт. — 115 zł" },
+      { what: "Открытка, имя собаки пишем от руки", price: 0.4, per: 1, in: ["basic", "brand"], first: 500, url: "https://allegro.pl/listing?string=kartka+z+podzi%C4%99kowaniem", src: "Печать с логотипом, A7, 500 шт. — 199,90 zł на Allegro; надпись от руки — время, а не деньги" },
+    ],
+    note: "Пакеты для уборки и памятка по посадке считаются отдельно — в «Подарке в посылке». Плата за упаковку в реестре BDO: 0,70 zł за кг непереработанной упаковки, а если за год выходит меньше 50 zł, её не платят; при наших объёмах это около 100 кг коробок в год.",
+    links: [["Ставка 0,70 zł/кг — Dz.U. 2025 poz. 988", "https://api.sejm.gov.pl/eli/acts/DU/2025/988/text.pdf"], ["PARP и firmove: интернет-магазину нужен BDO", "https://firmove.pl/aktualnosci/biznes/prowadzenie-firmy/oplata-produktowa-a-wlasny-biznes--to-trzeba-wiedziec"]],
+  },
+
   // доля заказов по источникам на каждом этапе; корейский ассортимент появляется после чекпоинта на 6-м месяце;
   // корм в доли не входит: это повторные заказы сверх плана, они считаются от числа клиентов (вводные группы «Корма»)
   sources: ["Польская база", "Украина", "Корея", "Фабрика", "Корма"],
   stages: [
-    { title: "Этап 1", months: "мес. 1–3", mix: [0.7, 0.25, 0, 0.05] },
-    { title: "Этап 2", months: "мес. 4–6", mix: [0.55, 0.4, 0, 0.05] },
-    { title: "Этап 3", months: "мес. 7–12", mix: [0.45, 0.4, 0.1, 0.05] },
+    { title: "Этап 1", months: "мес. 1–3", mix: [0.6, 0.25, 0, 0.15] },
+    { title: "Этап 2", months: "мес. 4–6", mix: [0.45, 0.4, 0, 0.15] },
+    { title: "Этап 3", months: "мес. 7–12", mix: [0.35, 0.4, 0.1, 0.15] },
   ],
   stageOfMonth: [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2],
 
