@@ -7,6 +7,7 @@ const ECON = {
   inputs: [
     { group: "Курсы", items: [
       { key: "uah", label: "UAH → PLN", value: 0.0885, digits: 4, src: "Средний курс NBP 13.10.2026 — 0,0868, плюс 2% на конвертацию" },
+      { key: "usd", label: "USD → PLN", value: 4.0, digits: 2, src: "Средний курс NBP 13.10.2026 — 3,9177, плюс 2% на конвертацию" },
       { key: "krw", label: "KRW → PLN", value: 0.00298, digits: 5, src: "Средний курс NBP 13.10.2026 — 0,002922, плюс 2% на конвертацию" },
     ] },
     { group: "Закупка и ввоз", items: [
@@ -16,6 +17,8 @@ const ECON = {
       { key: "frKr", label: "Корея: доставка и оформление, от закупки", value: 0.15, unit: "%", guess: true, src: "Оценка" },
       { key: "dutyUa", label: "Украина: пошлина", value: 0, unit: "%", guess: true, src: "0% при подтверждённом происхождении, иначе около 2,7% — см. «Импорт»" },
       { key: "dutyKr", label: "Корея: пошлина", value: 0, unit: "%", guess: true, src: "0% при декларации происхождения, иначе около 2,7% — см. «Импорт»" },
+      { key: "frCn", label: "Фабрика в Китае: доставка малой партии и оформление, от закупки", value: 0.25, unit: "%", guess: true, src: "Оценка для партий 5–50 штук курьером; у крупных партий доля ниже" },
+      { key: "dutyCn", label: "Фабрика в Китае: пошлина", value: 0.027, unit: "%", guess: true, src: "Около 2,7% по коду 4201 (одежда и упряжь для животных) — см. «Импорт»; подтвердить у таможенного агента" },
       { key: "vat", label: "Ставка VAT", value: 0.23, unit: "%", src: "Стандартная ставка в Польше" },
     ] },
     { group: "Расходы на заказ", items: [
@@ -139,15 +142,24 @@ const ECON = {
     { src: "Корея", brand: "Merlot", name: "Поводок Ardor", url: "https://merlotstore.com/", home: 46800, cur: "KRW", pl: 189, sized: 0, main: 1, on: 1 },
     { src: "Корея", brand: "Merlot", name: "Дождевик Ain Coat", url: "https://merlotstore.com/", home: 126000, cur: "KRW", pl: 499, sized: 1, main: 1, on: 1 },
     { src: "Корея", brand: "Merlot", name: "Комбинезон Ain Suit", url: "https://merlotstore.com/", home: 162000, cur: "KRW", pl: 649, sized: 1, main: 1, on: 1 },
+    // аксессуары для вирусного контента, поиск 14.10.2026: шапки, снуды, «собака и хозяин»; «Фабрика» — цена FOB из объявлений, не предложение поставщика
+    { src: "Фабрика", brand: "Фабрика, Alibaba", name: "Новогодняя вязаная шапка с прорезями для ушей", url: "https://www.alibaba.com/wholesale/knitted-dog-hat-ear-holes.html", home: 1.2, cur: "USD", pl: 39, sized: 1, main: 1, on: 1 },
+    { src: "Фабрика", brand: "Фабрика, Alibaba", name: "Зимняя вязаная шапка с прорезями для ушей", url: "https://www.alibaba.com/wholesale/knitted-dog-hat-ear-holes.html", home: 2.8, cur: "USD", pl: 49, sized: 1, main: 1, on: 1 },
+    { src: "Фабрика", brand: "Фабрика, Alibaba", name: "Вязаный снуд на уши «лягушка»", url: "https://www.alibaba.com/showroom/dog-snood.html", home: 4.75, cur: "USD", pl: 59, sized: 1, main: 1, on: 1 },
+    { src: "Украина", brand: "Bark&Go", name: "Шапка-снуд с ушками Teddy", url: "https://barkandgo.com.ua/shop/sobaka/snudi/", home: 550, cur: "UAH", pl: 99, sized: 1, main: 1, on: 1 },
+    { src: "Украина", brand: "Bark&Go", name: "Шапка-снуд «утка» Duckhood", url: "https://barkandgo.com.ua/shop/sobaka/snudi/", home: 550, cur: "UAH", pl: 99, sized: 1, main: 1, on: 1 },
+    { src: "Польская база", brand: "Pierrot", name: "Снуд на уши", url: "https://pierrotmoda.pl/bordowy-komin-dla-psa", pl: 35, sized: 1, main: 0, on: 1 },
+    { src: "Польская база", brand: "Pelo", name: "Снуд для выставки, защитная сетка", url: "https://pelo-sklep.pl/produkt/pelo-snood-komin-dla-psa-na-uszy-siatka-ochronna-cienka-spaniel-r-xl-12071735253/", pl: 65, sized: 1, main: 1, on: 1 },
+    { src: "Польская база", brand: "Pierrot", name: "Комплект толстовок «собака и хозяин»", url: "https://pierrotmoda.pl/zestawy", pl: 239.9, sized: 1, main: 1, on: 1 },
   ],
 
   // доля заказов по источникам на каждом этапе; корейский ассортимент появляется после чекпоинта на 6-м месяце;
   // корм в доли не входит: это повторные заказы сверх плана, они считаются от числа клиентов (вводные группы «Корма»)
-  sources: ["Польская база", "Украина", "Корея", "Корма"],
+  sources: ["Польская база", "Украина", "Корея", "Фабрика", "Корма"],
   stages: [
-    { title: "Этап 1", months: "мес. 1–3", mix: [0.75, 0.25, 0] },
-    { title: "Этап 2", months: "мес. 4–6", mix: [0.6, 0.4, 0] },
-    { title: "Этап 3", months: "мес. 7–12", mix: [0.5, 0.4, 0.1] },
+    { title: "Этап 1", months: "мес. 1–3", mix: [0.7, 0.25, 0, 0.05] },
+    { title: "Этап 2", months: "мес. 4–6", mix: [0.55, 0.4, 0, 0.05] },
+    { title: "Этап 3", months: "мес. 7–12", mix: [0.45, 0.4, 0.1, 0.05] },
   ],
   stageOfMonth: [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 2, 2],
 

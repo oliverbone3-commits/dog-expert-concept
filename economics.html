@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=19" defer></script>
+<script src="economics-data.js?v=20" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -456,7 +456,7 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const KEY = "econ-06"; const MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]; // bump when the order of items or scenarios changes: overrides are stored by position
+  const KEY = "econ-07"; const MONTHS = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"]; // bump when the order of items or scenarios changes: overrides are stored by position
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const defs = ECON.inputs.flatMap(g => g.items);
@@ -505,8 +505,10 @@ document.addEventListener("DOMContentLoaded", () => {
         // the most we can pay the supplier, net of VAT, for the goods to stay within the target share of our price
         if (!food) { goal = rev * (1 - p.target) / (payer ? 1 : 1 + v); need = 1 - goal / buyNet; }
       } else {
-        const ua = o.src === "Украина";
-        const rate = o.cur === "UAH" ? p.uah : p.krw, disc = ua ? p.discUa : p.discKr, fr = ua ? p.frUa : p.frKr, duty = ua ? p.dutyUa : p.dutyKr;
+        // Украина и Корея — от розницы бренда со скидкой опта; фабрика — цена FOB как есть
+        const ua = o.src === "Украина", kr = o.src === "Корея";
+        const rate = o.cur === "UAH" ? p.uah : o.cur === "KRW" ? p.krw : p.usd, disc = ua ? p.discUa : kr ? p.discKr : 0;
+        const fr = ua ? p.frUa : kr ? p.frKr : p.frCn, duty = ua ? p.dutyUa : kr ? p.dutyKr : p.dutyCn;
         homeZl = o.home * rate;
         const buy = homeZl * (1 - disc), ship = buy * fr, dutyZl = (buy + ship) * duty;
         cost = (buy + ship + dutyZl) * (payer ? 1 : 1 + p.vat);
@@ -670,22 +672,22 @@ document.addEventListener("DOMContentLoaded", () => {
     let brand = "";
     const firstOf = {}; neg.forEach((x, k) => { if (!(x.brand in firstOf)) firstOf[x.brand] = k; });
     $("goal-body").innerHTML = neg.slice().sort((a, b) => firstOf[a.brand] - firstOf[b.brand]).map(x => {
-      const now = x.local ? x.buyNet : x.home * (1 - (x.src === "Украина" ? M.p.discUa : M.p.discKr)), d = x.goalCur === "zł" ? 2 : 0;
+      const now = x.local ? x.buyNet : x.home * (1 - (x.src === "Украина" ? M.p.discUa : x.src === "Корея" ? M.p.discKr : 0)), d = x.goalCur === "zł" || x.goalCur === "USD" ? 2 : 0;
       const head = x.brand !== brand ? `<tr class="total"><td colspan="6">${x.brand} · ${x.src}</td></tr>` : ""; brand = x.brand;
-      return `${head}<tr><td class="name"><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a></td><td class="num">${zl(x.pl)}</td><td class="num">${nf(now, d)} ${x.goalCur}</td><td class="num"><b>до ${nf(x.goal, d)} ${x.goalCur}</b></td><td${x.need > 0 ? ' class="num neg"' : ' class="num"'}>${x.need <= 0 ? "проходит" : pct(x.need)}</td><td class="num">${x.local ? "—" : `−${pct(1 - x.goal / x.home)}`}</td></tr>`;
+      return `${head}<tr><td class="name"><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a></td><td class="num">${zl(x.pl)}</td><td class="num">${nf(now, d)} ${x.goalCur}</td><td class="num"><b>до ${nf(x.goal, d)} ${x.goalCur}</b></td><td${x.need > 0 ? ' class="num neg"' : ' class="num"'}>${x.need <= 0 ? "проходит" : pct(x.need)}</td><td class="num">${x.local ? "—" : x.goal >= x.home ? "не нужна" : `−${pct(1 - x.goal / x.home)}`}</td></tr>`;
     }).join("");
     $("src-filter").innerHTML = buttons("src", ["all", ...ECON.sources].map(v => [v, `${v === "all" ? "Все" : v} · ${M.items.filter(x => v === "all" || x.src === v).length}`]), srcFilter);
     $("items-body").innerHTML = M.items.filter(x => srcFilter === "all" || x.src === srcFilter).map(x => {
       const ch = saved.items[x.i] || {};
       const first = x.local
         ? `<input class="in${"buyNet" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="buyNet" value="${nf(x.buyNet, 2)}" aria-label="Опт без VAT, zł: ${esc(x.name)}"> zł<br><span class="muted">опт без VAT</span>`
-        : `<input class="in${"home" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="home" value="${nf(x.home)}" aria-label="Цена бренда, ${x.cur}: ${esc(x.name)}"> ${x.cur}<br><span class="muted">${zl(x.homeZl)}</span>`;
+        : `<input class="in${"home" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="home" value="${nf(x.home, x.cur === "USD" ? 2 : 0)}" aria-label="Цена бренда, ${x.cur}: ${esc(x.name)}"> ${x.cur}<br><span class="muted">${zl(x.homeZl)}</span>`;
       return `<tr${x.on ? "" : ' class="off"'}><td class="name"><b><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.name)}</a></b><span>${x.brand} · ${x.src}${x.main ? "" : " · добавка к заказу"}</span></td>
         <td class="num">${first}</td><td class="num">${zl(x.cost)}</td>
         <td class="num"><input class="in${"pl" in ch ? " changed" : ""}" type="text" inputmode="decimal" data-item="${x.i}" data-f="pl" value="${nf(x.pl)}" aria-label="Наша цена, zł: ${esc(x.name)}"> zł</td>
         <td${cls(x.gross)}>${zl(x.gross)}<br><span class="muted">${pct(x.gross / x.rev)}</span></td>
         <td${cls(x.contrib)}>${zl(x.contrib)}<br><span class="muted">${pct(x.contrib / x.rev)}</span></td>
-        <td class="num">${x.goal === null ? "—" : `до ${nf(x.goal, x.goalCur === "zł" ? 2 : 0)} ${x.goalCur}<br><span class="muted">${x.need <= 0 ? "уже проходит" : `нужно −${pct(x.need).replace("−", "")}`}</span>`}</td>
+        <td class="num">${x.goal === null ? "—" : `до ${nf(x.goal, x.goalCur === "zł" || x.goalCur === "USD" ? 2 : 0)} ${x.goalCur}<br><span class="muted">${x.need <= 0 ? "уже проходит" : `нужно −${pct(x.need).replace("−", "")}`}</span>`}</td>
         <td><input type="checkbox" data-item="${x.i}" data-f="on"${x.on ? " checked" : ""} aria-label="В расчёте: ${esc(x.name)}"></td></tr>`;
     }).join("");
     $("market-body").innerHTML = ECON.market.map(r => `<tr><td>${r.what}</td><td class="num">${r.price}</td><td>${r.note}<span class="links">${r.links.map(l => `<a href="${esc(l[1])}" target="_blank" rel="noopener">${l[0]}</a>`).join("")}</span></td></tr>`).join("");
