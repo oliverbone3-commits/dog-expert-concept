@@ -168,6 +168,15 @@ thead { background: color-mix(in srgb, var(--paper) 70%, transparent); }
 tr:last-child td { border-bottom: 0; }
 /* digits line up in every cell; right alignment only for columns that hold numbers alone */
 td { font-variant-numeric: tabular-nums; }
+/* label → value tables fit a phone screen without sideways scrolling */
+table:not(:has(tr > :nth-child(3))) { min-width: 0; }
+@media (max-width: 760px) {
+  /* in wider tables the row label stays in view while the rest scrolls */
+  .table-wrap :is(td, th):first-child:not([colspan]) { position: sticky; left: 0; z-index: 1; background: var(--surface); box-shadow: 1px 0 0 var(--line); }
+  .table-wrap th:first-child { background: color-mix(in srgb, var(--paper) 70%, var(--surface)); }
+  /* wide tables scroll anyway, so text columns get room instead of turning into tall narrow strips */
+  table:has(tr > :nth-child(3)) td:not(.num):not(:first-child):not([colspan]) { min-width: 180px; }
+}
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 .steps { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); counter-reset: s; padding: 0; list-style: none; }
