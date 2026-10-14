@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=22" defer></script>
+<script src="economics-data.js?v=23" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -568,11 +568,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const plan = `${sc.id}-${m}` in saved.orders ? saved.orders[`${sc.id}-${m}`] : def, st = stages[ECON.stageOfMonth[m]];
         const cal = (view.start + m) % 12, coef = view.season ? ECON.season.coef[cal] : 1, orders = Math.round(plan * coef);
         const fo = Math.round(clients * p.foodBuyers * perYear / 12), foodRes = fo * food.contrib, fresh = Math.ceil(orders * (1 - ECON.repeat[m]));
-        const res = orders * st.contrib + foodRes - fixed - (m < p.lossMonths ? p.lossLimit : 0); cum += res; low = Math.min(low, cum); clients += fresh;
-        return { m, cal, coef, plan, byCode: orders * p.pShare, payout: orders * p.pShare * p.pComm * st.aov * (1 - p.pDisc), orders, food: fo, foodRes, changed: plan !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov + fo * food.aov, res, cum, repeat: ECON.repeat[m], fresh, stock: orders * st.cost + fo * food.cost };
+        const ds = Math.round(orders * p.dashaShare), dRes = ds * p.dashaPrice * (1 - p.dashaFee); // Dasha's paid guides and webinars
+        const res = orders * st.contrib + foodRes + dRes - fixed - (m < p.lossMonths ? p.lossLimit : 0); cum += res; low = Math.min(low, cum); clients += fresh;
+        return { m, cal, coef, plan, byCode: orders * p.pShare, payout: orders * p.pShare * p.pComm * st.aov * (1 - p.pDisc), orders, food: fo, foodRes, ds, dRes, changed: plan !== def, aov: st.aov, contrib: st.contrib, rev: orders * st.aov + fo * food.aov + ds * p.dashaPrice, res, cum, repeat: ECON.repeat[m], fresh, stock: orders * st.cost + fo * food.cost };
       });
       const tot = f => months.reduce((s, x) => s + f(x), 0);
-      return Object.assign({}, sc, { months, low, perHour: (tot(x => x.res) + pre.res) / (sc.hours * 52), orders: tot(x => x.orders) + pre.orders, foodOrders: tot(x => x.food), foodRes: tot(x => x.foodRes), rev: tot(x => x.rev) + pre.rev, res: tot(x => x.res) + pre.res, fresh: tot(x => x.fresh) + pre.orders, stock: tot(x => x.stock) + pre.stock, run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
+      return Object.assign({}, sc, { months, low, perHour: (tot(x => x.res) + pre.res) / (sc.hours * 52), orders: tot(x => x.orders) + pre.orders, foodOrders: tot(x => x.food), foodRes: tot(x => x.foodRes), dashaSales: tot(x => x.ds), dashaRes: tot(x => x.dRes), rev: tot(x => x.rev) + pre.rev, res: tot(x => x.res) + pre.res, fresh: tot(x => x.fresh) + pre.orders, stock: tot(x => x.stock) + pre.stock, run: months[11].rev * 12, firstPlus: months.findIndex(x => x.res >= 0) });
     });
     const even = stages.map(st => st.contrib > 0 ? Math.ceil(fixed / st.contrib) : null);
     return { p, payer, packCost, items, groups, stages, fixed, pre, food, scenarios, even };
@@ -650,7 +651,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // plan
     $("plan-head").textContent = plus < 0 ? `«${cur.title}»: за год в плюс не выходим.` : `«${cur.title}»: в плюсе с ${plus + 1}-го месяца.`;
-    $("plan-lead").textContent = `За год вместе с предзаказом — ${nf(cur.orders)} заказов, ещё ${nf(cur.foodOrders)} заказов корма от вернувшихся клиентов и ${zl(cur.rev)} оборота. Итог после постоянных расходов: ${zl(cur.res)}. ${cur.low < 0 ? `В худший момент в минусе ${zl(Math.abs(cur.low))}.` : "В минус по накоплению не уходим."} На товар за год нужно около ${zl(cur.stock)}, первая закупка — 10 000 zł.`;
+    $("plan-lead").textContent = `За год вместе с предзаказом — ${nf(cur.orders)} заказов, ещё ${nf(cur.foodOrders)} заказов корма от вернувшихся клиентов и ${zl(cur.rev)} оборота. Продукты Даши — ${nf(cur.dashaSales)} продаж, это ${zl(cur.dashaRes)} результата. Итог после постоянных расходов: ${zl(cur.res)}. ${cur.low < 0 ? `В худший момент в минусе ${zl(Math.abs(cur.low))}.` : "В минус по накоплению не уходим."} На товар за год нужно около ${zl(cur.stock)}, первая закупка — 10 000 zł.`;
     const top = Math.max(1, ...cur.months.map(x => x.res)), bottom = Math.max(1, ...cur.months.map(x => -x.res)), scale = Math.max(top / 110, bottom / 46);
     const bars = [...(M.pre.orders ? [{ m: -1, orders: M.pre.orders, res: M.pre.res, label: "до", tip: "Предзаказ до запуска" }] : []), ...cur.months.map(x => Object.assign({ label: MONTHS[x.cal].slice(0, 3), tip: `${x.m + 1}-й месяц, ${MONTHS[x.cal]}` }, x))];
     $("chart").style.gridTemplateColumns = `repeat(${bars.length}, 1fr)`;
