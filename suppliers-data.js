@@ -1265,9 +1265,11 @@ const SUPPLIERS = [
   "reviews": "",
   "top": [],
   "letter": null,
-  "fit": "",
-  "bundles": [],
-  "fit_text": ""
+  "fit": "С оговорками",
+  "bundles": [
+   "Spacer bez ciągnięcia"
+  ],
+  "fit_text": "Польская альтернатива фабрике для набора «Spacer bez ciągnięcia»: шлейка и поводок под нашей маркой, если условия private label подойдут."
  },
  {
   "name": "DogiDigi",
@@ -1491,9 +1493,11 @@ const SUPPLIERS = [
   "reviews": "",
   "top": [],
   "letter": null,
-  "fit": "",
-  "bundles": [],
-  "fit_text": ""
+  "fit": "С оговорками",
+  "bundles": [
+   "Spacer bez ciągnięcia"
+  ],
+  "fit_text": "Сумочка для лакомств для набора «Spacer bez ciągnięcia» — польский пошив вместо фабричной."
  },
  {
   "name": "Accdog",
@@ -1677,9 +1681,11 @@ const SUPPLIERS = [
   "reviews": "",
   "top": [],
   "letter": null,
-  "fit": "",
-  "bundles": [],
-  "fit_text": ""
+  "fit": "С оговорками",
+  "bundles": [
+   "Spacer bez ciągnięcia"
+  ],
+  "fit_text": "Сумочка для лакомств для набора «Spacer bez ciągnięcia»; имеет смысл только с оптом."
  },
  {
   "name": "GravPresent",
@@ -2140,10 +2146,10 @@ const SUPPLIERS = [
   "eu": "Не применимо",
   "what": "Компрессионные жилетки от страха фейерверков, халаты-полотенца из микрофибры с капюшоном.",
   "why": "Сильвестр — массовая проблема в Польше, пик спроса совпадает с запуском. Халат — «собака-буррито» и решение грязи осенью; можно сделать свой принт и вышивку имени.",
-  "terms": "Компрессионная жилетка 5–5,50 USD от 50–500 шт.; халат 1,43–1,90 USD от 200 шт., 3–6 USD от 20 шт.",
-  "note": "Из Китая морем к Сильвестру не успеть — на этот сезон брать у оптовиков в ЕС. Жилетку продавать как часть плана привыкания, без обещания «вылечит страх».",
+  "terms": "Компрессионная жилетка 4,50–5,50 USD от 50–100 шт. (Sweetpet: образец 10 USD, производство 15 рабочих дней вне пика, около месяца в пик); снуд-«наушники» 0,88–1,38 USD от 20–100 шт., 8 размеров; халат 1,43–1,90 USD от 200 шт., 3–6 USD от 20 шт.",
+  "note": "К Сильвестру 2026 — только авиа: морем 35–50 дней, железной дорогой впритык и с риском закрытия границы с Беларусью. Жилетку продавать как часть плана привыкания, без обещания «вылечит страх». Запросить тест на PFAS и азокрасители.",
   "source": "https://psiadwokat.pl/strach-psa-przed-petardami-fajerwerkami-jak-pomoc",
-  "checked": "14.10.2026",
+  "checked": "19.10.2026",
   "site": "https://sweetpet.en.made-in-china.com/product/HdXtIxJMnFpN/China-Anxiety-Vest-for-Dogs-Thunder-Jacket-Calming-Shirts-for-Dogs.html",
   "instagram": "",
   "facebook": "",
@@ -2156,15 +2162,17 @@ const SUPPLIERS = [
   "priority": "Без приоритета",
   "segment": "",
   "opinion": "",
-  "next": "Выбрать 2–3 фабрики, запросить цену с доставкой до двери и образцы.",
-  "catalog": "https://sweetpet.en.made-in-china.com/product/LZlGzFoPAdrR/China-Dog-Drying-Coat-Microfiber-Fast-Dry-Puppy-Towel-with-Hooded.html",
+  "next": "До 22.10 запросить образцы жилетки и снуда авиа, срок производства в ноябре и цену доставки авиа до двери; решение по партии — до 5.11.",
+  "catalog": "https://sweetpet.en.made-in-china.com/product/PmQpeqCxOlUN/China-Dogs-Hats-Hoodies-Dog-s-Ear-Muffs-Headband-Noise-Ear-Protection.html",
   "talks": "Не начаты",
   "reviews": "",
   "top": [],
   "letter": null,
-  "fit": "",
-  "bundles": [],
-  "fit_text": ""
+  "fit": "С оговорками",
+  "bundles": [
+   "Spokojny Sylwester"
+  ],
+  "fit_text": "Жилетка и снуд для набора «Spokojny Sylwester». Цены из объявлений; успеваем только при заказе до ~5.11 и авиадоставке."
  },
  {
   "name": "Фабрики адвент-календарей и кнопок «говорящей собаки»",
@@ -2239,5 +2247,200 @@ const SUPPLIERS = [
   "fit": "",
   "bundles": [],
   "fit_text": ""
+ },
+ {
+  "name": "Zhongshan Tlon",
+  "country": "Китай",
+  "city": "Чжуншань",
+  "types": [
+   "Одежда"
+  ],
+  "sizes": "Все размеры",
+  "eu": "Не применимо",
+  "what": "Фабрика одежды для собак: компрессионные жилетки от страха, OEM и private label; аудит SGS, BSCI.",
+  "why": "Основной кандидат на жилетку для набора «Spokojny Sylwester»: быстрый образец и короткий срок производства.",
+  "terms": "Жилетка 5,70–9,13 USD от 100 шт. на дизайн, размеры XS–XL; образец 3–5 дней, производство 12–15 дней после одобрения образца; предоплата 30%. Цены из объявления, FOB.",
+  "note": "Успеваем к Сильвестру только авиа. Без логотипа на изделии — бренд на вкладыше из польской типографии. Запросить состав ткани, тест на PFAS и азокрасители, данные производителя для маркировки GPSR.",
+  "source": "https://tlonpetproduct.en.made-in-china.com/product/mriUXLTjXbkd/China-Anxiety-Vest-for-Dogs-Comfortable-Jacket-Calming-Shirts-for-Dogs-Anxiety-Jacket-Dog-Compression-Vest-Calming-Wrap-Pet-Clothes.html",
+  "checked": "19.10.2026",
+  "site": "https://tlonpetproduct.en.made-in-china.com/",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": "",
+  "priority": "Без приоритета",
+  "segment": "",
+  "opinion": "",
+  "next": "До 22.10 запросить образец авиа, MOQ 50 вместо 100, срок производства в ноябре и цену авиа до двери.",
+  "catalog": "https://tlonpetproduct.en.made-in-china.com/product/mriUXLTjXbkd/China-Anxiety-Vest-for-Dogs-Comfortable-Jacket-Calming-Shirts-for-Dogs-Anxiety-Jacket-Dog-Compression-Vest-Calming-Wrap-Pet-Clothes.html",
+  "talks": "Не начаты",
+  "reviews": "",
+  "top": [],
+  "letter": null,
+  "fit": "С оговорками",
+  "bundles": [
+   "Spokojny Sylwester"
+  ],
+  "fit_text": "Жилетка для набора «Spokojny Sylwester». MOQ 100 на дизайн — больше, чем хотим на первый сезон."
+ },
+ {
+  "name": "P.W. Hobby (Trixie)",
+  "country": "Польша",
+  "city": "Быдгощ",
+  "types": [
+   "Игрушки и тренировка"
+  ],
+  "sizes": "Все размеры",
+  "eu": "Уже в ЕС",
+  "what": "Эксклюзивный дистрибьютор Trixie в Польше с 2005 года, также Karlie и Flexi; B2B-портал hobbyhurt.pl.",
+  "why": "Коврик для вылизывания Trixie Lick'n'Snack для набора «Spokojny Sylwester» со склада в Польше — без риска сроков и с документами на материал.",
+  "terms": "Розница Lick'n'Snack 20×20 — около 24 zł. Оптовые условия не публичны, регламент портала закрыт; тел. +48 52 381 00 11.",
+  "note": "Коврик в наборе — бонус, не маржа: на Allegro 3 247 предложений от 9 zł. Китайские фабрики не показали отчёты LFGB, поэтому берём бренд.",
+  "source": "https://allegro.pl/produkt/trixie-taca-mata-spowalniajaca-jedzenie-do-lizania-dla-psa-kota-20-x-20-cm-b4ce2a04-734b-4b1d-b9d6-c4a2daed60b5",
+  "checked": "19.10.2026",
+  "site": "https://hobby.bydgoszcz.pl/en/about-us/",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": "+48 52 381 00 11",
+  "priority": "Без приоритета",
+  "segment": "",
+  "opinion": "",
+  "next": "Зарегистрироваться на hobbyhurt.pl или позвонить: оптовая цена Lick'n'Snack, наличие 50–80 шт., минимальный заказ.",
+  "catalog": "https://hobbyhurt.pl/",
+  "talks": "Не начаты",
+  "reviews": "",
+  "top": [],
+  "letter": null,
+  "fit": "Хорошо",
+  "bundles": [
+   "Spokojny Sylwester"
+  ],
+  "fit_text": "Коврик для вылизывания в наборе «Spokojny Sylwester» — есть на складе в Польше."
+ },
+ {
+  "name": "Dongguan Altra",
+  "country": "Китай",
+  "city": "Дунгуань",
+  "types": [
+   "Амуниция"
+  ],
+  "sizes": "Все размеры",
+  "eu": "Не применимо",
+  "what": "Фабрика амуниции: шлейки Y-формы с кольцами спереди и на спине, мягкая подкладка; свой цвет, размеры и логотип.",
+  "why": "Шлейка для набора «Spacer bez ciągnięcia»: можно заказать свой цвет и, возможно, поводок из той же ленты.",
+  "terms": "Y-шлейка с подкладкой 3,99–5,99 USD от 50 шт.; шлейка с карабином спереди и на спине 4,20–5,99 USD от 50 шт., S–XXL или свои; образец около 40 USD за 7 дней; производство 5–15 дней. Цены из объявлений, FOB.",
+  "note": "Нужно 5 размеров по обхвату груди (около 33–95 см), чтобы закрыть собак 3–40 кг. Проверить посадку Y-формы на Одине и маленьких собаках. В пик сезона сроки могут вырасти до 1–3 месяцев.",
+  "source": "https://altrapet.en.made-in-china.com/product/muCrhNPUbtVd/China-High-Quality-Custom-No-Pull-Padded-Adjustable-Dog-Harness-with-Cushioned-Air-Layer-Y-Shape-Dog-Harness.html",
+  "checked": "19.10.2026",
+  "site": "https://altrapet.en.made-in-china.com/",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": "",
+  "priority": "Без приоритета",
+  "segment": "",
+  "opinion": "",
+  "next": "Запросить образцы двух моделей в 2–3 размерах, свой цвет при 50 шт., поводок и сумочку из той же ленты.",
+  "catalog": "https://altrapet.en.made-in-china.com/product/ULWRmvuCvpcn/China-Sturdy-Nylon-Webbing-Dog-Harness-Front-Back-Clip-No-Choke-Pet-Body-Belt.html",
+  "talks": "Не начаты",
+  "reviews": "",
+  "top": [],
+  "letter": null,
+  "fit": "С оговорками",
+  "bundles": [
+   "Spacer bez ciągnięcia"
+  ],
+  "fit_text": "Шлейка для набора «Spacer bez ciągnięcia». Цены из объявления, образцы не проверены."
+ },
+ {
+  "name": "Dongguan Petisland",
+  "country": "Китай",
+  "city": "Дунгуань",
+  "types": [
+   "Амуниция"
+  ],
+  "sizes": "Все размеры",
+  "eu": "Не применимо",
+  "what": "Фабрика поводков: двусторонние тренировочные поводки с двумя карабинами, регулируемая длина; свой дизайн и логотип.",
+  "why": "Двусторонний поводок для набора «Spacer bez ciągnięcia»: малый MOQ подходит для первой партии.",
+  "terms": "Двусторонний поводок 2,5 см 3,13–5,46 USD от 20 шт.; свой дизайн и логотип от 10 шт. (по FAQ); срок 7–15 дней. Цены из объявления, FOB.",
+  "note": "Проверить карабины на крупной собаке (Один) и длину 2 м в трёх вариантах пристёгивания.",
+  "source": "https://petisland.en.made-in-china.com/product/wAHYbfDTIGUz/China-Heavy-Duty-Nylon-Double-Ended-Dog-Leash-Adjustable-Training-Lead-with-Dual-Clips.html",
+  "checked": "19.10.2026",
+  "site": "https://petisland.en.made-in-china.com/",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": "",
+  "priority": "Без приоритета",
+  "segment": "",
+  "opinion": "",
+  "next": "Запросить образец и цену в цвет шлейки.",
+  "catalog": "https://petisland.en.made-in-china.com/product/wAHYbfDTIGUz/China-Heavy-Duty-Nylon-Double-Ended-Dog-Leash-Adjustable-Training-Lead-with-Dual-Clips.html",
+  "talks": "Не начаты",
+  "reviews": "",
+  "top": [],
+  "letter": null,
+  "fit": "С оговорками",
+  "bundles": [
+   "Spacer bez ciągnięcia"
+  ],
+  "fit_text": "Поводок для набора «Spacer bez ciągnięcia». Цены из объявления."
+ },
+ {
+  "name": "Qingdao Yuanche",
+  "country": "Китай",
+  "city": "Циндао",
+  "types": [
+   "Аксессуары"
+  ],
+  "sizes": "Все размеры",
+  "eu": "Не применимо",
+  "what": "Зоотовары: силиконовые сумочки для лакомств с клипсой, логотип печатью или лазером.",
+  "why": "Недорогая сумочка для набора «Spacer bez ciągnięcia».",
+  "terms": "Силиконовая сумочка 2,38 USD от 200 шт.; срок 15–30 дней. Цена из объявления, FOB.",
+  "note": "MOQ 200 больше первой партии набора — сравнить с польскими Wildwoof и украинскими Haustier, Bark&Go.",
+  "source": "https://chinapetsupplies.en.made-in-china.com/product/RUHrFdXcLwkT/China-Silicone-Dog-Treat-Pouch-with-Clip-for-Outdoor-Pet-Training-and-Walking.html",
+  "checked": "19.10.2026",
+  "site": "https://chinapetsupplies.en.made-in-china.com/",
+  "instagram": "",
+  "facebook": "",
+  "etsy": "",
+  "tiktok": "",
+  "telegram": "",
+  "youtube": "",
+  "email": "",
+  "phone": "",
+  "priority": "Без приоритета",
+  "segment": "",
+  "opinion": "",
+  "next": "Спросить MOQ 50 и образец.",
+  "catalog": "https://chinapetsupplies.en.made-in-china.com/product/RUHrFdXcLwkT/China-Silicone-Dog-Treat-Pouch-with-Clip-for-Outdoor-Pet-Training-and-Walking.html",
+  "talks": "Не начаты",
+  "reviews": "",
+  "top": [],
+  "letter": null,
+  "fit": "С оговорками",
+  "bundles": [
+   "Spacer bez ciągnięcia"
+  ],
+  "fit_text": "Сумочка для набора «Spacer bez ciągnięcia»; MOQ великоват."
  }
 ];

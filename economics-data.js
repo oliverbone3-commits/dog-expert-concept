@@ -178,6 +178,15 @@ const ECON = {
     { src: "Польская база", brand: "Joqu", name: "Амортизирующий поводок для каникросса", url: "https://www.ceneo.pl/184806829", pl: 109, sized: 0, main: 1, on: 1 },
     { src: "Польская база", brand: "Rock Empire", name: "Ездовая шлейка", url: "https://www.ceneo.pl/179850910", pl: 155, sized: 1, main: 1, on: 1 },
     { src: "Польская база", brand: "Petsy", name: "Бальзам для лап", url: "https://www.ceneo.pl/162403149", pl: 28.53, sized: 0, main: 0, on: 1 },
+    // наборы для моно-лендингов (исследование 19.10.2026, страница «Наборы»): составные части; on: 0 — в средние модели не входят, итог года не меняется
+    { src: "Фабрика", brand: "Фабрика, Made-in-China", name: "Снуд-«наушники» от шума", url: "https://sweetpet.en.made-in-china.com/product/PmQpeqCxOlUN/China-Dogs-Hats-Hoodies-Dog-s-Ear-Muffs-Headband-Noise-Ear-Protection.html", home: 1.2, cur: "USD", pl: 39, sized: 1, main: 0, on: 0 },
+    { src: "Фабрика", brand: "Фабрика, Made-in-China", name: "Компрессионная жилетка, Zhongshan Tlon", url: "https://tlonpetproduct.en.made-in-china.com/product/mriUXLTjXbkd/China-Anxiety-Vest-for-Dogs-Comfortable-Jacket-Calming-Shirts-for-Dogs-Anxiety-Jacket-Dog-Compression-Vest-Calming-Wrap-Pet-Clothes.html", home: 7.4, cur: "USD", pl: 129, sized: 1, main: 1, on: 0 },
+    { src: "Фабрика", brand: "Фабрика, Made-in-China", name: "Шлейка Y-формы с кольцом спереди", url: "https://altrapet.en.made-in-china.com/product/muCrhNPUbtVd/China-High-Quality-Custom-No-Pull-Padded-Adjustable-Dog-Harness-with-Cushioned-Air-Layer-Y-Shape-Dog-Harness.html", home: 5, cur: "USD", pl: 129, sized: 1, main: 1, on: 0 },
+    { src: "Фабрика", brand: "Фабрика, Made-in-China", name: "Двусторонний тренировочный поводок 2 м", url: "https://petisland.en.made-in-china.com/product/wAHYbfDTIGUz/China-Heavy-Duty-Nylon-Double-Ended-Dog-Leash-Adjustable-Training-Lead-with-Dual-Clips.html", home: 4.3, cur: "USD", pl: 69, sized: 0, main: 1, on: 0 },
+    { src: "Фабрика", brand: "Фабрика, Made-in-China", name: "Силиконовая сумочка для лакомств", url: "https://chinapetsupplies.en.made-in-china.com/product/RUHrFdXcLwkT/China-Silicone-Dog-Treat-Pouch-with-Clip-for-Outdoor-Pet-Training-and-Walking.html", home: 2.38, cur: "USD", pl: 39, sized: 0, main: 0, on: 0 },
+    { src: "Польская база", brand: "Trixie", name: "Коврик для вылизывания Lick'n'Snack 20×20", url: "https://allegro.pl/produkt/trixie-taca-mata-spowalniajaca-jedzenie-do-lizania-dla-psa-kota-20-x-20-cm-b4ce2a04-734b-4b1d-b9d6-c4a2daed60b5", pl: 23.98, sized: 0, main: 0, on: 0 },
+    { src: "Польская база", brand: "Halti", name: "Двусторонний поводок Training Lead S, 2 м", url: "https://www.ceneo.pl/200573480", pl: 71.64, sized: 0, main: 1, on: 0 },
+    { src: "Польская база", brand: "Halti", name: "Шлейка No Pull, M", url: "https://www.ceneo.pl/197390256", pl: 76.58, sized: 1, main: 1, on: 0 },
   ],
 
   // упаковка заказа, цены польских магазинов упаковки 14.10.2026 (с VAT, за штуку при покупке от 50–500 шт.).
