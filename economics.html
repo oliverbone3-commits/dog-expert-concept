@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the number after ?v= changes together with the data file, so a browser never pairs a new page with old data -->
-<script src="economics-data.js?v=24" defer></script>
+<script src="economics-data.js?v=25" defer></script>
 <style>
   .kpi { display: grid; gap: var(--sp-1); align-content: start; }
   .kpi b { font: 500 clamp(24px, 3.2vw, 32px)/1.15 var(--font-display); font-variant-numeric: tabular-nums; }
@@ -246,6 +246,40 @@
             <tbody id="market-body"></tbody>
           </table>
         </div>
+      </div>
+    </details>
+  </section>
+
+  <section id="own" data-nav="Своё производство">
+    <div class="sec-head">
+      <div class="eyebrow">Своё производство · отдельный расчёт</div>
+      <h2 id="own-head"></h2>
+    </div>
+    <div class="col">
+      <p>Поводки, ошейники и шлейки, которые Дмитрий шьёт и клепает сам: из BioThane и из гладкой полиэстеровой ленты, как у Protekt Animals. Расчёт стоит отдельно и в план выше не входит. Цены ленты и фурнитуры — с сайтов магазинов 19.10.2026, время работы — оценка.</p>
+    </div>
+    <div class="levers"><div class="lever"><span>Работа</span><div class="row" role="group" aria-label="Учитывать работу" id="own-labor"></div></div></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Изделие</th><th class="num">Лента</th><th class="num">Фурнитура</th><th class="num">Работа</th><th class="num">Себестоимость</th><th class="num">Наша цена</th><th class="num">Доля в цене</th><th class="num">Остаётся</th><th>Рынок</th></tr></thead>
+        <tbody id="own-body"></tbody>
+      </table>
+    </div>
+    <p class="legend">Продажа без VAT, поэтому «остаётся» — наша цена минус себестоимость, до упаковки, оплаты, доставки и налога. Ориентир из «Целевых цен» — себестоимость не больше 45% цены. Где брать ленту, фурнитуру и инструмент — на странице <a href="production.html">«Производство»</a>.</p>
+    <details class="how mt">
+      <summary>Из чего считали каждое изделие</summary>
+      <div><ul class="small" id="own-bom"></ul></div>
+    </details>
+    <details class="how">
+      <summary>Пробная партия и как продавать на тесте</summary>
+      <div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Что купить</th><th class="num">Сумма</th></tr></thead>
+            <tbody id="own-trial"></tbody>
+          </table>
+        </div>
+        <p class="note verify" id="own-sales"></p>
       </div>
     </details>
   </section>
@@ -821,6 +855,33 @@ document.addEventListener("DOMContentLoaded", () => {
   render();
   // the page is built after load, so a link to a section has to be followed again
   if (location.hash.length > 1) { const el = document.getElementById(location.hash.slice(1)); if (el) { if (el.tagName === "DETAILS") el.open = true; el.scrollIntoView({ behavior: "instant" }); } }
+});
+</script>
+<script>
+// «Своё производство»: отдельный расчёт из ECON.own, в общую модель страницы не входит
+document.addEventListener("DOMContentLoaded", () => {
+  const O = ECON.own, $ = id => document.getElementById(id);
+  const nf = (n, d = 0) => n.toLocaleString("ru-RU", { minimumFractionDigits: d, maximumFractionDigits: d });
+  const zl = n => `${nf(n)} zł`;
+  const price = Object.fromEntries([...O.materials, ...O.hardware].map(x => [x.key, x]));
+  let labor = true;
+  const rows = () => O.products.map(p => {
+    const tape = p.m.reduce((s, [k, q]) => s + price[k].price * q, 0);
+    const hw = p.h.reduce((s, [k, q]) => s + price[k].price * q, 0);
+    const work = labor ? p.min / 60 * O.rate : 0, cost = tape + hw + work;
+    return { p, tape, hw, work, cost, share: cost / p.price, left: p.price - cost };
+  });
+  function render() {
+    const R = rows(), ok = R.filter(r => r.share <= 0.45).length;
+    $("own-head").textContent = `Себестоимость ${nf(Math.min(...R.map(r => r.cost)))}–${zl(Math.max(...R.map(r => r.cost)))} за изделие; в ориентир укладываются ${ok} из ${R.length}.`;
+    $("own-labor").innerHTML = [[true, `С работой, ${O.rate} zł/час`], [false, "Без учёта работы"]].map(([v, l]) => `<button class="btn" data-own="${v}" aria-pressed="${v === labor}">${l}</button>`).join("");
+    $("own-body").innerHTML = R.map(r => `<tr><td>${r.p.what}</td><td class="num">${zl(r.tape)}</td><td class="num">${zl(r.hw)}</td><td class="num">${labor ? `${zl(r.work)}<br><small class="muted">${r.p.min} мин</small>` : "—"}</td><td class="num"><b>${zl(r.cost)}</b></td><td class="num">${zl(r.p.price)}</td><td class="num${r.share > 0.45 ? " neg" : ""}">${nf(r.share * 100)}%</td><td class="num">${zl(r.left)}</td><td class="small">${r.p.market.map(([l, u]) => `<a href="${u}" target="_blank" rel="noopener">${l}</a>`).join("<br>")}</td></tr>`).join("");
+    $("own-bom").innerHTML = O.products.map(p => `<li><b>${p.what}:</b> ${[...p.m.map(([k, q]) => `${price[k].what} — ${nf(q, 2)} м`), ...p.h.map(([k, q]) => `${price[k].what} — ${q} шт.`)].join("; ")}; ${p.min} минут.</li>`).join("");
+    $("own-trial").innerHTML = O.trial.map(x => `<tr><td>${x.what}</td><td class="num">${zl(x.zl)}</td></tr>`).join("") + `<tr><td><b>Итого</b></td><td class="num"><b>${zl(O.trial.reduce((s, x) => s + x.zl, 0))}</b></td></tr>`;
+    $("own-sales").innerHTML = `${O.sales} ${O.links.map(([l, u]) => `<a href="${u}" target="_blank" rel="noopener">${l}</a>`).join(" · ")}`;
+  }
+  document.addEventListener("click", e => { const b = e.target.closest("button[data-own]"); if (b) { labor = b.dataset.own === "true"; render(); } });
+  render();
 });
 </script>
 </body>

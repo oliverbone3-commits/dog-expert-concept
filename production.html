@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Рядом с собакой — производство</title>
+<meta name="description" content="Своё производство поводков, ошейников и шлеек: где брать BioThane, полиэстеровую ленту и фурнитуру, какой нужен инструмент.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600&family=Onest:wght@400;500;650&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles.css">
+<script src="site.js" defer></script>
+<!-- the same data file as «Экономика»: prices live in one place -->
+<script src="economics-data.js?v=25" defer></script>
+</head>
+<body data-page="production">
+
+<main class="wrap">
+  <div class="hero compact">
+    <div class="eyebrow" data-meta>Работа</div>
+    <h1>Производство</h1>
+    <p class="lead">Где брать ленту, фурнитуру и инструмент, чтобы шить и клепать поводки, ошейники и шлейки самим: из BioThane и из гладкой полиэстеровой ленты, как у Protekt Animals.</p>
+    <div class="chips">
+      <span class="chip">BioThane 12–21 zł/м</span>
+      <span class="chip">Полиэстер 2–4 zł/м</span>
+      <span class="chip">Фурнитура 0,50–6 zł</span>
+    </div>
+    <p class="status-note">Подборка Claude от 19.10.2026, командой не обсуждалась. Цены с VAT; «проверено» — цена видна на странице магазина в этот день, остальное — по поиску или оценка. Себестоимость изделий — в «Экономике», раздел <a href="economics.html#own">«Своё производство»</a>.</p>
+  </div>
+
+  <section id="tape" data-nav="Лента">
+    <div class="sec-head">
+      <div class="eyebrow">Лента</div>
+      <h2>Лента — основная статья себестоимости.</h2>
+    </div>
+    <div class="col">
+      <p>На поводок 3 м с ручкой уходит около 3,4 м ленты, на ошейник — 0,45–0,75 м, на шлейку — 1,3–2,45 м в зависимости от размера. Из катушки 30 м выходит 8–9 поводков, 12–23 шлейки или 40–65 ошейников.</p>
+    </div>
+    <div id="materials"></div>
+    <div class="grid">
+      <div class="card">
+        <h3>Что такое лента Protekt Animals</h3>
+        <p class="small">Гладкая полиэстеровая лента в неоновых цветах. Её ткёт сама компания Protekt — производитель снаряжения для работы на высоте; на поводки и шлейки она в продажу не идёт. Ширина у них: S — 20 мм, M — 25 мм, L — 30 мм; кольца стальные, регуляторы металлические, одну шлейку испытали на разрыв 206 кг.</p>
+        <p class="small"><a href="https://protektanimals.com/o-nas" target="_blank" rel="noopener">Protekt Animals — о компании</a> · <a href="https://protektanimals.com/pl/p/Szelki-Soft-Y-FLASH-4/186" target="_blank" rel="noopener">шлейка Soft Y</a></p>
+      </div>
+      <div class="card">
+        <h3>Чем заменить</h3>
+        <p class="small">Ближе всего по прочности — полиэстеровая крепёжная лента на 1 200 кг, но неона в ней нет. Неоновый полиэстер 15–20 мм на 400 кг продаёт Pet Hardware рулонами по 50 м. Полипропилен дешевле и бывает неоновым, но слабее и быстрее истирается — для поводков его не берём.</p>
+      </div>
+    </div>
+    <p class="note verify"><strong>Перед закупкой:</strong> попросить у продавца прочность на разрыв и состав ленты. Для шлеек и поводков нужна лента не слабее карабина и колец.</p>
+  </section>
+
+  <section id="hardware" data-nav="Фурнитура">
+    <div class="sec-head">
+      <div class="eyebrow">Фурнитура</div>
+      <h2>Почти всё есть у одной оптовой галантереи.</h2>
+    </div>
+    <div class="col">
+      <p>У Maćko есть отдельный раздел «сделай ошейник или шлейку сам»: карабины, пряжки, полукольца, кольца, регуляторы и шлёвки по 0,50–2,40 zł. Фастексы Duraflex и детали из нержавейки — у других магазинов.</p>
+    </div>
+    <div id="hardware-list"></div>
+    <p class="note">Для шлеек и перестёжек лучше брать сварные кольца и фурнитуру с указанной разрывной нагрузкой: по GPSR мы отвечаем за изделие как производитель.</p>
+  </section>
+
+  <section id="tools" data-nav="Инструмент">
+    <div class="sec-head">
+      <div class="eyebrow">Инструмент</div>
+      <h2>Швейная машина есть. Докупить — нож, пробойник и пресс.</h2>
+    </div>
+    <div id="tools-list"></div>
+    <div class="grid">
+      <div class="card">
+        <h3>BioThane</h3>
+        <ul class="small">
+          <li>режется обычным ножом, края не сыпятся;</li>
+          <li>отверстия — пробойником, соединения — заклёпками или винтами Chicago, можно прошить;</li>
+          <li>при шитье прилипает к лапке — нужна тефлоновая или роликовая.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Полиэстер</h3>
+        <ul class="small">
+          <li>резать горячим ножом, чтобы край оплавился и не распускался;</li>
+          <li>соединения только шить: усиленная строчка-закрепка в несколько рядов;</li>
+          <li>игла для джинсы 100–110, для нитки Serafil 20 — 120–140.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Как масштабировать</h3>
+        <ul class="small">
+          <li>шаблоны и упоры для нарезки по длине;</li>
+          <li>резать и пробивать партию сразу, собирать отдельно;</li>
+          <li>фурнитуру и ленту брать катушками и пачками — дешевле на 5–20%.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="duties" data-nav="Обязанности">
+    <div class="sec-head">
+      <div class="eyebrow">Обязанности производителя</div>
+      <h2>Свои изделия — свои документы по безопасности.</h2>
+    </div>
+    <div class="col">
+      <ul>
+        <li>оценка рисков изделия и короткое техническое описание: материалы, фурнитура, как проверяли;</li>
+        <li>на изделии или упаковке — кто сделал, адрес, номер модели или партии, предупреждения на польском;</li>
+        <li>учёт партий: какая лента и какая фурнитура пошли в какую партию — чтобы отозвать изделия, если что-то сломается.</li>
+      </ul>
+      <p class="small muted">Как оформить продажу на тесте — в «Экономике», в разделе «Своё производство». Применимость правил проверить с бухгалтером.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const O = ECON.own;
+  const nf = n => n.toLocaleString("ru-RU", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const price = x => x.price == null ? "—" : `${nf(x.price)} zł${x.unit ? "/" + x.unit : ""}`;
+  const shop = x => x.url ? `<a href="${x.url}" target="_blank" rel="noopener">${x.shop || "ссылка"}</a>` : (x.shop || "—");
+  const ok = x => x.v ? "проверено" : "по поиску или оценка";
+  const table = (head, rows) => `<div class="table-wrap"><table><thead><tr>${head.map(h => `<th${h[1] ? ' class="num"' : ""}>${h[0]}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+  const groups = [...new Set(O.materials.map(m => m.group))];
+  document.getElementById("materials").innerHTML = groups.map(g => `<h3 class="mt">${g}</h3>` + table(
+    [["Лента"], ["Цена", 1], ["Где", 0], ["Заметка"]],
+    O.materials.filter(m => m.group === g).map(m => `<tr><td>${m.what}</td><td class="num">${price(m)}<br><small class="muted">${ok(m)}</small></td><td>${shop(m)}</td><td class="small">${m.note || ""}</td></tr>`).join(""))).join("");
+  document.getElementById("hardware-list").innerHTML = table(
+    [["Деталь"], ["Цена за штуку", 1], ["Где"], ["Заметка"]],
+    O.hardware.filter(h => h.shop).map(h => `<tr><td>${h.what}</td><td class="num">${price(h)}<br><small class="muted">${ok(h)}</small></td><td>${shop(h)}</td><td class="small">${h.note || ""}</td></tr>`).join(""));
+  document.getElementById("tools-list").innerHTML = table(
+    [["Инструмент"], ["Цена", 1], ["Заметка"]],
+    O.tools.map(t => `<tr><td>${t.url ? `<a href="${t.url}" target="_blank" rel="noopener">${t.what}</a>` : t.what}</td><td class="num">${t.have ? "есть" : `${t.v ? "" : "≈ "}${t.price.toLocaleString("ru-RU", { maximumFractionDigits: 2 })} zł`}</td><td class="small">${t.note}</td></tr>`).join("")
+    + `<tr><td><b>Докупить</b></td><td class="num"><b>≈ ${Math.round(O.tools.filter(t => !t.have).reduce((s, t) => s + t.price, 0))} zł</b></td><td class="small">Горячий нож нужен только для полиэстера</td></tr>`);
+});
+</script>
+</body>
+</html>
