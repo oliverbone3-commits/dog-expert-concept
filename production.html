@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the same data file as «Экономика»: prices live in one place -->
-<script src="economics-data.js?v=27" defer></script>
+<script src="economics-data.js?v=28" defer></script>
 <style>
   .checks { list-style: none; padding: 0; margin: 0 0 var(--sp-3); display: grid; gap: 6px; }
   .checks label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
@@ -126,6 +126,21 @@
     </div>
   </section>
 
+  <section id="labels" data-nav="Бирки">
+    <div class="sec-head">
+      <div class="eyebrow">Бирки и брендинг</div>
+      <h2>Сначала простые бирки с данными, логотип — когда будет название.</h2>
+    </div>
+    <div class="col">
+      <p>Бирка нужна, когда изделие уходит другому человеку: на ней обязательные данные GPSR — кто сделал, контакт, номер партии. Для теста на Одине бирки не нужны. Бирки с логотипом заказывать рано: название бренда ещё не выбрано.</p>
+    </div>
+    <div id="labels-list"></div>
+    <ol class="small col">
+      <li><b>Перед первыми продажами</b> — 100 сатиновых бирок, около 100 zł: нейтральная надпись вроде «Handmade in Poland» и данные GPSR. Номер партии — маркером или отдельным тиражом.</li>
+      <li><b>Когда будет название</b> — брендинг на BioThane: печать на ленте у Print on Straps или резиновая нашивка. Сравнить по образцам.</li>
+    </ol>
+  </section>
+
   <section id="duties" data-nav="Обязанности">
     <div class="sec-head">
       <div class="eyebrow">Обязанности производителя</div>
@@ -189,6 +204,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("batch-items").innerHTML = table([[""], ["Изделие"], ["Для какой собаки"], ["Лента"], ["Фурнитура"]],
     B.items.map((it, i) => `<tr><td class="chk">${box("i" + i)}</td><td><b>${it.kind}</b><br>${it.what}${it.sew ? '<br><small class="muted">шьётся</small>' : ""}</td><td class="small">${it.dog}</td><td class="small">${it.m.map(([k, q]) => `${P[k].what.replace("BioThane Beta", "BioThane")} — ${q.toLocaleString("ru-RU")} м`).join("<br>")}</td><td class="small">${hwText(it)}</td></tr>`).join(""));
   document.addEventListener("change", e => { const id = e.target.dataset.chk; if (!id) return; if (e.target.checked) done[id] = 1; else delete done[id]; save(); });
+  document.getElementById("labels-list").innerHTML = table(
+    [["Вариант"], ["Для чего"], ["Цена"], ["Минимум"], ["Где"]],
+    O.labels.map(l => `<tr><td>${l.what}</td><td class="small">${l.use}</td><td>${l.price}<br><small class="muted">${ok(l)}</small></td><td class="small">${l.min}</td><td>${shop(l)}</td></tr>`).join(""));
   document.getElementById("tools-list").innerHTML = table(
     [["Инструмент"], ["Цена", 1], ["Заметка"]],
     O.tools.map(t => `<tr><td>${t.url ? `<a href="${t.url}" target="_blank" rel="noopener">${t.what}</a>` : t.what}</td><td class="num">${t.have ? "есть" : `${t.v ? "" : "≈ "}${t.price.toLocaleString("ru-RU", { maximumFractionDigits: 2 })} zł`}</td><td class="small">${t.note}</td></tr>`).join("")

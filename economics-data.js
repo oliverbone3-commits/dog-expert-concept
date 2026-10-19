@@ -583,6 +583,16 @@ const ECON = {
         market: [["Protekt Animals guard 105 zł", "https://protektanimals.com/dla-psa/szelki/szelki-guard"], ["Soft Y 165–170 zł", "https://protektanimals.com/dla-psa/szelki"]] },
     ],
     // на что купить пробную партию: лента, фурнитура на ~20 изделий и инструмент, которого нет
+    // бирки и брендинг: цены по поиску 20.10.2026, страницы открыты только у Print on Straps (v: 1)
+    labels: [
+      { what: "Сатиновая бирка с печатью", use: "Вшить в полиэстер; к BioThane прошить или приклепать", price: "≈ 79–116 zł за 100 штук", min: "100 штук", v: 0, shop: "Bestlabels", url: "https://www.bestlabels.pl/" },
+      { what: "Сатиновая бирка, термотрансфер", use: "То же; ширина 20–40 мм, длина любая", price: "от 0,07 zł за штуку без VAT", min: "100 штук, без платы за матрицу", v: 0, shop: "Strefa Haftu", url: "https://strefahaftu.com.pl/wszywki-termotransferowe/" },
+      { what: "Тканая бирка (жаккард)", use: "Полиэстер, вид дороже", price: "пример: 5,50 zł за штуку + 210 zł подготовка", min: "100 штук", v: 0, shop: "Ikast Etykiety", url: "https://www.ikastetykiety.pl/metki-do-ubran" },
+      { what: "Тканая бирка с логотипом", use: "То же", price: "от $92 за 100 штук", min: "100 штук", v: 0, shop: "Wunderlabel", url: "https://wunderlabel.com/logo-labels/" },
+      { what: "Печать логотипа на BioThane (UV)", use: "BioThane: логотип по ленте или на ручке, полноцветный", price: "подготовка 90 zł; доплата за метр — в форме заявки", min: "от 1 штуки, 7–10 рабочих дней", v: 1, shop: "Print on Straps", url: "https://printonstraps.com/produkt/wlasny-wzor/" },
+      { what: "Резиновая нашивка PVC с логотипом", use: "Приклепать к BioThane, не боится воды", price: "по запросу; чужие готовые в рознице ≈ €4,5", min: "уточнить", v: 0, shop: "Imar, Злоторыя", url: "https://panoramafirm.pl/artykuly/etykiety-i-naklejki/naszywki-na-akcesoria-w-ofercie-firmy-imar-155695.html" },
+      { what: "Тиснение горячим штампом", use: "Логотип прямо на BioThane", price: "латунный штамп + нагрев; польских цен не нашли", min: "штамп разово", v: 0, shop: "", url: "" },
+    ],
     // первая партия, чек-лист закупки: 5 поводков, 5 шлеек, 5 ошейников разных размеров, ширин, длин и материалов.
     // m — лента [ключ, метров] без запаса; h — фурнитура [ключ, штук]; sew — шьётся, а не клепается. Размеры собак — ориентир, мерить по собаке.
     batch: {
