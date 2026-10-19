@@ -12,7 +12,14 @@
 <link rel="stylesheet" href="styles.css">
 <script src="site.js" defer></script>
 <!-- the same data file as «Экономика»: prices live in one place -->
-<script src="economics-data.js?v=25" defer></script>
+<script src="economics-data.js?v=27" defer></script>
+<style>
+  .checks { list-style: none; padding: 0; margin: 0 0 var(--sp-3); display: grid; gap: 6px; }
+  .checks label { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+  .checks input { width: 18px; height: 18px; margin-top: 3px; accent-color: var(--accent); flex: none; }
+  .checks input:checked + span { color: var(--muted); text-decoration: line-through; }
+  td.chk { width: 34px; } td.chk input { width: 18px; height: 18px; accent-color: var(--accent); }
+</style>
 </head>
 <body data-page="production">
 
@@ -25,9 +32,27 @@
       <span class="chip">BioThane 12–21 zł/м</span>
       <span class="chip">Полиэстер 2–4 zł/м</span>
       <span class="chip">Фурнитура 0,50–6 zł</span>
+      <span class="chip">Чёрная — от €0,29</span>
     </div>
     <p class="status-note">Подборка Claude от 19.10.2026, командой не обсуждалась. Цены с VAT; «проверено» — цена видна на странице магазина в этот день, остальное — по поиску или оценка. Себестоимость изделий — в «Экономике», раздел <a href="economics.html#own">«Своё производство»</a>.</p>
   </div>
+
+  <section id="batch" data-nav="Закупка">
+    <div class="sec-head">
+      <div class="eyebrow">Первая партия · чек-лист закупки</div>
+      <h2 id="batch-head"></h2>
+    </div>
+    <div class="col">
+      <p>Пять поводков, пять шлеек и пять ошейников разных размеров, чтобы сравнить материалы, ширину и длину. Чёрная фурнитура, лента BioThane чёрная. Отметки сохраняются только в этом браузере.</p>
+    </div>
+    <h3 class="mt">Шаги</h3>
+    <ul class="checks" id="batch-steps"></ul>
+    <h3 class="mt">Что шьём</h3>
+    <div id="batch-items"></div>
+    <h3 class="mt">Что купить</h3>
+    <div id="batch-buy"></div>
+    <p class="legend">Ленту считаю с запасом 10% на брак и подгонку, фурнитуру — точно по изделиям плюс запасные винты, фастексы и регуляторы. Евро — по 4,3 zł. Доставка — оценка, у магазинов не проверял. Размеры собак — ориентир: шлейки и ошейники режем по меркам конкретной собаки.</p>
+  </section>
 
   <section id="tape" data-nav="Лента">
     <div class="sec-head">
@@ -61,6 +86,9 @@
       <p>У Maćko есть отдельный раздел «сделай ошейник или шлейку сам»: карабины, пряжки, полукольца, кольца, регуляторы и шлёвки по 0,50–2,40 zł. Фастексы Duraflex и детали из нержавейки — у других магазинов.</p>
     </div>
     <div id="hardware-list"></div>
+    <h3 class="mt">Чёрная фурнитура</h3>
+    <p class="small">Полный набор в чёрном — у немецкого магазина материалов Pfotenfreude: карабины, кольца, фастексы, регуляторы, пряжки и чёрные винты Chicago под BioThane. Доставляют в Польшу. Чёрное покрытие со временем стирается в местах трения — у нержавейки и латуни этого нет.</p>
+    <div id="black-list"></div>
     <p class="note">Для шлеек и перестёжек лучше брать сварные кольца и фурнитуру с указанной разрывной нагрузкой: по GPSR мы отвечаем за изделие как производитель.</p>
   </section>
 
@@ -128,7 +156,39 @@ document.addEventListener("DOMContentLoaded", () => {
     O.materials.filter(m => m.group === g).map(m => `<tr><td>${m.what}</td><td class="num">${price(m)}<br><small class="muted">${ok(m)}</small></td><td>${shop(m)}</td><td class="small">${m.note || ""}</td></tr>`).join(""))).join("");
   document.getElementById("hardware-list").innerHTML = table(
     [["Деталь"], ["Цена за штуку", 1], ["Где"], ["Заметка"]],
-    O.hardware.filter(h => h.shop).map(h => `<tr><td>${h.what}</td><td class="num">${price(h)}<br><small class="muted">${ok(h)}</small></td><td>${shop(h)}</td><td class="small">${h.note || ""}</td></tr>`).join(""));
+    O.hardware.filter(h => h.shop && !h.group).map(h => `<tr><td>${h.what}</td><td class="num">${price(h)}<br><small class="muted">${ok(h)}</small></td><td>${shop(h)}</td><td class="small">${h.note || ""}</td></tr>`).join(""));
+  document.getElementById("black-list").innerHTML = table(
+    [["Деталь"], ["Цена за штуку", 1], ["Где"], ["Заметка"]],
+    O.hardware.filter(h => h.group === "Чёрная фурнитура").map(h => `<tr><td>${h.what}</td><td class="num">${price(h)}<br><small class="muted">${ok(h)}</small></td><td>${shop(h)}</td><td class="small">${h.note || ""}</td></tr>`).join(""));
+  // first batch checklist: purchase list is computed from the items, ticks are stored in this browser only
+  const B = O.batch, P = Object.fromEntries([...O.materials, ...O.hardware].map(x => [x.key, x]));
+  const KEY = "rss-batch-v1";
+  let done = {}; try { done = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} };
+  const box = id => `<input type="checkbox" data-chk="${id}"${done[id] ? " checked" : ""} aria-label="Отметить">`;
+  const zl = n => `${Math.round(n).toLocaleString("ru-RU")} zł`;
+  const tape = {}, hw = {};
+  B.items.forEach(it => { it.m.forEach(([k, q]) => tape[k] = (tape[k] || 0) + q); it.h.forEach(([k, q]) => hw[k] = (hw[k] || 0) + q); });
+  B.extra.forEach(([k, q]) => hw[k] = (hw[k] || 0) + q);
+  const buyM = k => Math.ceil(tape[k] * (1 + B.spare) * 10) / 10;
+  const shops = {};
+  Object.keys(tape).forEach(k => (shops[P[k].shop] = shops[P[k].shop] || []).push({ id: "t-" + k, what: P[k].what, qty: `${buyM(k).toLocaleString("ru-RU")} м`, need: `нужно ${tape[k].toLocaleString("ru-RU", { maximumFractionDigits: 2 })} м`, zl: buyM(k) * P[k].price, url: P[k].url }));
+  Object.keys(hw).forEach(k => (shops[P[k].shop] = shops[P[k].shop] || []).push({ id: "h-" + k, what: P[k].what, qty: `${hw[k]} шт.`, need: P[k].eur ? `€${(hw[k] * P[k].eur).toFixed(2).replace(".", ",")}` : "", zl: hw[k] * P[k].price, url: P[k].url }));
+  const ship = Object.fromEntries(B.ship);
+  let total = 0;
+  const shopKey = s => Object.keys(ship).find(n => s.startsWith(n));
+  document.getElementById("batch-buy").innerHTML = Object.entries(shops).map(([s, lines]) => {
+    const sum = lines.reduce((t, l) => t + l.zl, 0), sh = ship[shopKey(s)] || 0; total += sum + sh;
+    return `<h4>${s}</h4>` + table([[""], ["Что"], ["Сколько", 1], ["Сумма", 1]],
+      lines.map(l => `<tr><td class="chk">${box(l.id)}</td><td><a href="${l.url}" target="_blank" rel="noopener">${l.what}</a></td><td class="num">${l.qty}<br><small class="muted">${l.need}</small></td><td class="num">${zl(l.zl)}</td></tr>`).join("")
+      + `<tr><td></td><td>Доставка, оценка</td><td></td><td class="num">≈ ${zl(sh)}</td></tr><tr><td></td><td><b>Итого у магазина</b></td><td></td><td class="num"><b>${zl(sum + sh)}</b></td></tr>`);
+  }).join("");
+  document.getElementById("batch-head").textContent = `Первая партия из 15 изделий — около ${zl(total)} с доставкой.`;
+  document.getElementById("batch-steps").innerHTML = B.steps.map((s, i) => `<li><label>${box("s" + i)}<span>${s}</span></label></li>`).join("");
+  const hwText = it => it.h.map(([k, q]) => `${P[k].what.replace(/ чёрн(ый|ое|ая)/, "")} — ${q}`).join("; ");
+  document.getElementById("batch-items").innerHTML = table([[""], ["Изделие"], ["Для какой собаки"], ["Лента"], ["Фурнитура"]],
+    B.items.map((it, i) => `<tr><td class="chk">${box("i" + i)}</td><td><b>${it.kind}</b><br>${it.what}${it.sew ? '<br><small class="muted">шьётся</small>' : ""}</td><td class="small">${it.dog}</td><td class="small">${it.m.map(([k, q]) => `${P[k].what.replace("BioThane Beta", "BioThane")} — ${q.toLocaleString("ru-RU")} м`).join("<br>")}</td><td class="small">${hwText(it)}</td></tr>`).join(""));
+  document.addEventListener("change", e => { const id = e.target.dataset.chk; if (!id) return; if (e.target.checked) done[id] = 1; else delete done[id]; save(); });
   document.getElementById("tools-list").innerHTML = table(
     [["Инструмент"], ["Цена", 1], ["Заметка"]],
     O.tools.map(t => `<tr><td>${t.url ? `<a href="${t.url}" target="_blank" rel="noopener">${t.what}</a>` : t.what}</td><td class="num">${t.have ? "есть" : `${t.v ? "" : "≈ "}${t.price.toLocaleString("ru-RU", { maximumFractionDigits: 2 })} zł`}</td><td class="small">${t.note}</td></tr>`).join("")
